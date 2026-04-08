@@ -1,0 +1,618 @@
+---
+title: "Small Bank Depositor Discipline: Multiple Outcomes"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+## Setup
+
+Rebuild the small-bank panel from raw Call Reports (in memory only), then run static DiD (dummy vs continuous treatment) and one event study per dependent variable. To add an outcome, copy a full section below and change the variable name, labels, and file stubs.
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+library(lubridate)
+library(readxl)
+library(stringr)
+
+source(here::here("code", "_common.R"))
+
+save_figures <- TRUE
+save_tables <- TRUE
+
+dat_suffix <- format(Sys.time(), "%Y%m%d")
+raw_dir <- here::here("data", "raw")
+
+fig_w <- 4
+fig_h <- 2.5
+fig_bg <- "transparent"
+
+#' Write one ggplot to `docs/figures/` when `save_figures` and `do_export` are TRUE.
+save_doc_fig <- function(plot, stub, do_export = TRUE) {
+  if (!isTRUE(save_figures) || !isTRUE(do_export)) return(invisible(NULL))
+  ggsave(
+    filename = here::here("docs", "figures", paste0(stub, "_", dat_suffix, ".png")),
+    plot = plot,
+    width = fig_w,
+    height = fig_h,
+    bg = fig_bg
+  )
+}
+
+#' Batch-save plots to `docs/figures/` (same dimensions as `save_doc_fig()`).
+save_doc_figs <- function(plots, stubs, do_export = TRUE) {
+  if (!isTRUE(save_figures) || !isTRUE(do_export)) return(invisible(NULL))
+  for (i in seq_along(plots)) {
+    ggsave(
+      filename = here::here("docs", "figures", paste0(stubs[[i]], "_", dat_suffix, ".png")),
+      plot = plots[[i]],
+      width = fig_w,
+      height = fig_h,
+      bg = fig_bg
+    )
+  }
+  invisible(NULL)
+}
+
+#' Export `fixest` models to LaTeX under `docs/tables/` when `save_tables` and `do_export` are TRUE.
+export_doc_tbl <- function(models, stub, dict, order = NULL, do_export = TRUE) {
+  if (!isTRUE(save_tables) || !isTRUE(do_export)) return(invisible(NULL))
+  args <- list(
+    models,
+    dict = dict,
+    tex = TRUE,
+    file = here::here("docs", "tables", paste0(stub, "_", dat_suffix, ".tex")),
+    replace = TRUE,
+    create_dirs = TRUE
+  )
+  if (!is.null(order)) args$order <- order
+  do.call(etable, args)
+  invisible(NULL)
+}
+
+#' Difference-of-event-study plot (e.g. uninsured minus insured time-deposit ES).
+plot_es_diff_from_pd <- function(pd) {
+  ggplot(pd, aes(x = k, y = est)) +
+    geom_hline(yintercept = 0, color = accent_gray, linewidth = 0.4, linetype = "dashed") +
+    geom_vline(xintercept = -0.5, color = "darkred", linewidth = 0.8, linetype = "dotted") +
+    annotate(
+      "text", x = -0.3, y = Inf,
+      label = "CECL Adoption\n(k = 0)",
+      color = accent_gray, vjust = 1.5, hjust = 0, size = 2.8
+    ) +
+    geom_ribbon(aes(ymin = lo90, ymax = hi90), fill = primary_blue, alpha = 0.15) +
+    geom_line(color = primary_blue, linewidth = 0.8) +
+    geom_point(color = primary_blue, size = 2) +
+    scale_x_continuous(breaks = seq(min(pd$k), max(pd$k), by = 2)) +
+    theme_custom() +
+    labs(
+      title = "",
+      x = "Quarters Relative to CECL Adoption (k = 0)",
+      y = "Coefficient"
+    )
+}
+```
+
+## Build small-bank panel from raw Call Reports
+
+Loads the newest stamped pair `call_report_data_YYYYMMDD_{1,2}.rds` if present; otherwise `call_report_data.rds` and `call_report_data2.rds`. No `saveRDS()` of the panel.
+
+```{r}
+
+raw1 <- file.path(raw_dir, paste0("call_report_data_20260401_1.rds"))
+raw2 <- file.path(raw_dir, paste0("call_report_data_20260401_2.rds"))
+stopifnot(file.exists(raw1), file.exists(raw2))
+cat("Raw files:\n ", raw1, "\n ", raw2, "\n")
+
+dt1 <- readRDS(raw1)
+dt2 <- readRDS(raw2)
+setDT(dt1); setDT(dt2)
+dt <- rbind(dt1, dt2, fill = TRUE)
+rm(dt1, dt2); gc()
+
+comm_bank_threshold <- 10e6
+
+dt[, D_DT := as.Date(D_DT)]
+# Calendar year for YTD de-cumulation (avoid column name "year": lubridate::year is a
+# function and can be picked up as a closure in by = .(ID_RSSD, year) in some contexts).
+dt[, cal_year := as.integer(format(D_DT, "%Y"))]
+dt[, quarter_no := lubridate::quarter(D_DT)]
+dt <- unique(dt, by = c("ID_RSSD", "D_DT"))
+setorder(dt, ID_RSSD, D_DT)
+
+cumulative_vars <- intersect(c(
+  "interest_expense","interest_income", "net_interest_income", "net_income",
+  "nonint_expense", "nonint_income"
+), names(dt))
+
+for (v in cumulative_vars) {
+  new_v <- paste0(v, "_q")
+  dt[, (new_v) := fifelse(quarter_no == 1L, get(v), get(v) - shift(get(v), 1L)), by = .(ID_RSSD, cal_year)]
+  dt[quarter_no > 1L & is.na(shift(get(v), 1L)), (new_v) := NA, by = .(ID_RSSD, cal_year)]
+}
+
+ie_var <- "interest_expense_q" 
+eq_col <- "equity_bop"  
+dt[, cecl_equity := fifelse(
+  !is.na(CECL) & !is.na(get(eq_col)) & get(eq_col) > 0,
+  CECL / get(eq_col) * 100,
+  NA_real_
+)]
+
+dt[total_assets > 0, unins_time_deps_assets := (unins_time_deps / total_assets) * 100]
+dt[total_assets > 0, ins_time_deps_assets   := (ins_time_deps   / total_assets) * 100]
+dt[total_assets > 0, int_expense_assets     := (get(ie_var)      / total_assets) * 100]
+dt[total_assets > 0, unins_deps_assets      := (unins_deps_excl_ret      / total_assets) * 100]
+dt[total_assets > 0, ins_deps_assets        := (ins_deps_excl_ret      / total_assets) * 100]
+dt[n_accts_ins_excl_ret > 0 & n_accts_unins_excl_ret>0, n_unins_deps_pct     := n_accts_unins_excl_ret      / (n_accts_unins_excl_ret+n_accts_ins_excl_ret) * 100]
+dt[total_assets > 0, roa := net_income_q*100 / total_assets]
+dt[total_assets > 0, roe := net_income_q*100 / get(eq_col)]
+
+dt[total_assets > 0, equity_assets := get(eq_col)*100/total_assets]
+dt[total_assets > 0, nim := net_interest_income_q*100/total_assets]
+
+ratio_vars_panel <- intersect(c(
+  "cecl_equity", "unins_time_deps_assets", "ins_time_deps_assets", "int_expense_assets",
+  "unins_deps_assets", "ins_deps_assets", "n_unins_deps_pct", "roa", "roe", "equity_assets", "nim"
+), names(dt))
+winsorize_by_date(dt, vars = ratio_vars_panel, date_var = "D_DT", probs = c(0.01, 0.99))
+
+
+
+```
+
+```{r}
+# Size for the <$10B split: total_assets on 2022-12-31 only.
+small_bank_ids <- unique(dt[D_DT == "2022-12-31" & total_assets < comm_bank_threshold, ID_RSSD])
+dt_sb <- dt[ID_RSSD %in% small_bank_ids]
+
+# Staggered CECL adoption: earliest quarter-end in the rollout window (two quarters before
+# through three quarters after 2023Q1) with non-missing cecl_equity. Banks with no such
+# quarter get NA adopt_dt (excluded from |qtrs_since|<=10 event window).
+adopt_quarters <- as.Date(c(
+  "2022-09-30", "2022-12-31", "2023-03-31", "2023-06-30", "2023-09-30", "2023-12-31"
+))
+adopt_by_bank <- dt_sb[D_DT %in% adopt_quarters & !is.na(cecl_equity), .(adopt_dt = min(D_DT)), by = ID_RSSD]
+dt_sb <- merge(dt_sb, adopt_by_bank, by = "ID_RSSD") # drop not adopting banks because no all.x = T
+
+cs_adopt <- dt_sb[!is.na(adopt_dt) & D_DT == adopt_dt & !is.na(cecl_equity)]
+if (nrow(cs_adopt) == 0L) stop("No adoption-quarter rows in small-bank sample.")
+
+high_cecl_map <- cs_adopt[, .(ID_RSSD, high_cecl_equity = as.integer(cecl_equity >= CECL_THRESHOLD_PCT))]
+dt_sb <- merge(dt_sb, high_cecl_map, by = "ID_RSSD")
+dt_sb[is.na(high_cecl_equity), high_cecl_equity := 0L]
+
+cecl_map <- cs_adopt[, .(ID_RSSD, cecl_equity_adopt = cecl_equity)]
+dt_sb <- merge(dt_sb, cecl_map, by = "ID_RSSD")
+dt_sb[!is.na(cecl_equity_adopt) & (is.na(cecl_equity) | D_DT != adopt_dt), cecl_equity := cecl_equity_adopt]
+dt_sb[, cecl_equity_adopt := NULL]
+
+dt_sb[, qtrs_since := compute_qtrs_since(D_DT, adopt_dt)]
+dt_sb[, post := as.integer(qtrs_since >= 0L)]
+
+setorder(dt_sb, ID_RSSD, D_DT)
+dt_sb[, ta_lag := shift(total_assets, 1L), by = ID_RSSD]
+dt_sb[, log_total_assets_l1 := fifelse(ta_lag > 0 & !is.na(ta_lag), log(ta_lag), NA_real_)]
+dt_sb[, ta_lag := NULL]
+dt_sb[, equity_assets_l1 := shift(equity_assets, 1L), by = ID_RSSD]
+dt_sb[, int_expense_assets_l1 := shift(int_expense_assets, 1L), by = ID_RSSD]
+dt_sb[, nim_l1 := shift(nim, 1L), by = ID_RSSD]
+dt_w <- dt_sb[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+dt_w[, post_factor:=as.factor(ifelse(post==0,0,ifelse(qtrs_since %in% 0:3,1,2)))]
+
+# # DSS deposit betas: merge last two numeric columns only (expbeta, depexpbeta); key = rssdid -> ID_RSSD
+# dss_beta_path <- file.path(raw_dir, "DSS_depositBeta.xlsx")
+# stopifnot(file.exists(dss_beta_path))
+# dss_beta <- as.data.table(read_excel(dss_beta_path))
+# rssd_col <- names(dss_beta)[tolower(names(dss_beta)) == "rssdid"][1L]
+# if (is.na(rssd_col)) {
+#   stop("DSS_depositBeta.xlsx must contain an 'rssdid' column to merge to ID_RSSD.")
+# }
+# nc_beta <- ncol(dss_beta)
+# beta_cols <- names(dss_beta)[(nc_beta - 1L):nc_beta]
+# dss_beta <- unique(dss_beta[, c(rssd_col, beta_cols), with = FALSE], by = rssd_col)
+# setnames(dss_beta, rssd_col, "ID_RSSD")
+# dt_w <- merge(dt_w, dss_beta, by = "ID_RSSD", all.x = TRUE)
+```
+
+```{r}
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1 ,
+  ..fe = ~ ID_RSSD + D_DT,
+  ..did_dummy = ~ i(qtrs_since, high_cecl_equity, ref = -1),
+  ..did_cont = ~ i(qtrs_since, cecl_equity, ref = -1),
+  ..dv1.1 = ~unins_time_deps_assets,
+  ..dv1.2 = ~ins_time_deps_assets,
+  ..dv1.3 = ~log1p(unins_time_deps),
+  ..dv1.4 = ~log1p(ins_time_deps),
+  ..dv2.1 = ~int_expense_assets,
+  ..dv2.2 = ~roa,
+  ..dv2.3 = ~nim
+)
+
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+
+order_did_tbl <- c("Post x CECL Adj","Post x High CECL")
+```
+
+## 1. Uninsured deposits vs. insured deposits
+
+```{r}
+r <- list(
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.2 ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.2 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+
+etable(r, dict = dict_did, order = order_did_tbl)
+
+export_did_time_deps_tbl <- TRUE
+export_doc_tbl(r, "small_bank_did_time_deposits", dict_did, order_did_tbl, do_export = export_did_time_deps_tbl)
+
+rp1 <- feols(..dv1.1 ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp2 <- feols(..dv1.2 ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p1 <- make_es_plot(rp1,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p1)
+p2 <- make_es_plot(rp2,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p2)
+rp3 <- feols(..dv1.1 ~ ..did_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp4 <- feols(..dv1.2 ~ ..did_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p3 <- make_es_plot(rp3,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p3)
+p4 <- make_es_plot(rp4,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p4)
+
+export_es_time_deps_figs <- TRUE
+save_doc_figs(
+  list(p1, p2, p3, p4),
+  c(
+    "es_unins_time_deps_assets",
+    "es_ins_time_deps_assets",
+    "es_unins_time_deps_assets_cecl_cont",
+    "es_ins_time_deps_assets_cecl_cont"
+  ),
+  do_export = export_es_time_deps_figs
+)
+```
+
+### Triple-difference: uninsured vs. insured time deposits
+
+```{r}
+unins <- copy(dt_w)
+unins[, dep_assets := unins_time_deps_assets]
+unins[, deposit_uninsured := 1L]
+
+ins <- copy(dt_w)
+ins[, dep_assets := ins_time_deps_assets]
+ins[, deposit_uninsured := 0L]
+
+stacked <- rbind(unins, ins)
+stacked[, deposit_uninsured := as.factor(deposit_uninsured)]
+stacked <- stacked[!is.na(dep_assets)]
+
+stacked[,bank_qt:=paste0(ID_RSSD,"_",D_DT)]
+
+dict_td <- c(
+  dict_did,
+  "deposit_uninsured1"="Uninsured time dep",
+  "bank_qt" = "Bank x Quarter"
+)
+
+# Baseline deposit columns use post_factor × CECL (order_did_tbl); triple-diff cols follow.
+order_td <- c("CECL Adj x Post x Uninsured time dep","CECL Adj x Uninsured time dep","CECL Adj x Post","High CECL x Post x Uninsured time dep",
+               "High CECL x Uninsured time dep",
+               "High CECL x Post","Post x Uninsured time dep")
+
+r_td <- list(
+  feols(
+    dep_assets ~
+      cecl_equity*post*deposit_uninsured + ..controls + int_expense_assets_l1| bank_qt,
+    data = stacked,
+    vcov = ~ID_RSSD
+  ),
+  feols(
+    dep_assets ~
+      high_cecl_equity*post*deposit_uninsured + ..controls + int_expense_assets_l1| bank_qt ,
+    data = stacked,
+    vcov = ~ID_RSSD
+  )
+)
+
+etable(c(r_td), dict = dict_td, order = order_td)
+
+export_triple_diff_td_tbl <- TRUE
+export_doc_tbl(c(r_td), "small_bank_triple_diff_time_deposits", dict_td, order_td, do_export = export_triple_diff_td_tbl)
+# 
+# # Difference of event-study coefficients (same outcomes as rp1 / rp2 in prior chunk)
+# pd_unins_td <- extract_es_data(rp1)
+# pd_ins_td <- extract_es_data(rp2)
+# pd_td_es <- merge(pd_unins_td, pd_ins_td, by = "k", suffixes = c("_u", "_i"))
+# pd_td_es[, est := est_u - est_i]
+# pd_td_es[, se := sqrt(se_u^2 + se_i^2)]
+# pd_td_es[, lo90 := est - CI_Z * se]
+# pd_td_es[, hi90 := est + CI_Z * se]
+# 
+# p_td <- plot_es_diff_from_pd(pd_td_es)
+# print(p_td)
+# save_doc_fig(p_td, "triple_diff_time_deps_es")
+# 
+# # Same triple-diff contrast using continuous CECL intensity (rp3 / rp4; mirrors r_td col. 1)
+# pd_unins_td_cont <- extract_es_data(rp3)
+# pd_ins_td_cont <- extract_es_data(rp4)
+# pd_td_es_cont <- merge(pd_unins_td_cont, pd_ins_td_cont, by = "k", suffixes = c("_u", "_i"))
+# pd_td_es_cont[, est := est_u - est_i]
+# pd_td_es_cont[, se := sqrt(se_u^2 + se_i^2)]
+# pd_td_es_cont[, lo90 := est - CI_Z * se]
+# pd_td_es_cont[, hi90 := est + CI_Z * se]
+# 
+# p_td_cont <- plot_es_diff_from_pd(pd_td_es_cont)
+# print(p_td_cont)
+# save_doc_fig(p_td_cont, "triple_diff_time_deps_es_cecl_cont")
+```
+
+## 2. Financial outcomes
+
+```{r}
+r <- list(
+  feols(..dv2.1 ~ ..reg_cont + ..controls| ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.1 ~ ..reg_dummy + ..controls| ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ ..reg_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.3 ~ ..reg_cont + ..controls| ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.3 ~ ..reg_dummy + ..controls| ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+
+etable(r, dict = dict_did, order = order_did_tbl)
+
+export_did_financial_outcomes_tbl <- TRUE
+export_doc_tbl(r, "small_bank_did_financial_outcomes", dict_did, order_did_tbl, do_export = export_did_financial_outcomes_tbl)
+
+rp1 <- feols(..dv2.1 ~ ..did_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp2 <- feols(..dv2.2 ~ ..did_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp3 <- feols(..dv2.3 ~ ..did_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p1 <- make_es_plot(rp1,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p1)
+p2 <- make_es_plot(rp2,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p2)
+p3 <- make_es_plot(rp3,ylab_str = "Coefficient",title_str="",vline_x = -1)
+print(p3)
+
+rp4 <- feols(..dv2.1 ~ ..did_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp5 <- feols(..dv2.2 ~ ..did_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp6 <- feols(..dv2.3 ~ ..did_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p4 <- make_es_plot(rp4, ylab_str = "Coefficient", title_str = "",vline_x = -1)
+print(p4)
+p5 <- make_es_plot(rp5, ylab_str = "Coefficient", title_str = "",vline_x = -1)
+print(p5)
+p6 <- make_es_plot(rp6, ylab_str = "Coefficient", title_str = "",vline_x = -1)
+print(p6)
+
+export_es_financial_outcomes_figs <- TRUE
+save_doc_figs(
+  list(p1, p2, p3, p4, p5, p6),
+  c(
+    "es_int_expense_assets",
+    "es_roa",
+    "es_nim",
+    "es_int_expense_assets_cecl_cont",
+    "es_roa_cecl_cont",
+    "es_nim_cecl_cont"
+  ),
+  do_export = export_es_financial_outcomes_figs
+)
+```
+
+## 3. Heterogeneity by depositor sophistication
+
+```{r}
+
+# Depositor sophistication: FDIC SOD 2022 branches merged to ZIP ACS (same construction as
+# cc_generated/v2/sophistication_heterogeneity.R). Source scripts: bank-branch-openings
+# sample-construction 01_download_fdic_sod_* and 04_build_zip_year_acs_panel_*.
+sod_path <- file.path(raw_dir, "fdic_sod_2012_2025_20260328.rds")
+zip_demo_path <- file.path(raw_dir, "zip_year_demographics_20260328.rds")
+
+sod_raw <- readRDS(sod_path)
+setDT(sod_raw)
+sod <- sod_raw[YEAR == 2022L]
+if (!"deposits_dollars" %in% names(sod)) {
+  sod[, deposits_dollars := DEPSUMBR * 1000]
+}
+sod[, zip5 := str_pad(as.character(ZIPBR), 5L, side = "left", pad = "0")]
+
+zip_demo <- readRDS(zip_demo_path)
+setDT(zip_demo)
+zip_2022 <- zip_demo[acs_year == 2022L]
+
+sod_merged <- merge(
+  sod,
+  zip_2022[, .(zip5, sophisticated, pct_college_educated, dividend_frac, med_hh_income)],
+  by = "zip5",
+  all.x = TRUE
+)
+
+soph_bank <- sod_merged[, .(
+  frac_sophisticated = fifelse(
+    sum(deposits_dollars, na.rm = TRUE) > 0,
+    sum(deposits_dollars * sophisticated, na.rm = TRUE) / sum(deposits_dollars, na.rm = TRUE),
+    NA_real_
+  ),
+  n_branches = .N,
+  total_sod_deposits = sum(deposits_dollars, na.rm = TRUE)
+), by = RSSDID]
+
+med_soph <- quantile(soph_bank$frac_sophisticated, 0.75, na.rm = TRUE)
+soph_bank[, high_sophistication := as.integer(frac_sophisticated >= med_soph)]
+
+dt_w_het <- merge(
+  dt_w,
+  soph_bank[, .(ID_RSSD = RSSDID, high_sophistication, frac_sophisticated)],
+  by = "ID_RSSD",
+  all.x = TRUE
+)
+
+n_sb <- uniqueN(dt_w_het$ID_RSSD)
+n_matched <- uniqueN(dt_w_het[!is.na(high_sophistication)]$ID_RSSD)
+cat(sprintf(
+  "Sophistication merge: %d / %d small banks (%.1f%%) matched to SOD-based measure.\n",
+  n_matched, n_sb, 100 * n_matched / n_sb
+))
+
+
+dt_w_het <- dt_w_het[!is.na(high_sophistication)]
+cat(sprintf(
+  "Heterogeneity ES sample: %d bank-quarters (|k|<=10), %d distinct banks.\n",
+  nrow(dt_w_het),
+  uniqueN(dt_w_het$ID_RSSD)
+))
+```
+
+## 4. Event-study heterogeneity by depositor sophistication
+This section restricts to banks with a non-missing deposit-weighted branch sophistication measure from 2022 FDIC Summary of Deposits merged to ZIP-level ACS. The binary split places banks at or above the cross-sectional median of `frac_sophisticated` in the SOD bank sample in the “high sophistication” group. We then estimate the same event-study specification as above separately for high- and low-sophistication subsamples, reusing the same dependent variables used in prior sections.
+
+```{r}
+stopifnot(nrow(dt_w_het) > 0L)
+if (uniqueN(dt_w_het$high_sophistication) < 2L) {
+  stop("Sophistication split is degenerate (need both high and low groups in dt_w_het).")
+}
+
+# Minimal heterogeneity run using the same dependent variables as prior sections.
+outcome_specs <- list(
+  list(name = "unins_time_deps_assets", lhs = "unins_time_deps_assets", add_ie_lag = TRUE),
+  list(name = "ins_time_deps_assets", lhs = "ins_time_deps_assets", add_ie_lag = TRUE),
+  list(name = "int_expense_assets", lhs = "int_expense_assets", add_ie_lag = FALSE),
+  list(name = "roa", lhs = "roa", add_ie_lag = FALSE),
+  list(name = "nim", lhs = "nim", add_ie_lag = FALSE)
+)
+
+het_es_models <- setNames(vector("list", length(outcome_specs)), vapply(outcome_specs, `[[`, "", "name"))
+
+for (spec in outcome_specs) {
+  rhs <- if (isTRUE(spec$add_ie_lag)) {
+    "..did_dummy + ..controls + int_expense_assets_l1"
+  } else {
+    "..did_dummy + ..controls"
+  }
+  fml <- as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe"))
+
+  m_hi <- feols(fml, data = dt_w_het[high_sophistication == 1L], vcov = ~ID_RSSD)
+  m_lo <- feols(fml, data = dt_w_het[high_sophistication == 0L], vcov = ~ID_RSSD)
+
+  het_es_models[[spec$name]] <- list(high = m_hi, low = m_lo)
+}
+
+print(names(het_es_models))
+```
+
+```{r}
+# Triple interaction table: Post x High CECL x High Sophistication
+triple_models <- setNames(vector("list", length(outcome_specs)), vapply(outcome_specs, `[[`, "", "name"))
+
+for (spec in outcome_specs) {
+  rhs <- if (isTRUE(spec$add_ie_lag)) {
+    "post * high_cecl_equity * high_sophistication + ..controls + int_expense_assets_l1"
+  } else {
+    "post * high_cecl_equity * high_sophistication + ..controls"
+  }
+
+  fml <- as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe"))
+  triple_models[[spec$name]] <- feols(fml, data = dt_w_het, vcov = ~ID_RSSD)
+}
+
+dict_triple <- c(
+  dict_did,
+  "high_sophistication" = "High Sophistication"
+)
+
+etable(triple_models, dict = dict_triple)
+```
+
+```{r}
+plot_specs <- list(
+  list(
+    name = "unins_time_deps_assets",
+    title = "Event Study: Uninsured Time Deposits / Assets by Depositor Sophistication",
+    ylab = "Unins. Time Deps. / Assets (pp)",
+    fig_stub = "es_soph_split_unins_time_deps_assets"
+  ),
+  list(
+    name = "ins_time_deps_assets",
+    title = "Event Study: Insured Time Deposits / Assets by Depositor Sophistication",
+    ylab = "Ins. Time Deps. / Assets (pp)",
+    fig_stub = "es_soph_split_ins_time_deps_assets"
+  ),
+  list(
+    name = "int_expense_assets",
+    title = "Event Study: Interest Expense / Assets by Depositor Sophistication",
+    ylab = "Int. Expense / Assets (pp)",
+    fig_stub = "es_soph_split_int_expense_assets"
+  ),
+  list(
+    name = "roa",
+    title = "Event Study: ROA by Depositor Sophistication",
+    ylab = "ROA (pp)",
+    fig_stub = "es_soph_split_roa"
+  ),
+  list(
+    name = "nim",
+    title = "Event Study: Net Interest Margin / Assets by Depositor Sophistication",
+    ylab = "NIM / Assets (pp)",
+    fig_stub = "es_soph_split_nim"
+  )
+)
+
+het_es_plots <- setNames(vector("list", length(plot_specs)), vapply(plot_specs, `[[`, "", "name"))
+triple_term <- "post:high_cecl_equity:high_sophistication"
+
+for (spec in plot_specs) {
+  pd_hi <- extract_es_data(het_es_models[[spec$name]]$high)
+  pd_lo <- extract_es_data(het_es_models[[spec$name]]$low)
+  this_model <- triple_models[[spec$name]]
+  this_coef <- coef(this_model)
+  this_se <- se(this_model)
+
+  note_txt <- "Note from triple-interaction table: Post x High CECL x High Sophistication not estimated."
+  if (triple_term %in% names(this_coef) && triple_term %in% names(this_se)) {
+    note_txt <- sprintf(
+      "Post x High CECL x High Sophistication = %.4f (SE = %.4f).",
+      this_coef[[triple_term]],
+      this_se[[triple_term]]
+    )
+  }
+
+  p <- make_split_es_plot(
+    pd_list = list(pd_hi, pd_lo),
+    group_names = c("High Sophistication", "Low Sophistication"),
+    colors = c(primary_blue, primary_gold),
+    title_str = "",
+    ylab_str = "Coefficient"
+  ) +
+    labs(
+      subtitle = NULL,
+      x = "Quarters Relative to CECL Adoption (k = 0)"
+    ) +
+    labs(caption = note_txt)
+
+  het_es_plots[[spec$name]] <- p
+  print(p)
+  save_doc_fig(p, spec$fig_stub)
+}
+```
+
+
+```{r}
+
+```
+

@@ -1,0 +1,106 @@
+%% ============================================================
+%%  Section: Descriptive Statistics
+%%  Depositor Discipline in Modern Banking (2026-04-07 draft)
+%%
+%%  Changes from 20260406 version:
+%%    - Removed all [@@@ ...] placeholders and addressed each one.
+%%    - §4.2 (Characteristics) rewritten: removed specific numbers throughout;
+%%      retained only the most salient differences (size, deposit structure).
+%%      CRE claim corrected: CRE share IS significantly higher for high-CECL
+%%      banks in the new table (1.727pp, p<0.05), opposite of what the prior
+%%      draft stated.
+%%    - §4.2 shortened by roughly one-third. Performance paragraph collapsed
+%%      to two sentences; deposit structure paragraph simplified.
+%%    - §4.3 (Predictors) shortened to four sentences; removed coefficient
+%%      recitation and moved the key takeaway to the opening sentence.
+%%
+%%  References two tables and two figures defined in tables_figures.tex:
+%%    tab:descriptive_sumstats_cecl  (tab01_sumstats_20260403)
+%%    tab:cecl_predictors_cross_section  (tab02_cecl_predictors_20260403)
+%%    fig:cecl_equity_distribution   (fig01_cecl_dist_20260403)
+%%    fig:cecl_adoption_quarter_distribution  (fig02_adoption_dist_20260403)
+%%
+%%  NOTE: The prior desc-stats file used \label{sec:data} which conflicts
+%%  with the data section. This file uses \label{sec:descriptive}.
+%% ============================================================
+
+\section{Descriptive Statistics}
+\label{sec:descriptive}
+
+In this section, we describe the cross-sectional distribution of the treatment
+variable, document the concentration of adoption timing, and compare pre-adoption
+characteristics of high- and low-CECL banks.
+
+\subsection{Distribution of the CECL Adjustment and Adoption Timing}
+\label{sec:descriptive:distribution}
+
+Figure~\ref{fig:cecl_equity_distribution} plots the cross-sectional distribution
+of \texttt{CECL Adj}, the Day-One retained-earnings charge scaled by pre-adoption
+book equity, for the community banks in the estimation sample.  The
+distribution is right-skewed.  The full-sample mean is 0.28 percent of equity and
+the median is essentially zero: roughly half of community banks adopted CECL with
+loan portfolios whose forward-looking expected credit losses, under the new
+standard, required little incremental reserve above what the incurred-loss
+standard had already accumulated.  The right tail is substantial, however.  The
+90th percentile of the distribution lies at approximately 2.5 percent of equity,
+the threshold for our binary High-CECL indicator.  The banks that exceed
+this threshold show a mean adjustment of nearly 3 percent of equity,
+representing a material reduction in reported book capital from a single
+mandatory accounting event.
+
+Figure~\ref{fig:cecl_adoption_quarter_distribution} shows the distribution of
+adoption quarters across the eligible six-quarter window (2022Q3--2023Q4).
+Adoption is sharply concentrated in 2023Q1: 3,997 of the 4,320 sample banks
+(92.5 percent) appear in their first CECL-compliant Call Report in that quarter,
+exactly as prescribed for calendar-year non-public filers.  The remaining
+323 banks are distributed across the five adjacent quarters, reflecting
+non-calendar fiscal years, early voluntary adoption, and minor filing lags.
+This near-uniform adoption calendar strengthens the identification: the
+information shock reaches the market in a single concentrated quarter, making
+it implausible that the timing itself was chosen in response to bank-specific
+deposit conditions.  We nonetheless use bank-specific event time throughout,
+assigning each bank its own $t^{*}$, so that the small minority with off-cycle
+adoption dates contribute symmetric pre- and post-adoption windows to the panel.
+
+\subsection{Characteristics of High- and Low-CECL Banks}
+\label{sec:descriptive:balance}
+
+Table~\ref{tab:descriptive_sumstats_cecl} compares High-CECL and Low-CECL banks
+at the adoption cross-section.
+
+High-CECL banks enter the adoption quarter with weaker loan quality and thinner
+capital buffers.  Their nonperforming loan ratios and allowance ratios are both
+significantly higher, and their CRE concentration is modestly but significantly
+greater, consistent with more credit-sensitive loan portfolios requiring larger
+expected-loss reserves under the new standard.  Capitalization is meaningfully
+lower for high-CECL banks, reflecting the combined effect of elevated credit
+exposure and the retained-earnings charge itself.
+
+The pre-adoption deposit structure of the two groups is broadly similar on
+dimensions central to our outcome variables.  Neither uninsured time deposits as
+a share of assets nor the total uninsured deposit share differs significantly
+between the groups.  One exception: High-CECL banks hold somewhat more insured
+time deposits at baseline, reflecting greater reliance on retail interest-bearing
+funding.  Bank fixed effects absorb this level difference, so our post-adoption
+estimates capture within-bank changes.  The event-study pre-period coefficients
+in Section~\ref{sec:results} confirm that deposit trends were parallel across
+groups in the ten quarters before adoption.
+
+Performance differences are modest in magnitude and absorbed by bank fixed
+effects; they confirm that High-CECL banks represent a coherent group for which
+the CECL disclosure carries the most new information about forward-looking credit
+risk.
+
+\subsection{What Predicts the CECL Adjustment?}
+\label{sec:descriptive:predictors}
+
+Table~\ref{tab:cecl_predictors_cross_section} regresses \texttt{CECL Adj} on
+bank characteristics at the adoption quarter.  The adjustment is driven by
+credit-risk fundamentals---NPL ratios and allowance levels---not by the deposit
+composition or securities portfolio characteristics that might independently
+generate depositor responses.  Unrealized securities losses, the channel central
+to the 2023 stress at larger institutions, show no significant relationship with
+the CECL adjustment in our community bank sample.  The overall fit is low
+(adjusted $R^2$ of approximately one percent in the most saturated specification),
+consistent with the CECL charge conveying information not easily recoverable from
+pre-adoption observables.

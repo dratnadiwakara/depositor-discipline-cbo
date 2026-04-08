@@ -1,0 +1,181 @@
+%% ============================================================
+%%  Section: Empirical Strategy and Identification
+%%  Depositor Discipline in Modern Banking (2026-04-03 draft)
+%%
+%%  NOTE: Written to cc_generated/v4/ due to session file limit.
+%%  Move to latex/section_mds/identification/ before compiling.
+%%
+%%  Figures referenced:
+%%    ../docs/figures/mkt_cap_large_banks_20260403.png
+%%    ../docs/figures/cds_spread_large_banks_20260403.png
+%% ============================================================
+
+\section{Empirical Strategy and Identification}
+\label{sec:identification}
+
+\subsection{Difference-in-Differences Design}
+\label{sec:identification:did}
+
+Our identification strategy exploits cross-sectional variation in the size of
+the CECL Day-One retained-earnings adjustment, scaled by pre-adoption equity, as
+a bank-level treatment intensity. We estimate difference-in-differences
+specifications of the form
+\begin{equation}
+  y_{it} = \alpha_i + \gamma_t + \beta_1 \, \text{Post}_{it} \times \text{CECL}_i
+  + \mathbf{X}_{it-1}'\boldsymbol{\delta} + \varepsilon_{it},
+  \label{eq:did}
+\end{equation}
+where $y_{it}$ is the outcome for bank $i$ in quarter $t$, $\alpha_i$ and
+$\gamma_t$ are bank and calendar-quarter fixed effects, $\text{Post}_{it}$
+equals one for all quarters at or after bank $i$'s CECL adoption date, and
+$\text{CECL}_i$ is either the continuous CECL-to-equity adjustment measured at
+adoption or a binary indicator for the top quartile of that distribution
+($\text{High CECL}_i$). The coefficient $\beta_1$ captures the differential
+change in outcomes for higher-exposure banks after adoption, relative to
+lower-exposure banks, net of bank-level trends absorbed by the fixed effects.
+$\mathbf{X}_{it-1}$ includes lagged log assets, lagged equity-to-assets, and
+lagged interest expense-to-assets, all measured one quarter prior to $t$.
+
+The estimating sample consists of community banks with total assets below
+\$10~billion as of 2022Q4, observed from 2016Q1 through 2025Q4. We restrict
+attention to banks whose CECL adoption quarter falls within a six-quarter window
+centered on 2023Q1 (from 2022Q3 through 2023Q4), the standard rollout window for
+non-SEC-filing institutions. Community banks outside this window---those with no
+detectable adoption date---are excluded, as are the roughly 200 large SEC-filing
+banks that adopted in 2020Q1, for reasons explained in
+Section~\ref{sec:identification:signal} below.
+
+\subsection{Identification: CECL as a Predetermined Information Shock}
+\label{sec:identification:predetermination}
+
+The core identifying assumption is that the CECL adjustment is predetermined
+relative to the post-adoption deposit and financial outcomes we study. This
+assumption has three distinct components.
+
+\paragraph{Content predetermination.}
+The CECL adjustment is computed as the difference between the new expected credit
+loss allowance under ASC~326 and the legacy incurred-loss reserve, applied to
+the loan portfolio as it stood on the adoption date. It reflects the accumulated
+stock of credit risk embedded in existing loans at a fixed point in time, not
+management's forward-looking response to post-adoption conditions. Crucially, it
+is disclosed simultaneously for all adopting banks on their first quarterly
+filing under CECL, meaning depositors receive the information in a single
+cross-sectional release rather than through gradual revelation. The size of the
+adjustment is therefore determined by loan portfolio characteristics frozen before
+the disclosure, not by the deposit outcomes that follow.
+
+\paragraph{Timing predetermination.}
+Community banks chose their fiscal-year CECL adoption dates years before the
+disclosure, subject to regulatory deadlines set by the FASB and federal banking
+agencies. A bank that adopted in 2023Q1 had committed to that timeline no later
+than 2019; a bank that adopted in 2023Q4 had similarly pre-committed. Neither
+bank could have adjusted its adoption timing in response to what the adjustment
+would reveal about its credit risk, as the adjustment itself was not calculated
+until the adoption quarter. This eliminates the possibility that banks with
+larger expected adjustments delayed adoption to avoid adverse depositor responses.
+
+\paragraph{Capital phase-in predetermination.}
+Under the 2020 interim final rule, banks electing the three-year regulatory
+capital transition were permitted to phase in the retained-earnings charge to
+their regulatory capital ratios over 2022--2024. The election was required to be
+made in advance of adoption. Banks that elected the phase-in
+($\text{Phase\_In}_i = 1$) faced the same informational disclosure to depositors
+as non-electing banks---the full CECL adjustment appears in the financial
+statements regardless of the phase-in election---but experienced a more gradual
+mechanical capital impact. This separation between information disclosure and
+capital impact provides an additional check on the mechanism: if depositor
+responses are driven by information rather than capital, they should be present
+regardless of phase-in status.
+
+\subsection{Signal Validation: Market and CDS Responses in the SEC-Filer Cohort}
+\label{sec:identification:signal}
+
+A necessary condition for our interpretation is that the CECL adjustment
+contains genuine new information about bank credit quality---information that
+sophisticated outside observers could not have extracted from prior
+disclosures. If CECL were merely a relabeling of already-known reserve
+positions, no rational depositor or investor should respond to it. We test this
+condition using the cohort of large, publicly traded banks that adopted CECL in
+2020Q1 under SEC-filer requirements.
+
+\paragraph{Why the 2020 cohort, and why only for validation.}
+SEC-filing banks (primarily banks with assets above \$10~billion) were required
+to adopt CECL in their first fiscal year beginning after December~15, 2019, which
+for calendar-year filers means 2020Q1. This cohort adopted on a known, uniform
+date---unlike community banks, whose adoption was staggered across 2022Q4 through
+2023Q4---so the event time is sharply defined. However, 2020Q1 coincides
+precisely with the onset of the COVID-19 pandemic. The aggregate shock to bank
+credit risk in that quarter is so large, and so correlated with CECL adoption
+timing, that any attempt to use the 2020 cohort to estimate depositor responses
+would be confounded by COVID-driven deposit flows. We therefore restrict our
+main analysis to community banks adopting in 2023, where no comparable aggregate
+shock coincides with the disclosure. We use the 2020 SEC-filer cohort only to
+establish that the CECL adjustment carries genuine information content that moves
+sophisticated financial market participants---a validation exercise for the
+instrument, not an attempt to identify depositor discipline.
+
+\paragraph{Equity market response.}
+Figure~\ref{fig:es_large_banks_market_cds} Panel A plots event-study estimates of the
+differential change in normalized equity market capitalization for SEC-filer banks
+in the nine months before and after their CECL adoption date, using the
+continuous CECL-to-equity ratio as the treatment intensity. All specifications
+include bank and calendar-month fixed effects and are estimated on the subsample
+of adopters through 2021 to maintain distance from the COVID period.\footnote{The
+pre-adoption window begins at $m = -9$ and the reference period is $m = -1$.
+Banks with earlier CECL adoption dates (2019) are included; the COVID-era 2020
+cohort is partially included with the caveat that month fixed effects absorb
+common pandemic variation.}
+
+The pre-adoption coefficients are flat and statistically indistinguishable from
+zero across all nine lead months, confirming that equity markets did not
+differentially price high-CECL banks before the disclosure. At adoption
+(month~0) the coefficient drops sharply to $-0.947$ ($p = 0.006$), indicating
+that a one-percentage-point higher CECL-to-equity ratio is associated with a
+$0.95$-unit decline in normalized market capitalization in the adoption month
+itself. The effect deepens through months~1 and~2, reaching a trough of
+$-2.771$ ($p < 0.001$) at month~2---implying that a ten-percentage-point higher
+CECL adjustment is associated with roughly a $28$~percent lower market
+capitalization relative to adoption-month levels, after removing common monthly
+shocks and bank fixed effects. The effect then partially reverts over months~3
+through~9 but remains negative and economically substantial through month~6. This
+pattern is inconsistent with the CECL adjustment being merely a mechanical
+accounting restatement: a purely cosmetic change to reserve classifications would
+carry no information about underlying credit quality and should produce no
+market cap response.
+
+\paragraph{Credit default swap response.}
+Figure~\ref{fig:es_large_banks_market_cds} Panel B repeats the event-study analysis using
+monthly CDS spreads for the subset of SEC-filing banks with active CDS contracts
+and a complete nine-month symmetric window around adoption (103 banks). The CDS
+market provides a complementary signal: while equity values reflect the residual
+claim on the bank's asset portfolio, CDS spreads directly price the probability
+of default and are traded by sophisticated institutional counterparties
+specifically because they serve as credit risk monitors.
+
+The pre-adoption CDS coefficients are flat and cluster tightly around zero
+through all nine lead months---even more precisely than the equity
+estimates---reflecting the concentrated sophistication of CDS market
+participants. At adoption, CDS spreads jump immediately and rise persistently
+through month~3. The most precisely estimated post-adoption coefficient occurs at
+month~4: $+190.8$~basis points per unit of CECL-to-equity ($p = 0.047$),
+implying that a ten-percentage-point higher CECL adjustment is associated with
+approximately 19~basis points wider CDS spreads four months after adoption.
+Months~2 ($+164$~bps, $p = 0.090$) and~5 ($+152$~bps, $p = 0.056$) are
+marginally significant. The response is noisier than the equity response, as
+expected given the smaller CDS sample, but the directional pattern is
+unambiguous: the CDS market persistently prices higher default risk at
+high-CECL banks following the disclosure.
+
+\paragraph{Joint interpretation.}
+The equity and CDS results together establish two things. First, the CECL
+adjustment is informative: sophisticated financial market participants with every
+incentive to have already priced bank credit risk revised their valuations
+sharply and persistently at the moment of CECL adoption. The flat pre-trends in
+both markets rule out the possibility that the adjustment was anticipated. Second,
+the information content is specifically about credit risk, not about other
+mechanical consequences of CECL adoption such as regulatory capital changes: CDS
+spreads price default probability directly, and their response cannot be
+attributed to capital-ratio mechanics. These two properties---genuine information
+content, unanticipated timing---are exactly what is required for the CECL
+disclosure to serve as a valid shock in our community-bank depositor discipline
+design.

@@ -1,0 +1,66 @@
+%% ============================================================
+%%  Section: Conclusion  (2026-04-07)
+%%  Depositor Discipline in Modern Banking
+%%  Target length: ~1 page (~350 words)
+%%
+%%  Improvements over conclusion_20260404.tex:
+%%    - Opening paragraph no longer recites all six coefficients;
+%%      states the core finding and what the design rules out.
+%%    - Contribution paragraph added: positions against prior literature
+%%      by naming the three identification problems the paper resolves.
+%%    - Policy paragraph tightened; Correia et al. historical point
+%%      retained but shortened.
+%%    - Em dashes replaced throughout.
+%%    - Ends with the broadest implication for the discipline-vs-stability tradeoff.
+%%    - \label{sec:conclusion} resolves the undefined-reference warning in the intro.
+%%
+%%  Citations used (all in bib):
+%%    correia2026bank, nier2006market, demirgucc2004market, flannery2019market
+%% ============================================================
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper provides causal evidence that uninsured depositors discipline community
+banks in response to a credit-risk disclosure in normal times.  Exploiting the
+mandatory CECL Day-One retained-earnings adjustment as a predetermined information
+shock, we show that high-CECL community banks experienced significant contractions
+in uninsured time deposits, simultaneous increases in insured deposits, higher
+funding costs, and lower profitability relative to otherwise similar low-CECL
+peers after 2023Q1 adoption.  A triple-difference specification with bank
+$\times$ quarter fixed effects isolates a within-bank composition shift, ruling
+out aggregate funding shocks as an alternative explanation.  The disciplinary
+response is amplified at banks in markets with financially sophisticated depositor
+bases, consistent with a mechanism operating through informed monitoring rather
+than mechanical portfolio adjustment.
+
+The findings resolve three problems that have contaminated prior tests of
+depositor discipline.  Simultaneity---the co-evolution of bank risk and deposit
+behavior in equilibrium---is addressed by the predetermined timing and magnitude
+of the CECL shock.  Accounting opacity---the suppression of bank risk signals
+under the incurred-loss standard---is the problem that CECL adoption itself
+corrects.  Crisis-period confounding---the crowding-out of private discipline by
+government guarantees in the samples with the most distress variation---is avoided
+by focusing on a non-crisis, non-TBTF setting where theory predicts discipline
+operates most freely.  Together, the design delivers estimates that are difficult
+to attribute to anything other than informed uninsured depositors acting on newly
+disclosed credit-risk information.
+
+The policy relevance is immediate.  Congress is considering legislation that would
+expand deposit insurance coverage for business accounts, most recently the Main
+Street Depositor Protection Act introduced in March 2026.  Our estimates imply
+that such an expansion would convert a substantial volume of currently sensitive
+deposits into ones that, by design, carry no incentive to monitor.  The
+disciplinary costs we document would not disappear; they would be transferred to
+the Deposit Insurance Fund and borne across all insured institutions through
+higher assessments.  This moral-hazard cost should be weighed against the
+run-prevention benefits.  The historical record provides useful perspective on
+those benefits: \citet{correia2026bank}, examining over 3{,}400 bank runs in
+the United States between 1863 and 1934, find that failures following runs were
+concentrated almost entirely at institutions with poor fundamentals, while
+well-capitalized banks survived runs through liquidity support.  If runs are
+disciplinary rather than purely destabilizing, then policies that eliminate the
+threat of runs at weak institutions remove a governance mechanism from the banks
+that need it most.  The right policy framework should preserve the disciplinary
+pressure that uninsured depositors provide, while extending stability protections
+in ways that do not wholesale eliminate the incentive to monitor.

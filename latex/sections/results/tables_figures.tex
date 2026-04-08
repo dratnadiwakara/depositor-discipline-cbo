@@ -1,0 +1,253 @@
+
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure plots the cross-sectional distribution of the CECL day-one retained earnings adjustment scaled by pre-adoption equity (percentage points) for community banks at the adoption quarter. The vertical dashed line marks the high-CECL threshold used in the main analysis.
+    }
+    \includegraphics[width=0.75\textwidth]{figures/fig01_cecl_dist_20260403.png}
+    \caption{Distribution of CECL adjustment relative to equity}
+    \label{fig:cecl_equity_distribution}
+\end{figure}
+
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure reports the number of community banks by fiscal quarter of first observed non-missing CECL adjustment in the eligible adoption window. The highlighted bar corresponds to the primary community-bank rollout quarter in the sample construction.
+    }
+    \includegraphics[width=0.75\textwidth]{figures/fig02_adoption_dist_20260403.png}
+    \caption{Distribution of CECL adoption quarters}
+    \label{fig:cecl_adoption_quarter_distribution}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+This table reports summary statistics for community banks in the Call Report panel at each bank's CECL adoption quarter among eligible adoption windows. Columns present the full sample, banks with high CECL day-one adjustment relative to pre-adoption equity, and banks with low CECL adjustment, together with the high-minus-low mean difference and two-sample $t$-test significance. Total assets are expressed in millions of dollars; ratio variables are in percentage points. Variables are winsorized at the 1st and 99th percentiles within quarter. The high-CECL indicator uses the project threshold for the continuous adjustment scaled by equity.
+    }
+
+    \vspace{0.25cm}
+{\small Panel A: Cross-section at adoption quarter}\\
+    \resizebox{0.8\textwidth}{!}{
+\input{tables/tab01_sumstats_20260403}
+    }
+    \caption{Summary statistics at CECL adoption}
+    \label{tab:descriptive_sumstats_cecl}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+This table reports ordinary least squares estimates of the CECL day-one adjustment scaled by pre-adoption equity (percentage points) on balance-sheet and loan-composition covariates measured at the adoption quarter. Specifications add loan-quality and allowance controls in successive columns. Heteroskedasticity-robust (HC1) standard errors appear in parentheses. *, **, and *** denote statistical significance at the 10\%, 5\%, and 1\% levels, respectively.
+    }
+
+    \vspace{0.25cm}
+{\small Panel A: Cross-sectional predictors}\\
+    \resizebox{0.8\textwidth}{!}{
+\input{tables/tab02_cecl_predictors_20260403}
+    }
+    \caption{Predictors of CECL adjustment scaled by equity}
+    \label{tab:cecl_predictors_cross_section}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure presents event-study estimates for large banks around CECL day-one adjustment adoption using market-based outcomes. Panel A reports the response of normalized market capitalization, and Panel B reports the response of CDS spreads. The horizontal axis measures months relative to CECL adjustment timing, with month $-1$ omitted as the reference period. Coefficients come from bank and month fixed-effects regressions with log assets as a control and bank-clustered standard errors.
+    }
+    Panel A: Normalized market cap\\
+    \includegraphics[width=0.75\textwidth]{figures/mkt_cap_large_banks_20260403.png}
+    \vspace{0.5cm}\\
+    Panel B: CDS spread\\
+    \includegraphics[width=0.75\textwidth]{figures/cds_spread_large_banks_20260403.png}
+    \caption{Event-study estimates: market cap and CDS responses for large banks}
+    \label{fig:es_large_banks_market_cds}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+This table reports bank-by-quarter difference-in-differences estimates for community banks in the Call Report panel. The dependent variables are uninsured time deposits scaled by assets (columns 1--2) and insured time deposits scaled by assets (columns 3--4), each expressed in percentage points. Columns (1) and (3) include an interaction of a post-2023Q1 indicator with the continuous CECL day-one adjustment relative to equity; columns (2) and (4) include an interaction of the post indicator with an indicator for high CECL exposure (top decile). All specifications include bank and quarter fixed effects, lagged log assets, lagged equity-to-assets ratio, and lagged interest expense to assets. Standard errors are clustered at the bank level. *, **, and *** denote statistical significance at the 10\%, 5\%, and 1\% levels, respectively.
+    }
+
+    \vspace{0.25cm}
+{\small Panel A: Community banks}\\
+    \resizebox{0.8\textwidth}{!}{
+\input{tables/small_bank_did_time_deposits_20260403}
+    }
+    \caption{Difference-in-differences: time deposits and CECL exposure}
+    \label{tab:small_bank_did_time_deposits}
+\end{table}
+
+
+
+
+
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure plots event-study estimates for community banks in the quarterly Call Report panel. The horizontal axis measures quarters relative to CECL adoption ($k=0$ corresponds to 2023Q1 for community banks). The top row uses uninsured time deposits scaled by assets as the outcome; the bottom row uses insured time deposits scaled by assets. The left column reports coefficients on leads and lags of high CECL exposure interacted with quarter indicators; the right column reports coefficients on leads and lags of the continuous CECL day-one adjustment relative to equity interacted with quarter indicators. In each specification $k=-1$ is omitted; the vertical axis is the estimated coefficient and the shaded band is a pointwise confidence interval. Standard errors are clustered at the bank level.
+    }
+    {\small Uninsured time deposits / assets}\\[0.25em]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small High CECL}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_unins_time_deps_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Continuous CECL adj.}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_unins_time_deps_assets_cecl_cont_20260403.png}
+    \end{minipage}
+    \vspace{0.5cm}\\
+    {\small Insured time deposits / assets}\\[0.25em]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small High CECL}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_ins_time_deps_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Continuous CECL adj.}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_ins_time_deps_assets_cecl_cont_20260403.png}
+    \end{minipage}
+    \caption{Event-study estimates: time deposits around CECL adoption}
+    \label{fig:es_time_deps_cecl}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+This table reports triple-difference estimates for community banks using a stacked bank-by-quarter panel in which each row corresponds to either uninsured or insured time deposits scaled by assets (percentage points), with an indicator for the uninsured deposit series. Column (1) includes two-way interactions of the post-2023Q1 indicator and the continuous CECL day-one adjustment relative to equity with the uninsured indicator, as well as the corresponding triple interaction; column (2) uses an indicator for high CECL exposure (top decile) in place of the continuous adjustment. All specifications include bank and quarter fixed effects, lagged log assets, lagged equity-to-assets ratio, and lagged interest expense to assets. Standard errors are clustered at the bank level. *, **, and *** denote statistical significance at the 10\%, 5\%, and 1\% levels, respectively.
+    }
+
+    \vspace{0.25cm}
+{\small Panel A: Community banks}\\
+    \resizebox{0.8\textwidth}{!}{
+\input{tables/small_bank_triple_diff_time_deposits_20260404}
+    }
+    \caption{Triple difference: time deposits, CECL, and uninsured status}
+    \label{tab:small_bank_triple_diff_time_deposits}
+\end{table}
+
+
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+This table reports bank-by-quarter difference-in-differences estimates for community banks in the Call Report panel. The dependent variables are interest expense scaled by assets (columns 1--2), return on assets (columns 3--4), and net interest margin (columns 5--6), each expressed in percentage points where applicable. Odd columns include an interaction of a post-2023Q1 indicator with the continuous CECL day-one adjustment relative to equity; even columns include an interaction of the post indicator with an indicator for high CECL exposure (top decile). All specifications include bank and quarter fixed effects, lagged log assets, and lagged equity-to-assets ratio. Standard errors are clustered at the bank level. *, **, and *** denote statistical significance at the 10\%, 5\%, and 1\% levels, respectively.
+    }
+
+    \vspace{0.25cm}
+{\small Panel A: Community banks}\\
+    \resizebox{0.8\textwidth}{!}{
+\input{tables/small_bank_did_financial_outcomes_20260403}
+    }
+    \caption{Difference-in-differences: financial outcomes and CECL exposure}
+    \label{tab:small_bank_did_financial_outcomes}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure plots event-study estimates for community banks in the quarterly Call Report panel. The horizontal axis measures quarters relative to CECL adoption ($k=0$ corresponds to 2023Q1 for community banks). Each row corresponds to a different dependent variable: interest expense scaled by assets, return on assets, and net interest margin. The left column reports coefficients on leads and lags of high CECL exposure interacted with quarter indicators; the right column reports coefficients on leads and lags of the continuous CECL day-one adjustment relative to equity interacted with quarter indicators. In each specification $k=-1$ is omitted; the vertical axis is the estimated coefficient and the shaded band is a pointwise confidence interval. Standard errors are clustered at the bank level.
+    }
+    {\small Interest expense / assets}\\[0.25em]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small High CECL}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_int_expense_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Continuous CECL adj.}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_int_expense_assets_cecl_cont_20260403.png}
+    \end{minipage}
+    \vspace{0.5cm}\\
+    {\small Return on assets}\\[0.25em]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small High CECL}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_roa_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Continuous CECL adj.}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_roa_cecl_cont_20260403.png}
+    \end{minipage}
+    \vspace{0.5cm}\\
+    {\small Net interest margin}\\[0.25em]
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small High CECL}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_nim_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Continuous CECL adj.}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_nim_cecl_cont_20260403.png}
+    \end{minipage}
+    \caption{Event-study estimates: financial outcomes around CECL adoption}
+    \label{fig:es_financial_outcomes_cecl}
+\end{figure}
+
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure presents event-study estimates by depositor sophistication for community banks in the quarterly Call Report panel. The horizontal axis measures quarters relative to CECL adoption, with $k=-1$ as the omitted reference period. Each panel reports one dependent variable and overlays estimates for high- and low-sophistication banks. All specifications include bank and calendar-quarter fixed effects, lagged controls consistent with the corresponding table specification, and bank-clustered standard errors. The note printed below each panel reports the estimated Post $\times$ High CECL $\times$ High Sophistication coefficient and standard error from the associated triple-interaction regression.
+    }
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel A: Uninsured time deposits / assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_unins_time_deps_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel B: Insured time deposits / assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_ins_time_deps_assets_20260403.png}
+    \end{minipage}
+    \vspace{0.5cm}\\
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel C: Interest expense / assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_int_expense_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel D: Return on assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_roa_20260403.png}
+    \end{minipage}
+    \vspace{0.5cm}\\
+    \begin{minipage}[t]{0.65\textwidth}
+        \centering
+        {\small Panel E: Net interest margin / assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_nim_20260403.png}
+    \end{minipage}
+    \caption{Event-study estimates by depositor sophistication}
+    \label{fig:es_sophistication_split}
+\end{figure}

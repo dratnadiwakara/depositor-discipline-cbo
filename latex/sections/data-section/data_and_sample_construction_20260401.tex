@@ -1,0 +1,92 @@
+\section{Data and Sample Construction}\label{sec:data}
+
+\subsection{Data Sources}
+
+Our empirical design draws on four categories of data: regulatory bank reports, branch-level deposit information, ZIP-code demographics, and market-based risk indicators. We construct two linked analysis datasets. The first is a quarterly panel of community banks used for the main depositor-discipline tests. The second is a monthly panel of large publicly traded banks used to validate the informational content of the CECL day-one adjustment through equity market capitalization and credit default swap (CDS) spreads.
+
+The community-bank panel is built from quarterly FFIEC Consolidated Reports of Condition and Income (Call Reports), which provide balance-sheet items, income-statement flows, deposit-account breakdowns, and the CECL day-one retained-earnings adjustment for each FDIC-insured commercial bank. We obtain Call Report data for all reporting institutions from [@@@ source: e.g., FFIEC CDR bulk download / SNL / S\&P Capital IQ] covering the period 2016Q1--2025Q4.
+
+For the large-bank validation exercise, we draw on FR~Y-9C consolidated financial statements filed by bank holding companies with the Federal Reserve, CRSP monthly stock files for equity market capitalization, and Bloomberg CDS spread data. We link CRSP permanent company identifiers to Federal Reserve RSSD identifiers using the CRSP--FRB crosswalk maintained by the Federal Reserve Bank of New York.
+
+To study heterogeneity by depositor sophistication within the community-bank sample, we merge two additional sources: the FDIC Summary of Deposits (SOD), which reports deposit balances at the branch level, and ZIP-code demographic characteristics from the American Community Survey (ACS).
+
+\subsection{Community-Bank Panel Construction}
+
+We begin by constructing a unique bank-quarter panel from the raw Call Reports, identified by each institution's RSSD identifier and report date. Observations are sorted by bank and time, and duplicate bank-date records are removed.
+
+Several income-statement items in the Call Reports are reported as year-to-date cumulative totals. Because our identification strategy relies on event-time variation at quarterly frequency, we convert these cumulative fields into true quarterly flows. Specifically, for interest expense, interest income, net interest income, net income, noninterest expense, and noninterest income, quarter~1 values are retained as reported, while quarters~2 through~4 are computed by differencing the current cumulative total from the prior quarter's cumulative total within bank-year.
+
+This transformation is necessary because using cumulative figures would blur quarter-to-quarter adjustments around CECL adoption and could mechanically attenuate dynamic treatment effects in event-study specifications.
+
+\subsection{Treatment Variable: CECL Day-One Adjustment Relative to Equity}
+
+Our central treatment-intensity measure is the CECL day-one retained-earnings adjustment scaled by beginning-of-period book equity:
+\[
+CECLEquity_{i} = 100 \times \frac{\text{CECL Day-One Adjustment}_{i}}{\text{Book Equity}_{i,t_0}},
+\]
+where $t_0$ denotes bank~$i$'s adoption quarter. The variable is expressed in percentage points and captures the magnitude of the accounting transition shock relative to each bank's capital base.
+
+CECL adoption timing is bank-specific. For each community bank, we search the regulatory rollout window from 2022Q3 through 2023Q4 and define the adoption quarter as the earliest quarter with a non-missing CECL adjustment. Banks that do not report a CECL value in this window are excluded from event-time estimation.
+
+We employ two treatment forms in the empirical analysis:
+\begin{itemize}
+\item \emph{Continuous treatment}: the adoption-quarter value of $CECLEquity_i$.
+\item \emph{Binary treatment}: an indicator $HighCECL_i$ equal to one if $CECLEquity_i$ exceeds the [@@@ Xth percentile, e.g., 90th percentile] of the cross-sectional distribution, and zero otherwise.
+\end{itemize}
+After determining each bank's adoption-quarter CECL intensity, we carry this value forward as a time-invariant bank characteristic. This construction ensures that treatment status reflects the initial information shock rather than any post-adoption accounting dynamics.
+
+\subsection{Sample Definition and Event-Time Structure}
+
+The main sample consists of community banks, defined as institutions with total assets below \$10~billion as of 2022Q4. We retain all bank-quarters for institutions meeting this size criterion.
+
+Event time is measured in quarters relative to each bank's CECL adoption date:
+\[
+k_{it} = t - t_0^i,
+\]
+where $t_0^i$ is the adoption quarter for bank~$i$. We define a post-adoption indicator $Post_{it} = \mathbb{1}\{k_{it} \geq 0\}$. The primary dynamic specification uses a symmetric event window of $|k| < 12$ quarters around adoption. For static difference-in-differences models, we additionally group post-adoption quarters into bins (0--3, 4--7, and 8+~quarters after adoption), with all pre-adoption quarters as the omitted baseline.
+
+This bank-specific event-time structure accommodates staggered adoption timing while preserving a common interpretation of treatment: cross-sectional variation in the magnitude of a predetermined information shock.
+
+\subsection{Outcome Variables and Controls}
+
+We construct several outcome variables to capture depositor quantity responses, bank funding costs, and profitability. All outcomes are expressed as percentages of total assets (or beginning-of-period equity for return on equity) and are defined at quarterly frequency:
+
+\begin{itemize}
+\item \textbf{Deposit quantities.} Uninsured deposits (excluding retirement accounts) to total assets; insured deposits (excluding retirement accounts) to total assets; uninsured time deposits to total assets; insured time deposits to total assets; and the share of uninsured accounts among all non-retirement deposit accounts.
+\item \textbf{Funding costs.} Quarterly interest expense to total assets.
+\item \textbf{Profitability.} Return on assets (quarterly net income to total assets); return on equity (quarterly net income to beginning-of-period book equity); and net interest margin (quarterly net interest income to total assets).
+\end{itemize}
+
+To reduce the influence of extreme observations, all ratio variables are winsorized by report date at the 1st and 99th percentiles. This preserves within-quarter cross-sectional rankings while limiting the impact of outliers.
+
+All regression specifications include two lagged balance-sheet controls: the natural logarithm of total assets and the equity-to-assets ratio, both measured as of the prior quarter. These controls absorb persistent differences in bank size and capitalization that may correlate with CECL exposure and deposit composition. [@@@ Add any additional controls used in some specifications, e.g., lagged NIM, lagged ROA, or other covariates if applicable.]
+
+\subsection{Depositor Sophistication}
+
+To examine whether depositor responses vary with the financial sophistication of a bank's customer base, we construct a bank-level sophistication index. We merge the 2022 FDIC Summary of Deposits---which reports deposit volumes at each branch location---with ZIP-code-level demographic attributes from the 2022 American Community Survey. Following [@@@ cite if this sophistication measure follows a specific paper, e.g., Iyer and Puri (2012), or describe original construction], we define a ZIP-level sophistication indicator based on [@@@ e.g., the share of residents with a college degree, median household income, or a composite index---confirm which variable ``sophisticated'' captures].
+
+For each bank, we compute the deposit-weighted average sophistication across all of its branches:
+\[
+Sophistication_i = \frac{\sum_{b \in \mathcal{B}_i} Deposits_b \times S_b}{\sum_{b \in \mathcal{B}_i} Deposits_b},
+\]
+where $\mathcal{B}_i$ is the set of branches belonging to bank~$i$, $Deposits_b$ is the deposit volume at branch~$b$, and $S_b$ is the sophistication indicator for the ZIP code of branch~$b$. Banks are classified as \emph{high sophistication} if their deposit-weighted sophistication score is at or above the 75th percentile of the cross-sectional distribution.
+
+Because this measure is based on pre-treatment branch-footprint characteristics, it captures the ex~ante information environment of a bank's depositor base rather than any post-CECL behavioral response.
+
+\subsection{Large-Bank Validation Sample}
+
+To verify that CECL day-one adjustments convey economically meaningful information to market participants, we construct a complementary panel of large, publicly traded bank holding companies.
+
+From FR~Y-9C filings, we identify each institution's first reported CECL adjustment and compute $CECLEquity_i$ as the ratio of the day-one adjustment to total equity capital. We retain a single cross-sectional CECL observation per bank and winsorize this ratio at the 2.5th and 97.5th percentiles.
+
+For equity market validation, we merge monthly market capitalization from CRSP to FR~Y-9C institutions using the CRSP--FRB crosswalk. We normalize each bank's market capitalization to its value in the month immediately preceding CECL adoption and define event time in months relative to each bank's first CECL reporting date.
+
+For credit-market validation, we obtain five-year CDS spreads from Bloomberg, retaining observations with notional trading volume exceeding \$1~million. CDS spreads are winsorized by month at the 2.5th and 97.5th percentiles. We restrict the CDS sample to banks with a complete 19-month event window ($\pm 9$~months around CECL adoption) to ensure balanced estimation.
+
+Although this validation sample is distinct from the community-bank depositor panel, it uses the same treatment concept---cross-sectional variation in CECL day-one intensity---and parallel event-time logic. Its purpose is to establish that the CECL shock is priced in both equity and credit markets, supporting the interpretation that depositor responses in the main analysis reflect reactions to informative balance-sheet news rather than unrelated contemporaneous shocks.
+
+\subsection{Summary}
+
+Table~\ref{tab:summary_stats} presents summary statistics for the main community-bank estimation sample. [@@@ Reference the correct summary-statistics table label once created.] The final community-bank panel comprises [@@@ N] banks observed over [@@@ N] bank-quarters, with bank and calendar-quarter fixed effects absorbed in all specifications. The large-bank validation panel consists of [@@@ N] bank holding companies observed at monthly frequency, with matched equity and CDS information.
+
+Together, these datasets implement a unified empirical strategy: exploiting predetermined cross-sectional variation in CECL day-one shock intensity to trace depositor, funding-cost, and market-valuation responses around CECL adoption.

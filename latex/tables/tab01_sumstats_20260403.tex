@@ -1,0 +1,33 @@
+\begingroup
+\centering
+\begin{tabular}{lrrr rrr rrr r}
+  \tabularnewline \midrule \midrule
+  & \multicolumn{3}{c}{Full Sample ($N=4320$)} & \multicolumn{3}{c}{High CECL ($N=432$)} & \multicolumn{3}{c}{Low CECL ($N=3888$)} & \\
+  \cmidrule(lr){2-4}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+  Variable & Mean & SD & Median & Mean & SD & Median & Mean & SD & Median & Hi$-$Lo \\
+  \midrule
+  \emph{Balance sheet} & & & & & & & & & & \\
+  \hspace{1em}Total Assets (\$M) & 645.991 & 1009.675 & 303.499 & 843.428 & 1152.601 & 413.302 & 624.054 & 990.264 & 296.057 & 219.374*** \\
+  \hspace{1em}Equity / Assets (\%) & 10.268 & 8.236 & 8.825 & 9.222 & 3.949 & 8.808 & 10.384 & 8.573 & 8.827 & -1.162*** \\
+  \hspace{1em}CECL Adj.\ / Equity (\%) & 0.278 & 1.168 & 0.000 & 2.957 & 1.407 & 2.512 & -0.020 & 0.641 & 0.000 & 2.977*** \\
+  \midrule
+  \emph{Loan quality} & & & & & & & & & & \\
+  \hspace{1em}NPL / Loans (\%) & 0.550 & 0.888 & 0.226 & 0.650 & 0.895 & 0.346 & 0.539 & 0.887 & 0.210 & 0.111** \\
+  \hspace{1em}Allowance / Loans (\%) & 1.363 & 0.614 & 1.251 & 1.436 & 0.589 & 1.326 & 1.355 & 0.616 & 1.238 & 0.081*** \\
+  \hspace{1em}CRE / Loans (\%) & 25.093 & 16.124 & 23.551 & 26.646 & 14.907 & 26.758 & 24.919 & 16.248 & 23.136 & 1.727** \\
+  \midrule
+  \emph{Deposit structure} & & & & & & & & & & \\
+  \hspace{1em}Unins.\ Time Deps / Assets (\%) & 5.299 & 4.418 & 4.242 & 5.357 & 4.283 & 4.423 & 5.293 & 4.434 & 4.209 & 0.064 \\
+  \hspace{1em}Ins.\ Time Deps / Assets (\%) & 7.367 & 5.846 & 5.926 & 8.116 & 6.342 & 6.529 & 7.284 & 5.783 & 5.846 & 0.832*** \\
+  \hspace{1em}Unins.\ Deps / Total Deps (\%) & 39.327 & 14.512 & 37.760 & 38.857 & 14.266 & 38.230 & 39.380 & 14.540 & 37.697 & -0.523 \\
+  \midrule
+  \emph{Performance} & & & & & & & & & & \\
+  \hspace{1em}Int.\ Expense / Assets (\%) & 0.230 & 0.136 & 0.210 & 0.253 & 0.140 & 0.227 & 0.227 & 0.135 & 0.208 & 0.026*** \\
+  \hspace{1em}ROA (\%) & 0.282 & 0.262 & 0.259 & 0.237 & 0.200 & 0.223 & 0.287 & 0.267 & 0.263 & -0.049*** \\
+  \midrule
+  \midrule
+  \multicolumn{11}{l}{\emph{Cross-section at each bank's CECL adoption quarter. Total assets in \$M.}} \\
+  \multicolumn{11}{l}{\emph{Winsorized at 1st/99th percentile by quarter. High CECL $\geq$ 2.5\% of pre-adoption equity.}} \\
+  \multicolumn{11}{l}{\emph{Hi$-$Lo: mean difference. Significance: $^{***}$0.01, $^{**}$0.05, $^{*}$0.10 (two-sample $t$-test).}} \\
+\end{tabular}
+\par\endgroup

@@ -1,0 +1,197 @@
+%% ============================================================
+%%  Section: Data and Sample Construction
+%%  Depositor Discipline in Modern Banking (2026-04-04 draft)
+%%
+%%  Scope: data provenance, variable construction, winsorization,
+%%  depositor sophistication index, large-bank validation sample.
+%%  Treatment variable formulas are in sec:background (eq:dayone,
+%%  eq:treatment, eq:binary). Sample size and balance table are
+%%  in the descriptive statistics section that follows.
+%%
+%%  NOTE: The desc-stats section currently carries \label{sec:data}.
+%%  When incorporating this file, change the desc-stats section
+%%  heading to \section{Descriptive Statistics}\label{sec:descriptive}
+%%  to avoid duplicate labels.
+%%
+%%  New citation needed: narayanan2026decline (see bib note below).
+%% ============================================================
+
+\section{Data and Sample Construction}
+[@@@ remove emdashes --- unless absolutely necessary, no paragraph titles]
+\label{sec:data}
+
+\subsection{Data Sources}
+\label{sec:data:sources}
+
+Our empirical design draws on four data sources. The primary source is quarterly
+Call Reports (FFIEC 041 and 051) filed by all federally insured commercial banks
+and savings institutions with the Federal Financial Institutions Examination
+Council (FFIEC). We obtain raw Call Report data via the FFIEC Central Data Repository
+bulk download for the period 2016Q1 through 2025Q4.[@@@ remove this previous sentence. too much] Call Reports supply[@@@ provide]
+balance-sheet stocks, income-statement flows, deposit-account breakdowns by insurance status, and ---
+beginning with each institution's CECL adoption quarter --- the cumulative-effect
+retained-earnings adjustment recorded in Schedule~RI-A. This last field is the
+raw[@@@ main] input for the treatment variable defined in Section~\ref{sec:background}.
+
+For the depositor sophistication analysis, we supplement the Call Report panel
+with two additional cross-sections. The 2022 FDIC Summary of Deposits (SOD)
+provides deposit balances at the branch level, reported as of June~30 each year,
+for all FDIC-insured institutions. We merge these branch-level balances to
+five-year ZIP-code estimates from the 2022 American Community Survey
+and [@@@IRS SOI] to construct a bank-level measure of depositor financial
+sophistication (Section~\ref{sec:data:sophistication}).
+
+The signal-validation exercise requires market data available only for large
+publicly traded institutions. We draw on [@@@ use] FR~Y-9C consolidated holding-company
+financial statements filed with the Federal Reserve, monthly equity market
+capitalization from CRSP, and five-year credit default swap (CDS) spreads
+from Bloomberg. CRSP permanent company identifiers are linked to Federal Reserve
+RSSD identifiers via the CRSP--FRB crosswalk maintained by the Federal Reserve
+Bank of New York.
+
+\subsection{Call Report Panel Construction}
+\label{sec:data:panel}
+
+We assemble a  bank-quarter panel identified by each institution's RSSD
+identifier and report date [@@@ quarter]. The panel spans 2016Q1--2025Q4
+for all institutions.
+
+Several income-statement fields in Call Reports are recorded on a
+year-to-date cumulative basis rather than as stand-alone quarterly flows.
+Because our event-study specifications require true quarter-level flows, we
+convert interest expense, interest income, net interest income, net income,
+noninterest expense, and noninterest income as follows: Q1 observations are
+retained as filed; for Q2 through Q4, the quarterly flow is computed as the
+difference between the current cumulative total and the prior quarter's
+cumulative total within the same bank-year. This transformation ensures that
+income-statement outcomes in the event-study window reflect within-quarter
+changes rather than mechanically growing year-to-date sums that would attenuate
+the estimated dynamic treatment effects. [@@@ this paragraph way too long, shorten it to one sentence and join with the previous paragraph]
+
+CECL adoption is identified by searching the window 2022Q3--2023Q4 for the
+first quarter in which a bank reports a non-missing value for the
+cumulative-effect retained-earnings adjustment in Schedule~RI-A. This quarter is
+assigned as the bank-specific adoption date $t^{*}$, and the treatment variable
+\texttt{CECL Adj} is set to its adoption-quarter value and held fixed
+throughout the panel (Section~\ref{sec:background}, equation~\eqref{eq:treatment}).
+Banks with no non-missing adjustment in the eligible window are excluded. Banks
+that underwent mergers, charter conversions, or supervisory actions that would
+contaminate the balance sheet within the $\pm 10$-quarter event window are also
+excluded.[@@@ not true. remove this sentence] The community-bank sample is further restricted to institutions with
+total assets below \$10~billion as of 2022Q4, consistent with the Federal
+Reserve's standard definition; the large SEC-filing institutions required to
+adopt in 2020Q1 are excluded from the main panel and analyzed separately in the
+signal-validation exercise.
+
+\subsection{Outcome Variables}
+\label{sec:data:outcomes}
+
+We construct three groups of outcome variables, all expressed as percentages
+of contemporaneous total assets (or beginning-of-period equity for
+return on equity) and measured at quarterly frequency. [@@@ we only do roa]
+
+\paragraph{Deposit quantities.}
+We separately track insured and uninsured deposit balances, relying on the
+\$250,000 FDIC coverage threshold as the insurance boundary. Uninsured deposits
+are total deposits minus estimated insured deposits, as reported in
+Schedule~RC-O; we exclude retirement accounts throughout to focus on accounts
+subject to full depositor loss exposure. Time deposit sub-categories --- maturity
+of one year or less, one to three years, and more than three years --- are
+drawn from Schedule~RC-E and summed to quarterly total-time-deposit balances,
+split by whether the underlying accounts exceed the \$250,000 insurance ceiling.
+The primary outcome variables are uninsured time deposits and insured time
+deposits, each scaled by total assets. We additionally construct the share of
+uninsured deposits among all non-retirement deposits as a compositional measure
+that is invariant to aggregate balance-sheet growth. [@@@ we only use uninsured time and insured time deposits scaled by assets. these variables are provided directly in the call report. cite relevant schedule. revise this paragraph. also explain why time deposits is a good variable.]
+
+\paragraph{Funding costs.}
+The funding-cost outcome is quarterly interest expense (converted from the
+year-to-date Call Report field as described above)[@@@ remove things inside (), already explained above] scaled by average total
+assets. Net interest margin is quarterly net interest income scaled by average
+total assets.
+
+\paragraph{Profitability.}
+Return on assets is quarterly net income to average total assets. Return on
+equity is quarterly net income to beginning-of-period book equity.[@@@ we only do roa]
+
+\subsection{Control Variables and Winsorization}
+\label{sec:data:controls}
+
+All regression specifications include three lagged balance-sheet controls
+measured as of the quarter prior to the outcome: the natural logarithm of total
+assets, the equity-to-assets ratio, and interest expense scaled by total assets.
+Log assets accommodates scale effects on deposit composition. The
+equity ratio controls for the bank's capital position, which is important because
+the CECL charge mechanically reduced regulatory capital; including the lagged
+equity ratio ensures the treatment coefficient captures the informational content
+of the disclosure rather than its incidental capital effect. Lagged interest
+expense captures pre-existing differences in deposit pricing strategy across
+institutions, absorbing the fact that higher-risk banks may already pay elevated
+rates at baseline.[@@@ int exp also captures bank's response in anticipation]
+
+To limit the influence of outliers, all ratio variables --- outcomes and
+controls --- are winsorized within each calendar quarter at the 1st and 99th
+percentiles. [@@@ incorporate this in the previous paragrpah]
+
+\subsection{Depositor Sophistication}
+\label{sec:data:sophistication}
+
+We construct a bank-level measure of depositor financial sophistication by
+merging branch-level deposit data with ZIP-code demographics. Following
+\citet{narayanan2026decline}, we classify ZIP codes as financially sophisticated
+using the 2022 American Community Survey: a ZIP code is assigned a sophistication
+indicator of one if its share of adults with at least a bachelor's degree exceeds
+the sample median, and zero otherwise.[@@@ and above median stock ownership]
+For each bank~$i$, we aggregate to the bank level using deposit weights from
+the 2022 FDIC Summary of Deposits:
+\begin{equation}
+  \texttt{soph}_{i}
+  \;=\;
+  \frac{
+    \displaystyle\sum_{b \in \mathcal{B}_i}
+      \mathrm{Deposits}_{b} \cdot \mathbf{1}\!\left\{S_{b} = 1\right\}
+  }{
+    \displaystyle\sum_{b \in \mathcal{B}_i} \mathrm{Deposits}_{b}
+  },
+  \label{eq:sophistication}
+\end{equation}
+where $\mathcal{B}_i$ is the set of branches belonging to bank~$i$,
+$\mathrm{Deposits}_b$ is branch~$b$'s June~2022 deposit balance, and $S_b$ is
+the ZIP-code sophistication indicator for branch~$b$'s location.
+\texttt{soph}$_i$ is thus the deposit-weighted fraction of a bank's
+branch-level balances located in high-education ZIP codes.  Banks are
+classified as \emph{high sophistication} if their score is at or above the
+75th percentile of the cross-sectional distribution. 
+
+\subsection{Large-Bank Validation Sample}
+\label{sec:data:validation}
+
+To establish the information content of the CECL Day-One disclosure, we
+construct a complementary panel of large, publicly traded bank holding companies
+that adopted CECL in 2020Q1 under SEC-filer requirements
+(Section~\ref{sec:identification:signal}). From FR~Y-9C filings, we identify
+each institution's first CECL reporting quarter and compute the treatment variable
+following equation~\eqref{eq:treatment}, with holding-company total equity capital
+as the denominator. [@@@ same as above for community banks]
+
+For the equity market event study, we extract monthly market capitalization from
+CRSP for each holding company, linked to FR~Y-9C via the CRSP--FRB crosswalk.
+We normalize market capitalization to its value in the month immediately
+preceding the adoption month ($m = -1$), so coefficients measure
+adoption-relative percentage changes in equity value. The event-study window
+spans nine months before and nine months after adoption ($m \in [-9, +9]$).[@@@ this section is only about sample construction and data. leave the empirical specificaiton stuff for later]
+
+For the CDS event study, we obtain monthly five-year CDS spreads from Bloomberg,
+retaining only contracts with observable trading activity. CDS spreads are
+winsorized by month at the 2.5th and 97.5th percentiles. To ensure symmetry,
+we restrict the CDS subsample to the 103 bank holding companies with a
+complete 19-month event window ($\pm 9$ months), eliminating institutions
+whose CDS contracts were initiated or discontinued within the window. .[@@@ this section is only about sample construction and data. leave the empirical specificaiton stuff for later]
+
+Although the validation sample differs from the community-bank panel in size,
+listing status, and adoption timing, it shares the same treatment concept ---
+cross-sectional variation in the Day-One CECL adjustment relative to equity ---
+and the same event-time structure. Its purpose is to verify that the CECL
+disclosure is an information event rather than a mechanical accounting
+reclassification, before testing depositor responses in the community-bank setting
+where identification is cleanest.

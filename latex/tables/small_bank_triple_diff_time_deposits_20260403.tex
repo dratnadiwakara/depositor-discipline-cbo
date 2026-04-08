@@ -1,0 +1,48 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{2}{c}{Deposits/Assets (\%)}\\
+   Model:                                                & (1)             & (2)\\  
+   \midrule
+   \emph{Variables}\\
+   Post                                                  & -0.4902$^{***}$ & -0.5044$^{***}$\\   
+                                                         & (0.0827)        & (0.0824)\\   
+   Uninsured time dep                                    & -2.825$^{***}$  & -2.835$^{***}$\\   
+                                                         & (0.0793)        & (0.0788)\\   
+   log(Assets), $t{-}1$                                  & -0.0892         & -0.0948\\   
+                                                         & (0.2220)        & (0.2210)\\   
+   Equity/Assets (\%), $t{-}1$                           & -0.0714$^{***}$ & -0.0714$^{***}$\\   
+                                                         & (0.0125)        & (0.0125)\\   
+   Int. Exp/Assets (\%), $t{-}1$                         & 5.688$^{***}$   & 5.679$^{***}$\\   
+                                                         & (0.2746)        & (0.2744)\\   
+   CECL Adj $\times$ Post                                & 0.0873$^{*}$    &   \\   
+                                                         & (0.0512)        &   \\   
+   CECL Adj $\times$ Uninsured time dep                  & -0.2113$^{***}$ &   \\   
+                                                         & (0.0707)        &   \\   
+   Post $\times$ Uninsured time dep                      & 0.8855$^{***}$  & 0.8981$^{***}$\\   
+                                                         & (0.0637)        & (0.0638)\\   
+   CECL Adj $\times$ Post $\times$ Uninsured time dep    & -0.1770$^{***}$ &   \\   
+                                                         & (0.0578)        &   \\   
+   High CECL $\times$ Post                               &                 & 0.7852$^{***}$\\   
+                                                         &                 & (0.2932)\\   
+   High CECL $\times$ Uninsured time dep                 &                 & -0.9769$^{***}$\\   
+                                                         &                 & (0.3656)\\   
+   High CECL $\times$ Post $\times$ Uninsured time dep   &                 & -1.252$^{***}$\\   
+                                                         &                 & (0.3402)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                                                  & Yes             & Yes\\  
+   Quarter                                               & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                                          & 194,128         & 194,128\\  
+   Adjusted R$^2$                                        & 0.64139         & 0.64145\\  
+   \midrule \midrule
+   \multicolumn{3}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{3}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

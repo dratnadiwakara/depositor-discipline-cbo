@@ -1,0 +1,160 @@
+%% ============================================================
+%%  Institutional Background and Identification Strategy
+%%  Depositor Discipline in Modern Banking — v2 (top-journal revision)
+%% ============================================================
+
+\section{Institutional Background and Identification Strategy}
+\label{sec:background}
+
+\subsection{From Incurred Losses to CECL}
+\label{sec:background:transition}
+
+For most of the postwar period, U.S. banks recognized credit losses under the
+\textit{incurred loss model} (ILM), codified in ASC 450-20 and ASC 310-10. The
+ILM prohibited reserve recognition until a triggering event—typically a missed
+payment or internal downgrade—made a loss ``probable and estimable.'' Anchored to
+observable credit events that had already occurred, the standard deferred
+recognition of latent risk embedded in seasoning loan portfolios. The result was
+that two otherwise identical banks could carry materially different allowances
+depending on portfolio vintage, borrower geography, and the timing of internal
+credit reviews—none of which necessarily reflected differences in current
+managerial risk appetite. The ILM's procyclical bias has been documented
+extensively: provisioning lags default rates by one to two years over the cycle
+\citep{BeattyLiao2011}, and delayed recognition reduces the informativeness of
+public disclosures precisely when outside monitors most need timely signals
+\citep{BushmanWilliams2012, BushmanWilliams2015}.
+
+The 2007–2009 financial crisis prompted FASB to replace the incurred-loss trigger
+with a forward-looking standard. In June 2016, FASB issued ASU 2016-13,
+introducing the \textit{Current Expected Credit Loss} model (CECL), codified in
+ASC 326. Under CECL, a bank must estimate and reserve for \textit{lifetime}
+expected credit losses at origination, incorporating historical loss experience,
+current conditions, and forward-looking forecasts. The magnitude of the required
+reserve is a direct function of the credit-risk composition of the loan portfolio:
+loans with longer remaining maturities, weaker borrower quality, or thinner
+collateral coverage require larger CECL allowances relative to the ILM allowance
+previously carried.
+
+\paragraph{Adoption timeline.}
+FASB phased adoption by entity type. Large SEC registrants adopted on January 1,
+2020; smaller reporting companies, non-accelerated filers, and non-public entities
+— which comprise our community-bank sample — adopted on January 1, 2023. Our
+identification centers on the 2023 community-bank cohort. The earlier large-bank
+adoption serves as a signal-validation sample, but its 2020Q1 timing coincides
+with the onset of the COVID-19 shock, which contaminates any deposit-market tests
+for that cohort (Section~\ref{sec:signal}).
+
+\paragraph{Regulatory capital phase-in.}
+Banking regulators permitted community banks to elect a three-year phase-in of
+the day-one capital impact, spreading the reduction to risk-weighted capital ratios
+over 2023–2025. The phase-in applied only to regulatory capital treatment; it did
+not affect accounting recognition. A bank electing the phase-in still reported the
+full CECL reserve and the full retained-earnings charge in its Q1 2023 Call
+Report. We exploit variation in phase-in election as a heterogeneity test in
+Section~\ref{sec:heterogeneity}.
+
+\subsection{The Day-One Adjustment}
+\label{sec:background:dayone}
+
+At adoption, each bank recorded the difference between its new CECL-required
+allowance and its existing ILM allowance as a cumulative-effect adjustment to
+retained earnings on the opening balance sheet — the ``Day-One'' impact. For bank
+$i$ adopting in quarter $t^{*}$:
+\begin{equation}
+  \Delta_i \;\equiv\;
+  \mathrm{ALLL}^{\mathrm{CECL}}_{i,t^{*}} -
+  \mathrm{ALLL}^{\mathrm{ILM}}_{i,t^{*}-1},
+  \label{eq:dayone}
+\end{equation}
+with $\Delta_i < 0$ for the vast majority of adopters. Our treatment variable
+scales this charge by beginning-of-period equity:
+\begin{equation}
+  \texttt{cecl\_equity}_{i}
+  \;=\;
+  \frac{\Delta_i}{\texttt{equity\_bop}_{i,t^{*}}}
+  \times 100,
+  \label{eq:treatment}
+\end{equation}
+expressed in percentage points, so that the measure is comparable across banks of
+different sizes. We assign each bank its adoption-quarter value and hold it fixed
+throughout the panel.\footnote{A small number of banks report their adjustment in
+a quarter adjacent to the nominal 2023Q1 date due to fiscal-year heterogeneity
+or filing lags. Our algorithm assigns the first quarter in the 2022Q3–2023Q4
+window with a non-missing \texttt{cecl\_equity} observation as bank-specific
+event time $t^{*}=0$.} For our main binary specification we define:
+\begin{equation}
+  \texttt{high\_cecl\_equity}_{i}
+  \;=\;
+  \mathbf{1}\!\left\{\texttt{cecl\_equity}_{i} \geq \tau\right\},
+  \label{eq:binary}
+\end{equation}
+where $\tau$ is the top-decile cutoff of the cross-sectional distribution.
+Results are robust to continuous-treatment specifications using the raw
+\texttt{cecl\_equity} value.
+
+\subsection{Identification Strategy}
+\label{sec:background:id}
+
+Our goal is to identify the causal effect of disclosed credit-risk information on
+depositor behavior. The standard obstacle is that risk and deposit structure are
+jointly determined: riskier banks carry fewer uninsured deposits in equilibrium,
+so cross-sectional comparisons conflate information responses with pre-existing
+sorting. The CECL Day-One adjustment addresses this problem because it reveals
+risk-relevant information at a \textit{known, regulatory-mandated moment} and
+with \textit{a magnitude predetermined by historical lending decisions}.
+
+\paragraph{Exogenous timing.}
+The 2023Q1 adoption date was set by FASB and federal banking regulators, not by
+individual banks. Banks could neither delay adoption to conceal an unfavorable
+charge nor accelerate it to preempt scrutiny, so the timing of disclosure is
+orthogonal to bank-level conditions as of 2022.
+
+\paragraph{Predetermined magnitude.}
+The size of $\Delta_i$ in \eqref{eq:dayone} is determined by the cumulative
+composition of a bank's loan portfolio accumulated well before the standard was
+finalized in 2016 — loan vintages, maturities, collateral structures, and
+borrower credit quality from prior years. Although banks anticipated CECL exposure
+after 2016 and some gradually tightened underwriting, such responses compress
+rather than eliminate cross-sectional variation in $\Delta_i$, and the residual
+variation driven by pre-2016 portfolio composition is unlikely to correlate with
+contemporaneous deposit-market conditions through any channel other than the
+information disclosed at adoption.
+
+\paragraph{Information, not liquidity.}
+Equation~\eqref{eq:dayone} records a pure accounting charge: the Day-One
+adjustment does not trigger a cash transfer, dividend cut, or borrower default.
+It reduces reported book equity and regulatory capital ratios — absent phase-in
+election — but leaves the cash flows and contractual terms of the underlying loans
+unchanged. Any subsequent shift in deposit quantities or pricing therefore reflects
+depositor reaction to the \textit{information} content of the disclosure, rather
+than a concurrent deterioration in bank liquidity or cash-flow capacity. This
+separability of information from cash flows is the central advantage of our
+design relative to tests based on realized defaults, dividend omissions, or rating
+downgrades, all of which confound new information with contemporaneous changes in
+bank financial condition.
+
+\paragraph{Empirical design.}
+We implement a difference-in-differences estimator that exploits cross-sectional
+variation in shock magnitude and the sharp adoption-quarter break:
+\begin{equation}
+  y_{it}
+  \;=\;
+  \alpha_i + \lambda_t
+  + \beta \cdot \texttt{post}_{it} \times \texttt{high\_cecl\_equity}_{i}
+  + X_{i,t-1}'\gamma
+  + \varepsilon_{it},
+  \label{eq:baseline}
+\end{equation}
+where $y_{it}$ is a deposit or funding-cost outcome; $\alpha_i$ and $\lambda_t$
+are bank and calendar-quarter fixed effects; $\texttt{post}_{it}$ equals one at
+or after the bank's adoption quarter; and $X_{i,t-1}$ is a vector of lagged
+controls including log total assets and the equity ratio. We also estimate
+continuous-treatment variants using \texttt{cecl\_equity} in place of the binary
+indicator, and dynamic event-study specifications with quarter-relative-to-adoption
+dummies over the window $|\texttt{qtrs\_since}| \leq 10$ (reference period
+$k = -1$). The identifying assumption is that, conditional on fixed effects and
+controls, shock magnitude is uncorrelated with differential pre-trends in
+depositor behavior. We evaluate this assumption through parallel pre-trend tests
+and complement it with a signal-validation exercise showing that equity markets
+and CDS spreads priced the CECL information shock at large-bank adoption in 2020
+(Section~\ref{sec:signal}).

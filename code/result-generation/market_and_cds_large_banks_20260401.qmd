@@ -1,0 +1,254 @@
+---
+title: "Market and CDS Responses to CECL Shock (Large Banks)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+## Setup
+
+## CRSP/FRB crosswalk panel (PERMCO → RSSD by quarter)
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(dplyr)
+library(fixest)
+library(ggplot2)
+library(here)
+library(lubridate)
+library(DescTools)
+library(bit64)
+
+source(here::here("code", "_common.R"))
+```
+
+```{r}
+
+convert_crsp_frb_to_bank_qt <- function(file_path, start_date = "2000-03-31") {
+  
+  df <- fread(file_path)
+  
+  # Expand each (permco, RSSD) relationship to quarter-ends.
+  df[, dt_start := ymd(dt_start)]
+  df[, dt_end := ymd(dt_end)]
+  
+  df <- df[!is.na(dt_start) & !is.na(dt_end)]
+  
+  panel_start_date <- ymd(start_date)
+  most_recent_qtr_end <- floor_date(Sys.Date(), "quarter") + months(3) - days(1)
+  
+  max_dt_end <- max(df$dt_end, na.rm = TRUE)
+  df[dt_end == max_dt_end, dt_end := most_recent_qtr_end]
+  
+  generate_quarters <- function(start_date, end_date) {
+    if (is.na(start_date) || is.na(end_date)) return(NULL)
+    
+    start <- max(start_date, panel_start_date)
+    if (is.na(start) || start > end_date) return(NULL)
+    
+    quarter_starts <- seq(
+      floor_date(start, "quarter"),
+      floor_date(end_date, "quarter"),
+      by = "3 months"
+    )
+    quarter_ends <- quarter_starts + months(3) - days(1)
+    quarter_ends[quarter_ends >= start & quarter_ends <= end_date]
+  }
+  
+  panel_dt <- df[, {
+    qtrs <- generate_quarters(dt_start, dt_end)
+    if (!is.null(qtrs) && length(qtrs) > 0) {
+      .(
+        name = name,
+        inst_type = inst_type,
+        entity = entity,
+        permco = permco,
+        quarter_end = qtrs
+      )
+    } else NULL
+  }, by = .I][, -"I"]
+  
+  setnames(panel_dt, "entity", "RSSD")
+  return(panel_dt)
+}
+
+
+crsp_frb <- convert_crsp_frb_to_bank_qt(
+  here("data", "raw", "crsp_20220930v2.csv"),
+  start_date = "2018-03-31"
+)[, .(RSSD, permco, quarter_end)]
+```
+
+
+## Y-9C: controls + CECL day-one / equity
+
+```{r}
+y9c <- readRDS(here("data", "raw", "y9c.rds"))
+
+y9c[, quarter_no := quarter(D_DT)]
+y9c[, leverage_ratio := NULL]
+
+# Convert YTD flows to quarterly rates (simple annualization).
+qt_adjust_cols <- c("int_exp_dom_deposits", "nii", "int_exp_total", "non_int_exp", "net_income")
+for (col in qt_adjust_cols) {
+  eval(parse(text = paste0(
+    "y9c[,", col, ":=ifelse(quarter_no==1,", col,
+    "*4,ifelse(quarter_no==2,", col,
+    "*2,ifelse(quarter_no==3,", col,
+    "*4/3,", col, ")))]"
+  )))
+}
+
+y9c <- y9c %>%
+       arrange(ID_RSSD, D_DT) %>%
+       group_by(ID_RSSD) %>%
+       mutate(
+         asset_growth = total_assets / lag(total_assets, 4) - 1,
+         # interest_expense_pct_of_assets = int_exp_total/total_assets,
+         deposit_exp_deposits = int_exp_dom_deposits / domestic_deposits,
+         loans_assets = (total_loans + lag(total_loans, 1)) / (total_assets + lag(total_assets, 1)),
+         nii_pct_of_assets = nii / total_assets,
+         non_interest_exp_assets = non_int_exp / total_assets,
+         roe_pct_quarterly = net_income / total_equity_capital,
+         .groups = "drop"
+       ) %>% data.table()
+
+```
+
+
+```{r}
+# One CECL observation per bank (first non-missing CECL).
+cecl_df <- y9c[!is.na(CECL)]
+setorder(cecl_df, ID_RSSD, D_DT)
+
+cecl_df <- cecl_df[!duplicated(cecl_df[, .(ID_RSSD)])]
+cecl_df[, cecl_equity := CECL / total_equity_capital]
+
+cecl_df <- cecl_df[, .(ID_RSSD, cecl_equity, total_assets, D_DT)]
+setnames(cecl_df, "D_DT", "first_cecl_dt")
+cecl_df[, cecl_equity := Winsorize(
+  cecl_equity,
+  quantile(cecl_equity, probs = c(0.025, 0.975), na.rm = TRUE)
+)]
+```
+
+
+## Sanity plot: CECL distribution (large banks)
+
+```{r}
+g1 <- ggplot(cecl_df, aes(x = cecl_equity * 100)) +
+  geom_histogram(bins = 15, alpha = 0.75) +
+  geom_vline(xintercept = 3, color = "darkred") +
+  theme_minimal() +
+  theme(legend.position = "bottom", legend.title = element_blank()) +
+  labs(x = "CECL Day 1 Adjustment/Equity (%)", y = "Number of Banks")
+
+# pdf(paste0("figures/large_bank_cecl_dist.pdf"),width = 6,height = 3.5)
+print(g1)
+```
+
+
+
+## Market cap panel (CRSP) + event time in months
+
+```{r}
+bnk_mkt <- readRDS(here("data", "raw", "bank_mkt_data_cecl.rds"))
+bnk_mkt[, data_month := as.Date(paste0(year(date), "-", month(date), "-01"))]
+bnk_mkt <- bnk_mkt[, .(market_cap = max(market_cap)), by = .(permco, data_month)]
+bnk_mkt[, `:=`(
+  normalized_market_cap = market_cap / market_cap[data_month == min(data_month)]
+), by = permco]
+
+
+bnk_mkt[, quarter_end := as.Date(paste0(year(data_month), "-", 3 * quarter(data_month), "-", 
+                           days_in_month(as.Date(paste0(year(data_month), "-", 3 * quarter(data_month), "-01")))))]
+
+bnk_mkt <- merge(bnk_mkt, crsp_frb, by.x = c("permco", "quarter_end"), by.y = c("permco", "quarter_end"))
+bnk_mkt <- merge(bnk_mkt, cecl_df, by.x = c("RSSD"), by.y = c("ID_RSSD"))
+
+bnk_mkt[, months_since := (year(data_month) - year(first_cecl_dt)) * 12 + (month(data_month) - month(first_cecl_dt))]
+bnk_mkt[, post := ifelse(months_since > 0, 1, 0)]
+```
+
+
+
+## Event study: market cap response
+
+```{r}
+r1 <- feols(
+  normalized_market_cap ~ i(months_since, cecl_equity, ref = -1) + log(total_assets) | RSSD + data_month,
+  data = bnk_mkt[abs(months_since) <= 9 & year(first_cecl_dt) <= 2021],
+  vcov = ~RSSD
+)
+
+# pdf(paste0("figures/mkt_cap_listed_large.pdf"),width = 6,height = 3.5)
+p1 <- make_es_plot(
+  r1,
+  title_str = "",
+  ylab_str = "Normalized Market Cap",
+  col = "dodgerblue4",
+  event_var = "months_since",
+  xlab_str = "Months Since CECL Adjustment",
+  vline_label = "CECL Adjustment\n(Month -1)",
+  vline_x = -1
+)
+ggsave(here("docs", "figures", "mkt_cap_large_banks_20260403.png"),
+       p1, width = 4, height = 2.5, bg = "transparent")
+cat("Figure saved: mkt_cap_large_banks_20260403.png\n")
+print(p1)
+```
+
+
+## CDS panel + event study (subset with full 19-month window)
+
+```{r}
+cds <- readRDS(here("data", "raw", "bank_cds_spreads.rds"))
+cw <- readRDS(here("data", "raw", "ticker_permco_rssd.rds"))
+
+cds <- merge(cds, cw, by.x = "ticker", by.y = "TICKER")
+cds[, data_month := as.Date(paste0(year(date), "-", month(date), "-01"))]
+cds <- cds[
+  as.numeric(PX_VOLUME) > 1000000,
+  .(RSSD = RSSD_TOP, data_month, CDS_spread = RSK_BB_IMPLIED_CDS_SPREAD)
+]
+
+cds <- merge(cds, bnk_mkt, by = c("RSSD", "data_month"))
+
+cds[, CDS_spread := Winsorize(
+  CDS_spread,
+  quantile(CDS_spread, probs = c(0.025, 0.975), na.rm = TRUE)
+), by = data_month]
+```
+
+
+```{r}
+# Keep banks with a complete event-time window (-9..+9 = 19 months).
+t <- cds[abs(months_since) <= 9 & year(first_cecl_dt) <= 2021]
+t <- t[, .N, by = RSSD]
+
+r1 <- feols(
+  CDS_spread ~ i(months_since, cecl_equity, ref = -1) + log(total_assets) | RSSD + data_month,
+  data = cds[abs(months_since) <= 9 & year(first_cecl_dt) <= 2021 & RSSD %in% t[N == 19]$RSSD],
+  vcov = ~RSSD
+)
+
+p2 <- make_es_plot(
+  r1,
+  title_str = "",
+  ylab_str = "CDS Spread",
+  col = "dodgerblue4",
+  event_var = "months_since",
+  xlab_str = "Months Since CECL Adjustment",
+  vline_label = "CECL Adjustment\n(Month -1)",
+  vline_x = -1
+)
+ggsave(here("docs", "figures", "cds_spread_large_banks_20260403.png"),
+       p2, width = 4, height = 2.5, bg = "transparent")
+cat("Figure saved: cds_spread_large_banks_20260403.png\n")
+print(p2)
+```
+
