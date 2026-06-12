@@ -7,26 +7,26 @@ You are coordinating a rigorous pre-submission review of an academic economics p
 ## Phase 1: Parse Arguments and Discover the Paper
 
 Parse `$ARGUMENTS` as follows:
-- Treat `$ARGUMENTS` as the **file path to the main manuscript file** (typically the main `.tex` file).
-- A main manuscript path is **always provided** when this agent is invoked; do not attempt to guess or auto-detect it.
+- The **first argument** is `<track-name>` (required) — the track folder name under `tracks/`, e.g. `did-april2026`. The agent reads from `tracks/<track-name>/latex/...`. Project root paths `data/raw/`, `data/constructed/`, and `code/common.R` are unchanged.
+- The **optional second argument** is the file path to the main manuscript file (typically the main `.tex` file). If omitted, default to `tracks/<track-name>/latex/main.tex`.
 - Set the target journal constant as `TARGET_JOURNAL = "Journal of Finance (JF)"` and use this value in Agent 6 and in the report header.
 
 Use the provided file path as the main LaTeX file:
 
 1. Read the main .tex file and extract all `\input{}`, `\include{}`, and `\subfile{}` references to build the full file list.
 2. Read all component .tex files to understand the complete paper structure (introduction, data, methodology, results, appendix, etc.).
-3. Use Glob to list figure files, assuming they are stored under `latex/figures/` relative to the project root:
-   - `latex/figures/**/*.pdf`
-   - `latex/figures/**/*.png`
-   - `latex/figures/**/*.eps`
-   - `latex/figures/**/*.jpg`
-   - `latex/figures/**/*.jpeg`
-   - `latex/figures/**/*.svg`
-   - Exclude: `latex/figures/**/_minted-*/**`, `latex/figures/**/build/**`, `latex/figures/**/output/**`, `latex/figures/**/.git/**`
-4. Use Glob to list table files: patterns covering common directories:
-   - `**/Tables/**/*.tex`, `**/tables/**/*.tex`, `**/Table/**/*.tex`, `**/table/**/*.tex`
-   - Root-level: `*table*.tex`, `*Table*.tex`
-   - Also: `latex/tables/**/*.tex`
+3. Use Glob to list figure files, assuming they are stored under `tracks/<track-name>/latex/figures/`:
+   - `tracks/<track-name>/latex/figures/**/*.pdf`
+   - `tracks/<track-name>/latex/figures/**/*.png`
+   - `tracks/<track-name>/latex/figures/**/*.eps`
+   - `tracks/<track-name>/latex/figures/**/*.jpg`
+   - `tracks/<track-name>/latex/figures/**/*.jpeg`
+   - `tracks/<track-name>/latex/figures/**/*.svg`
+   - Exclude: `tracks/<track-name>/latex/figures/**/_minted-*/**`, `tracks/<track-name>/latex/figures/**/build/**`, `tracks/<track-name>/latex/figures/**/output/**`, `tracks/<track-name>/latex/figures/**/.git/**`
+4. Use Glob to list table files: patterns covering common directories under the track:
+   - `tracks/<track-name>/**/Tables/**/*.tex`, `tracks/<track-name>/**/tables/**/*.tex`, `tracks/<track-name>/**/Table/**/*.tex`, `tracks/<track-name>/**/table/**/*.tex`
+   - Track root-level: `tracks/<track-name>/*table*.tex`, `tracks/<track-name>/*Table*.tex`
+   - Also: `tracks/<track-name>/latex/tables/**/*.tex`
    - Exclude: `**/_minted-*/**`, `**/build/**`, `**/output/**`, `**/.git/**`
 
 Record:
@@ -60,6 +60,18 @@ You are a copy editor at a top economics journal. Read all .tex files in the fol
    - "This paper contributes to the literature by..." — show, don't tell
    - Passive voice where active is natural ("it is shown that" → "we show that")
    - Inconsistent first person ("we find" in some places, "the paper argues" in others)
+   - **Cochrane (2005) §2 phrases** — flag and recommend deletion or rewrite:
+     - "in other words" — restate the prior sentence cleanly instead.
+     - "it should be noted that", "it is easy to show that", "a comment is in order at this point" — kill the preamble; just make the point.
+     - "It is clear that…", "There is X that…" — strike everything before "that".
+     - Naked "this" at sentence start ("This shows that…") with no following noun — clothe it.
+     - Adjectives on own work: "striking results", "very significant", "remarkable", "fascinating", "novel" — let the world give you the adjectives.
+     - Sign-of-effect parens: "X increases (decreases) when Y decreases (increases)" — pick one direction.
+     - "models where" describing a model — use "in which".
+     - Author-name abbreviations ("FF show", "DKS find") — spell out.
+     - "I leave X for future research" / "this opens avenues for future work" / "future research could explore" — strike.
+     - "illustrative empirical work" — never. Do real work or none.
+     - "we assume that consumers have power utility" describing model structure — drop "assume"; just state the model.
 
 5. **Typographic consistency**:
    - Hyphenation: is "long-run" vs "long run" used consistently? Is "high income" vs "high-income" (attributive vs predicative) applied correctly?
@@ -419,9 +431,9 @@ The .tex files to review are: [LIST ALL TEX FILE PATHS HERE]
 
 After all 6 agents return their results, consolidate them into a single structured report. Save the report to:
 
-`.claude/cc/finance-paper-reviewer/PRE_SUBMISSION_REVIEW_[YYYY-MM-DD].md`
+`.claude/cc/finance-paper-reviewer/PRE_SUBMISSION_REVIEW_[track]_[YYYY-MM-DD].md`
 
-where `[YYYY-MM-DD]` is today's date.
+where `[track]` is the track name from `$ARGUMENTS` and `[YYYY-MM-DD]` is today's date.
 
 **Report structure:**
 

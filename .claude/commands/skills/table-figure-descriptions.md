@@ -43,6 +43,11 @@ For **figures**:
 - **Do not omit variable definitions** — any transformed variable (logs, indicators, interactions) must be defined.
 - **Do not use vague language** — "appropriate controls" or "standard fixed effects" are not acceptable when the specification itself is the focus; in such cases, clearly describe how the specification differs from the baseline rather than listing every control.
 
+### Numerical formatting (Cochrane 2005 §2 — Tables)
+- **Significant digits**: 2–3 sig figs, not whatever the program prints. `4.56783 (0.6789)` becomes `4.6 (0.7)`. Flag any cell with > 3 sig figs and propose the rounded value in the suggested note or caption.
+- **Sensible units**: prefer percentages, basis points, log points, thousands, or millions over raw decimals. Do not report `0.0000023` when `2.3` (with units) reads instantly. If the column is in raw units that produce extreme values, note the unit choice in the suggested caption and recommend a rescaling.
+- **Regression-equation in caption**: for regression tables, the caption (or the note) must include the regression equation or an explicit `\eqref{}` to it, plus the name of the left-hand-side variable. Flag captions that name only the table topic (e.g. "Main results") without identifying the LHS variable or the equation.
+
 ### Tone and length
 - Write in third-person, present tense, declarative sentences.
 - Notes are typically 3–8 sentences. Complex tables with multiple panels or many columns may run longer.
@@ -55,10 +60,12 @@ For **figures**:
 
 ### Step 1 — Ingest inputs
 
+**`$ARGUMENTS`**: `<track-name>` (required) — the track folder name under `tracks/`, e.g. `did-april2026`. The skill resolves the default file to `tracks/<track-name>/latex/main.tex`, with tables under `tracks/<track-name>/latex/tables/` and figures under `tracks/<track-name>/latex/figures/`.
+
 The user will provide one of:
-- **Single `.tex` file** containing both the paper body and table/figure environments.
+- **Single `.tex` file** containing both the paper body and table/figure environments. **Default: `tracks/<track>/latex/main.tex`** — if no file is specified, use that default and figure out what the body and table/figure environments are.
 - **Two `.tex` files**: a paper file and a separate tables/figures file. The tables file is `\input{}`-ed or `\include{}`-ed into the paper. Read both.
-- Supplementary **code files** in `code/sample-construction/` and `code/result-generation/`. Read these when available — they are the ground truth for variable construction, sample filters, and estimation details.
+- Supplementary **code files** in `tracks/<track>/code/sample-construction/` and `tracks/<track>/code/result-generation/` (plus shared `code/common.R` at the project root). Read these when available — they are the ground truth for variable construction, sample filters, and estimation details.
 
 Use `bash_tool` or `view` to read all relevant files. Do not rely on memory alone.
 
@@ -73,7 +80,7 @@ Parse the LaTeX to find every `\begin{table}`, `\begin{figure}`, `\begin{table*}
 
 ### Step 3 — Consult code files
 
-For each table/figure, check `code/result-generation/` for the script that produces it. Also check `code/sample-construction/` for sample definition and variable construction. Extract:
+For each table/figure, check `tracks/<track>/code/result-generation/` for the script that produces it. Also check `tracks/<track>/code/sample-construction/` for sample definition and variable construction (and the shared `code/common.R` for project-wide helpers). Extract:
 - Exact variable names and how they are constructed
 - Sample restrictions (merge conditions, date filters, observation requirements)
 - Regression specifications (controls, fixed effects, clustering)
@@ -99,7 +106,7 @@ Only suggest improvements when something is **missing, ambiguous, or incorrect**
 
 ### Step 5 — Output
 
-Produce a single Markdown file under `.claude/cc/table-figure-descriptions/` (create the folder if it does not exist), for example `.claude/cc/table-figure-descriptions/table-figure-notes_YYYYMMDD.md`, with the following structure:
+Produce a single Markdown file under `.claude/cc/table-figure-descriptions/` (create the folder if it does not exist), for example `.claude/cc/table-figure-descriptions/table-figure-notes_<track>_YYYYMMDD.md`, with the following structure:
 
 ```
 # Table and Figure Notes

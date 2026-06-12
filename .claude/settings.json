@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"biblatex\\\\|\\\\\\\\\\\\\\\\bibliography{\\\\|\\\\\\\\\\\\\\\\addbibresource{\" \"c:/OneDrive/github/depositor-discipline-cbo/latex/main.tex\")",
+      "WebFetch(domain:onlinelibrary.wiley.com)",
+      "WebFetch(domain:doi.org)",
+      "WebSearch"
+    ],
+    "additionalDirectories": [
+      "c:\\OneDrive\\github\\depositor-discipline-cbo\\.claude\\cc",
+      "c:\\OneDrive\\github\\depositor-discipline-cbo\\.claude\\cc\\latex-preflight"
+    ]
+  }
+}

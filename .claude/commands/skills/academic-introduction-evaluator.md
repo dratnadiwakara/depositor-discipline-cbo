@@ -23,7 +23,7 @@ American Economic Review (AER), or Quarterly Journal of Economics (QJE).
 It must **not** edit, rewrite, or modify the paper or any manuscript files. The agent
 surfaces what is missing or misplaced; the author revises. The **only output** is one
 markdown report file written to the **`.claude/cc/academic-introduction-evaluator/`**
-folder (e.g. `.claude/cc/academic-introduction-evaluator/introduction_evaluation_YYYYMMDD.md`).
+folder (e.g. `.claude/cc/academic-introduction-evaluator/introduction_evaluation_<track>_YYYYMMDD.md`).
 Do not write the evaluation elsewhere or only to the chat.
 
 ---
@@ -68,7 +68,8 @@ Introduction Formula and Claudia Sahm's framework, as practiced in AER/QJE/JF:
 
 8. **Road Map** — Outline the paper's organization. Keep it short and customized (not
    "Section 2 contains the model, Section 3 has results…"). Many top papers omit or
-   minimize this. Do not penalize for omission.
+   minimize this. **Do not penalize for omission** — Cochrane (2005) §1 explicitly
+   treats the roadmap as optional.
 
 ---
 
@@ -82,6 +83,10 @@ The user will provide the introduction as:
 - A `.pdf` — use the Read tool if the environment supports it, or the Shell tool to extract
   text (e.g. with pdftotext or similar)
 - A `.tex` file for the whole paper — locate the `\section{Introduction}` block (or equivalent)
+
+**Inputs:** **`$ARGUMENTS`**: `<track-name>` (required) — the track folder name under `tracks/`, e.g. `did-april2026`. The skill resolves the default file to `tracks/<track-name>/latex/main.tex`. The user may pass an explicit `.tex` path to override.
+
+**Default:** If no file is specified, use `tracks/<track>/latex/main.tex`. Use this file to figure out the introduction tex file.
 
 **Do not modify the manuscript.** Only read. If the paper body (beyond the introduction) is
 available, skim it briefly to understand the actual findings and methodology — this helps you
@@ -126,12 +131,26 @@ Flag:
 - Identification strategy absent or buried
 - Value-added paragraph that restates the research question instead of comparing to
   prior work
+- **Throat-clearing opener** (Cochrane 2005 §1) — opening sentence of the form:
+  - "Financial economists have long wondered whether…"
+  - "The finance literature has long been interested in…"
+  - "[Topic] is a fundamental / important / longstanding question in economics…"
+  - "In recent years, the literature on X has grown…"
+  - A paragraph of policy-importance preamble before the contribution
+  - A cute opening quotation (`\epigraph`, `\begin{quote}`, italicized quote)
+  - Flag these prominently. The intro must open with what the paper does.
+- **Conclusion stated abstractly** instead of concretely — e.g. "we show that the
+  pecking-order theory is rejected" without giving the underlying fact ("in a
+  regression of x on y, controlling for z, the coefficient is q"). Cochrane: give
+  the fact, not the conclusion.
+- **Adjectives on own work**: "striking results", "very significant", "novel
+  finding". Cochrane: let the world give you the adjectives.
 
 ### Step 5 — Write the evaluation report
 
 Produce the structured report (see Output Format below) and **write it to a single file in
-the `.claude/cc/academic-introduction-evaluator/` folder**. Use a dated filename:
-`.claude/cc/academic-introduction-evaluator/introduction_evaluation_YYYYMMDD.md`
+the `.claude/cc/academic-introduction-evaluator/` folder**. Use a track- and date-stamped filename:
+`.claude/cc/academic-introduction-evaluator/introduction_evaluation_<track>_YYYYMMDD.md`
 (or a user-specified name if provided). Ensure the `.claude/cc/academic-introduction-evaluator/`
 directory exists, creating it if necessary. Do not write the evaluation to any other path.
 Do not output the full report only in the chat — the canonical output is the .md file
@@ -141,8 +160,8 @@ in `.claude/cc/academic-introduction-evaluator/`.
 
 ## Output Format
 
-Write the report to **`.claude/cc/academic-introduction-evaluator/introduction_evaluation_YYYYMMDD.md`**
-(with the current date, or a name the user specified). The report must be structured as follows:
+Write the report to **`.claude/cc/academic-introduction-evaluator/introduction_evaluation_<track>_YYYYMMDD.md`**
+(with the current date and track, or a name the user specified). The report must be structured as follows:
 
 ```
 # Introduction Evaluation: [Paper Title or Topic]
@@ -241,5 +260,8 @@ Assessment: ...
 | Literature review substitutes for value-added | 2 pages of citation without explaining the gap | Cut to 5–7 key papers; explain what each cannot do that you can |
 | Identification absent | Empirical paper with no description of research design | Add 1–2 sentences on the identification strategy in the intro |
 | Hook is too narrow | Opens with "In recent years, the literature on X has grown..." | Replace with a fact, statistic, or question that motivates WHY X matters |
+| Throat-clearing opener (Cochrane 2005) | Opens with "Financial economists have long…", "[Topic] is a fundamental question…", policy-importance preamble, or a quotation | Cut to the result. Open with what the paper does, stated concretely. |
+| Conclusion-only result statement | "We show the pecking-order theory is rejected" without giving the underlying coefficient/fact | Give the fact: "In a regression of x on y, controlling for z, the coefficient is q." |
+| Adjectives on own work | "striking results", "very significant", "novel finding" | Cut. Cochrane: let the world give you the adjectives. |
 | Value-added = contribution list | Lists 3 things the paper does without explaining how they differ from prior work | Each contribution should be framed as "unlike [prior paper], we..." |
 | Road map is generic | "Section 2 describes the data. Section 3 presents results." | Customize: mention what the reader will learn at each step |

@@ -4,6 +4,8 @@
 **Slug**: depositor-discipline-cbo
 **Description**: Causal evidence that uninsured depositors discipline community banks in response to mandatory credit-risk disclosures (CECL Day-One retained-earnings adjustments), using a difference-in-differences design with staggered adoption dates (primarily 2023Q1).
 
+**Working style**: minimum code that answers the question; surgical edits to existing scripts; state assumptions before coding; verify before moving on.
+
 ## Project Layout
 
 ```
@@ -79,6 +81,7 @@ Difference-in-differences exploiting the mandatory CECL (Current Expected Credit
 - Reset the environment with `rm(list = ls())` as the first line of every standalone script.
 - Use **relative paths** exclusively. In Quarto/R Markdown documents, construct paths with `here::here()`. In plain `.R` scripts, use paths relative to the project root (e.g., `"data/raw/file.csv"`).
 - Append date suffixes (`YYYYMMDD`) to new script filenames (e.g., `01_build_panel_20260406.R`).
+- **State assumptions before writing a new regression or sample filter.** In chat, declare the unit of observation, sample window, treatment variable, outcome, fixed effects, and the *expected sign* of the key coefficient. If any of those are not pinned by the existing CLAUDE.md context, stop and ask. This is the regression-side analogue of the existing `/skills/write-section` "stop and ask rather than fabricate" rule.
 
 ### Project Organization
 
@@ -88,6 +91,15 @@ Difference-in-differences exploiting the mandatory CECL (Current Expected Credit
 | `code/result-generation/` | `.qmd` documents with `type: source` that produce tables and figures |
 | `code/common.R` | Shared libraries, paths, ggplot2 theme, fixest globals |
 
+### Surgical Edits to Existing Scripts
+
+When editing an existing `.R` or `.qmd` file under `code/`:
+
+- Touch only the lines required by the request. Do not re-style, re-order, or "tidy" unrelated specifications, even if they violate current conventions.
+- Do not delete pre-existing alternative specifications, commented-out blocks, or archived chunks unless the user asks. Those are often referee-response material in waiting.
+- If a clean-up looks tempting and unavoidable, raise it in chat first; do not bundle it into the edit.
+- When adding a new regression to a `result-generation/` file, add a new `feols()` line; do not refactor the surrounding spec list to share more macros than `..fc` / `..fe` already provide.
+
 ### Data Management
 
 - Raw data lives in `data/raw/` and is **never modified**.
@@ -95,10 +107,11 @@ Difference-in-differences exploiting the mandatory CECL (Current Expected Credit
 - Define `data_path <- "data/constructed/"` near the top of each analysis script.
 - Generate timestamped output filenames: `format(Sys.time(), "%Y%m%d_%H%M%S")`.
 - Include a comment in each script indicating which upstream script generated any imported dataset.
+- **Every sample-construction script ends with a `cat()` diagnostic block.** Print N rows, N unique units, the time-span coverage, count of NA in each key variable, and the 1st/50th/99th percentiles of the treatment and outcome. The user reads this block before any downstream regression script consumes the dataset. This is the verify-before-moving-on rule for data prep — the standing analogue of `/skills/sanity-check` for newly built samples.
 
 ### Figure & Table Export
 
-- Figures → `latex/figures/` as timestamped `.png` files with `bg = "transparent"`.
+- Figures → `latex/figures/` as timestamped `.png` files with `bg = "white"`.
 - Tables → `latex/tables/` as `.tex` files with matching timestamps.
 - Control exports with logical flags at the top of each script:
   ```r

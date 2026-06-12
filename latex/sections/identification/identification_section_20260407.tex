@@ -38,8 +38,10 @@ conflate depositors' information responses with pre-existing sorting and
 equilibrium co-determination \citep{covitz2004market, chen2022bank}.
 We address this problem by exploiting the CECL Day-One adjustment as a
 natural experiment that delivers a well-defined information shock, one whose
-timing is set by regulation and whose magnitude reflects historical lending
-decisions rather than current deposit market conditions.  
+timing is set by regulation and whose magnitude reflects the bank's assessment
+of lifetime expected losses on its existing loan portfolio---incorporating both
+historical lending decisions and current economic conditions at adoption---and
+is predetermined relative to the deposit dynamics we study.
 
 \subsection{Empirical Design}
 \label{sec:identification:did}
@@ -84,12 +86,16 @@ responses, we also estimate an event-study specification:
 \end{equation}
 where $\tau_{it} = t - t_i^{*}$ is event time in quarters relative to bank
 $i$'s CECL adoption date, and $k = -1$ is the omitted reference period.
-Coefficients $\{\hat{\beta}_k\}_{k < 0}$ test for pre-adoption differential
-trends between high- and low-CECL banks; coefficients $\{\hat{\beta}_k\}_{k
-\geq 0}$ trace the cumulative post-adoption effect.  A pattern of flat
-pre-trends followed by a post-adoption break supports the interpretation that
-observed differences are caused by the CECL disclosure rather than
-pre-existing divergence.
+Coefficients $\{\hat{\beta}_k\}_{k=-10}^{-2}$ test for pre-adoption
+differential trends between high- and low-CECL banks, with $k=-1$ normalized
+to zero as the reference period; coefficients $\{\hat{\beta}_k\}_{k \geq 0}$
+trace the cumulative post-adoption effect.  A pattern of flat pre-trends
+followed by a post-adoption break supports the interpretation that observed
+differences are caused by the CECL disclosure rather than pre-existing
+divergence.  The ten-quarter pre-period begins in 2020Q3, a window
+constrained by panel data availability and chosen to follow the COVID-19
+disruption quarters (2020Q1--2020Q2) whose aggregate liquidity dislocations
+would complicate interpretation of pre-trend estimates.
 
 
 \subsection{Treatment Exogeneity}
@@ -117,9 +123,15 @@ cross-sectional regression in Table~\ref{tab:cecl_predictors_cross_section}
 confirms that the CECL adjustment is predicted by NPL ratios and historical
 allowance levels, with a maximum adjusted $R^2$ of roughly one percent,
 and shows no meaningful relationship with deposit structure variables.
-This evidence is consistent with treatment intensity being largely independent
-of pre-adoption deposit outcomes, though we cannot rule out residual
-correlation through channels not captured by the observables in our sample.
+This evidence suggests that a large share of the cross-sectional variation
+in treatment intensity is idiosyncratic to the accounting measurement rather
+than explained by observable credit-quality proxies.  Although NPL and
+allowance ratios carry statistically significant coefficients, the low
+explanatory power implies these observables cannot be used to reliably predict
+which banks will face large adjustments---a finding we interpret as
+additional support for the exogeneity of cross-sectional treatment assignment,
+though we cannot rule out residual correlation through channels not captured
+by the observables in our sample.
 
 
 \subsection{Information Content, Not Cash Flows}
@@ -142,11 +154,16 @@ adjustment is responding to newly disclosed information about credit-risk
 composition, not to a concurrent worsening of the bank's actual financial
 condition.
 
-The disclosure is also mandatory, quantified, and audited, which distinguishes
-it from voluntary disclosure events where the decision to disclose is itself
-endogenous to management strategy, and from supervisory rating changes where
-the information event is confounded by the behavioral constraints regulators
-impose directly.
+What distinguishes the CECL Day-One adjustment from routine Call Report
+disclosures---which are also mandatory, quantified, and audited---is the
+predetermined adoption date and the forced aggregation of forward-looking
+lifetime credit losses into a single disclosed figure.  Unlike NPL ratios or
+allowance levels reported each quarter at management's discretion within
+accounting rules, the Day-One adjustment requires banks to reveal their full
+expected-loss assessment in one number at a calendar date set by regulation,
+not by management's disclosure preferences.  This eliminates the endogeneity
+problem of voluntary disclosure events and the behavioral-constraint problem
+of supervisory rating changes.
 
 \subsection{Threats to Identification}
 \label{sec:identification:threats}
@@ -197,8 +214,14 @@ sharply and persistently for banks with larger CECL adjustments.  Panel~B
 shows CDS spreads: the pre-adoption pattern is similarly flat, and spreads
 widen materially at adoption and remain elevated in subsequent months.
 Both markets revised assessments sharply at the moment of disclosure, not
-before, consistent with the CECL adjustment conveying genuine information
-about credit-risk composition that was not recoverable from prior disclosures.
-This evidence supports the interpretation that community bank uninsured
-depositors in 2023 were responding to a real, previously unavailable signal,
-rather than to a mechanical accounting reclassification.
+before---though we note that banks with larger CECL adjustments (i.e.,
+riskier loan portfolios) also faced larger COVID-19 credit shocks in 2020Q1,
+an observationally equivalent alternative explanation for the adoption-month
+break.  The flat pre-adoption coefficients confirm that equity and CDS markets
+were not systematically anticipating the disclosure, but the pandemic's
+simultaneous arrival prevents cleanly attributing the adoption-month movement
+to CECL alone.  This evidence is consistent with the CECL adjustment conveying
+credit-risk information in a setting where market prices are observable; we
+view it as suggestive rather than definitive, and note that the
+community-bank depositor tests in Section~\ref{sec:results} do not rely on
+this cohort for identification.
