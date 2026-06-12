@@ -1,0 +1,204 @@
+%% ============================================================
+%%  Section: Introduction  (2026-06-12, post-JMCB revision)
+%%  Depositor Discipline in Community Banking
+%%
+%%  Structure:
+%%    ¶1   Hook + explicit research question
+%%    ¶2   Identification challenges + CECL solution + 2023-stress-by-design preview
+%%    ¶3   Main results: within-bank composition shift (core), level effect, magnitudes
+%%    ¶4   Where the deposits go: insured wholesale substitution + local spillovers
+%%    ¶5   Signal validation (large banks) — demoted to suggestive
+%%    ¶6   Financial consequences + lending + sophistication, with magnitudes
+%%    ¶7   Contribution 1: depositor discipline / market discipline lit
+%%    ¶8   Contribution 2: accounting disclosure + CECL consequences lit
+%%    ¶9   Contribution 3: deposit insurance design + policy
+%%
+%%  Changes from JMCB version (per revision-plan-20260612.md):
+%%    - removed "absent a crisis trigger" and "non-crisis setting" framing
+%%    - identification ¶ previews flexible controls + cohort-timing tests (RA2/RB1)
+%%    - composition shift promoted to headline result (survives all controls)
+%%    - signal-validation ¶ compressed; 191 bps point estimate dropped (RA3)
+%%    - new ¶4 on deposit destination and spillovers (RB2)
+%%    - lending result added (RA8); magnitudes sentences added throughout
+%%    - "predetermined" language softened (RA1)
+%% ============================================================
+
+\section{Introduction}
+\label{sec:intro}
+
+Whether uninsured depositors discipline bank risk remains one of the central open
+questions in banking.  Theory predicts they should: uninsured depositors bear
+full downside risk and have strong incentives to withdraw or demand higher rates
+when they detect deterioration in bank financial condition
+\citep{calomiris1991role, diamond2001liquidity}.  A large empirical literature
+documents that riskier banks pay higher deposit rates and experience larger
+uninsured outflows \citep{park1995market, martinez2001depositors,
+maechler2006dynamic, iyer2016tale, egan2017deposit, chen2024liquidity}, yet whether these patterns
+reflect a causal disciplinary response or equilibrium correlation remains
+unsettled.  The question is pressing: against a backdrop of expanding government
+protection for uninsured depositors, the Main Street Depositor Protection Act
+(S.~2999, reintroduced March 2026) would formally extend coverage to
+\$10~million per account, making it important to understand whether this
+discipline operates before the incentives that sustain it are further weakened. Historical
+evidence suggests the stakes are large, as early state deposit insurance programs in the
+United States eliminated market discipline, enabling insured banks to take on excessive
+risk \citep{calomiris2019stealing}.
+We ask whether uninsured depositors respond to mandatory credit-risk disclosures
+by withdrawing balances or demanding higher rates, and we provide causal evidence
+on this question using U.S.\ community banks, where institutions below
+\$10~billion in assets carry no credible government backstop and identification
+conditions are favorable \citep{o1990deposit, flannery1996evidence}.
+
+Achieving clean identification requires resolving three problems that prior work
+leaves open.  First, simultaneity: a bank's risk profile, deposit composition,
+and depositor behavior co-evolve, so regressions of deposit flows on risk
+measures capture equilibrium sorting rather than isolated disciplinary responses.
+Second, accounting opacity: under the incurred-loss model, banks could delay
+credit loss recognition, systematically understating risk in public disclosures
+and limiting depositors' ability to monitor \citep{bushman2012accounting,
+bushman2015delayed}.  Third, confounding from aggregate stress: the periods with
+the greatest variation in bank distress are precisely those in which government
+interventions and depositors' own liquidity needs contaminate the measured
+response \citep{bennett2015market}.  We address the first two problems by
+exploiting mandatory CECL adoption for community banks in 2023 as an information
+shock whose cross-sectional intensity was largely fixed before the event.  CECL
+requires banks to recognize lifetime expected credit losses on existing loan
+portfolios at adoption, producing a one-time adjustment to retained earnings
+whose magnitude reflects loan vintages assembled years earlier.  Banks knew the
+standard was coming, but the size of the Day-One charge---the treatment
+variation we use---was pinned down by the composition and seasoning of the
+existing loan book rather than by contemporaneous deposit-market conditions.
+The third problem we confront directly rather than assume away: community banks
+adopted CECL in the same quarter that the failures of Silicon Valley Bank and
+Signature Bank put bank risk on every depositor's mind.  We show that our
+estimates are robust to allowing deposit dynamics to vary flexibly with the full
+set of 2022Q4 bank characteristics that governed exposure to the 2023 stress---%
+uninsured deposit shares, size, capital, asset quality, profitability,
+commercial-real-estate concentration, and unrealized securities losses---each
+interacted with calendar-quarter fixed effects, and that the response patterns
+line up with each cohort's own adoption quarter rather than with March 2023.
+\citet{kim2026current} and \citet{gee2022decision}
+confirm that the Day-One adjustment is informative, predicting subsequent
+charge-offs and improving analyst forecast accuracy; \citet{nier2006market} and
+\citet{chen2022bank} establish that disclosure improvements of this type enable
+depositors to act on credit risk signals.
+
+Our central result, estimated on a sample of more than 4,000 community banks over
+quarterly observations from 2016 to 2025, is a within-bank shift in the
+composition of time deposits away from uninsured and toward insured balances.  A
+triple-difference specification stacks the insured and uninsured series in a
+single panel and adds bank-by-quarter fixed effects, absorbing all bank-specific
+time-varying shocks---including any bank-level effect of the 2023 stress; the
+triple interaction implies that each percentage point of CECL exposure reduces
+uninsured time deposits by $0.18$ percentage points of assets \emph{relative to}
+insured time deposits within the same bank and quarter.  This composition result
+is the most robust fact in the paper: it survives the characteristics-by-quarter
+controls, a fully saturated specification, alternative treatment scalings and
+cutoffs, and the exclusion of the largest-adjustment bank.  The simple
+difference-in-differences levels are consistent with it.  Banks in the right
+tail of CECL exposure (Day-One adjustment of at least 2.5 percent of
+pre-adoption equity) experienced a 0.394 percentage-point contraction in
+uninsured time deposits relative to total assets---roughly 7 percent of the
+sample mean, or about \$1.3~million for the median treated bank---while insured
+time deposits rose by 0.71 percentage points.  Event studies confirm that
+deposit trajectories were parallel across treatment and control banks before
+adoption and that the divergence emerged at adoption and persisted through the
+end of the sample.  We are transparent that the \emph{level} of the uninsured
+decline attenuates when deposit-composition characteristics are allowed their
+own time paths---as it mechanically must, since those controls absorb part of
+the uninsured channel itself---which is why we anchor the paper on the
+within-bank composition contrast that no such control can explain away.
+
+We also answer the question any composition result raises: where do the deposits
+go?  High-CECL banks replace the lost uninsured balances with \emph{insured}
+wholesale funding---insured brokered deposits rise by roughly 0.5 percentage
+points of assets and reciprocal deposits, which split large accounts across
+network banks to obtain full coverage, also increase---while uninsured brokered
+funding does not move.  At the same time, branch-level data from the FDIC
+Summary of Deposits show that deposit growth after 2023 is faster at low-CECL
+banks operating in counties more exposed to high-CECL competitors, direct
+evidence that part of the withdrawn funding re-intermediates locally.  Both
+margins are exactly what a disciplinary mechanism predicts: depositors and the
+banks competing for them reprice and reallocate around the newly disclosed
+credit risk, partly by purchasing insurance through market arrangements
+\citep{kim2024insurance}.
+
+Before turning to deposits, we verify that the Day-One disclosure moves
+informed-market prices at all, using the cohort of large, publicly traded banks
+that adopted CECL in 2020Q1---the only cohort with observable equity prices and
+credit default swap spreads around adoption.  Market capitalization falls and
+CDS spreads widen differentially for high-CECL large banks beginning in the
+adoption month, with flat pre-adoption leads.  Because that cohort adopted on
+the eve of the pandemic, we treat this evidence as suggestive corroboration
+that the adjustment carries credit-relevant news, not as a standalone causal
+estimate.
+
+The deposit reallocation carries real financial costs.  High-CECL banks paid
+approximately 8--9 basis points more annually in interest expense relative to
+assets---about \$0.3~million per year for the median treated bank---consistent
+with paying up to replace outflowing uninsured balances with insured wholesale
+funding.  Return on assets fell by roughly 15 basis points per year and net
+interest margin compressed by approximately 9 basis points annually, confirming
+that higher funding costs were not passed through to borrowers.  The pressure
+extends to the asset side: quarterly loan growth at high-CECL banks slows by
+0.65 percentage points, concentrated in commercial real estate, linking the
+funding shock to credit supply in the spirit of \citet{granja2025current}.  The
+effects are amplified by depositor sophistication.  Splitting the sample by a
+deposit-weighted branch-market index of financial sophistication, constructed
+from FDIC branch data merged to ZIP-code American Community Survey estimates of
+educational attainment and IRS investment-income filing rates, we find that
+high-CECL banks in high-sophistication markets paid an additional 17--18 basis
+points annually in interest expense and suffered an additional 30 basis point
+drag on return on assets; the pattern is unchanged when the index is built from
+pre-period (2019) branch weights, addressing the concern that branch footprints
+responded to treatment.
+
+This paper contributes first to the empirical literature on depositor and market
+discipline in banking.  A substantial body of evidence documents that riskier
+banks pay higher rates and experience larger uninsured outflows
+\citep{park1995market, martinez2001depositors, maechler2006dynamic,
+egan2017deposit}, and that market-priced signals contain information about bank
+distress \citep{flannery1996evidence, nier2006market}.  The causal
+interpretation of these patterns has proven difficult to establish, however.
+\citet{bennett2015market} and \citet{berger2015depositors} document that
+government guarantees attenuate estimated effects in the crisis episodes that
+generate the most variation, and institutions subject to implicit government
+support carry systematically smaller estimated discipline effects
+\citep{jacewitz2018deposit}.  Recent work on the 2023 episode shows that
+depositors ran on banks with high uninsured shares and unrealized losses
+\citep{caglio2024depositors}; our contribution is orthogonal variation
+\emph{within} that high-attention period: a bank-specific, predetermined
+disclosure whose intensity is essentially uncorrelated with the balance-sheet
+characteristics that governed run exposure, so that the disciplinary response
+to new credit-risk information can be separated from the aggregate flight to
+safety.
+
+This paper also contributes to the accounting and disclosure literature on CECL
+and its economic consequences.  \citet{bushman2012accounting} and
+\citet{bushman2015delayed} establish that delayed loss recognition under the
+incurred-loss model reduced bank transparency and attenuated market discipline;
+our findings provide direct evidence that the mandated switch to forward-looking
+expected-loss accounting triggered the disciplinary response that opacity had
+been suppressing.  Prior work on CECL's real effects focuses on lending behavior
+\citep{granja2025current}, provisioning dynamics \citep{kim2026current}, and
+decision-usefulness \citep{gee2022decision}.  Unlike these studies, which examine
+bank-side responses or analyst outcomes, we trace the full causal chain from
+mandatory accounting disclosure to depositor behavior to bank funding costs,
+profitability, and lending, documenting the funding-market channel through which
+improved disclosure standards alter the cost of risk-taking.
+
+Finally, this paper speaks to the debate over deposit insurance design and the
+scope of government guarantees.  Prior work establishes that broader insurance
+coverage reduces the incentive of uninsured depositors to monitor and exert
+pressure on bank risk-taking, weakening the market discipline that complements
+regulatory oversight \citep{demirgucc2004market, flannery2019market}.  Our
+evidence that uninsured depositors monitor and respond to credit risk
+information at community banks supports the view that depositor discipline is a
+functioning governance mechanism in the institutional setting where theory
+predicts it should work best---and the substitution into insured brokered and
+reciprocal deposits shows that much of the response takes the form of
+repurchasing insurance rather than exiting the banking system
+\citep{kim2024insurance}.  Policies that move a substantial volume of currently
+uninsured deposits inside the insurance perimeter should be evaluated not only
+for their run-prevention benefits but also for the monitoring and pricing
+discipline they displace.

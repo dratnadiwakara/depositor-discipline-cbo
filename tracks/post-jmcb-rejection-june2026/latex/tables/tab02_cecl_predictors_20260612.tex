@@ -1,0 +1,47 @@
+
+\begingroup
+\centering
+\begin{tabular}{lccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{3}{c}{CECL Adj}\\
+   Model:                            & (1)            & (2)             & (3)\\  
+   \midrule
+   \emph{Variables}\\
+   Constant                          & -0.2670        & -0.2611         & -0.3530\\   
+                                     & (0.2241)       & (0.2325)        & (0.2361)\\   
+   log(Assets)                       & 0.0540$^{***}$ & 0.0463$^{**}$   & 0.0483$^{***}$\\   
+                                     & (0.0178)       & (0.0183)        & (0.0183)\\   
+   Equity/Assets (\%)                & -0.0072$^{**}$ & -0.0131$^{***}$ & -0.0128$^{***}$\\   
+                                     & (0.0032)       & (0.0036)        & (0.0036)\\   
+   NPL/Loans (\%)                    & 0.0785$^{***}$ & 0.0699$^{***}$  & 0.0670$^{**}$\\   
+                                     & (0.0261)       & (0.0261)        & (0.0264)\\   
+   CRE/Loans (\%)                    & -0.0019$^{*}$  & -0.0004         & $2.67\times 10^{-6}$\\    
+                                     & (0.0011)       & (0.0012)        & (0.0012)\\   
+   Unrealized Sec. Loss/Assets (\%)  & 0.0174$^{*}$   & 0.0080          & 0.0098\\   
+                                     & (0.0094)       & (0.0096)        & (0.0096)\\   
+   Unins. Dep./Deposits (\%)         &                & -0.0010         & -0.0011\\   
+                                     &                & (0.0015)        & (0.0015)\\   
+   Time Dep./Deposits (\%)           &                & 0.0046$^{**}$   & 0.0046$^{**}$\\   
+                                     &                & (0.0018)        & (0.0018)\\   
+   Brokered Dep./Deposits (\%)       &                & 0.0097$^{**}$   & 0.0100$^{**}$\\   
+                                     &                & (0.0045)        & (0.0045)\\   
+   ROA Trend (8q)                    &                & -1.616$^{**}$   & -1.668$^{**}$\\   
+                                     &                & (0.7647)        & (0.7643)\\   
+   NPL Trend (8q)                    &                & -0.1794         & -0.1706\\   
+                                     &                & (0.1941)        & (0.1943)\\   
+   County Deposit HHI                &                &                 & 0.0027$^{*}$\\   
+                                     &                &                 & (0.0014)\\   
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                      & 4,251          & 4,238           & 4,236\\  
+   Adjusted R$^2$                    & 0.00524        & 0.01345         & 0.01407\\  
+   \midrule \midrule
+   \multicolumn{4}{l}{\emph{Heteroskedasticity-robust standard-errors in parentheses}}\\
+   \multicolumn{4}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Cross-section at 2022Q4 (pre-adoption). Column (2) is the first stage for the residualized treatment. ROA and NPL trends are bank-level 8-quarter slope coefficients (2021Q1--2022Q4). County deposit HHI is the bank's 2022 deposit-weighted average county HHI (0--100 scale).
+\par\endgroup
+
+

@@ -1,0 +1,196 @@
+%% ============================================================
+%%  Institutional Background
+%%  Depositor Discipline in Modern Banking (2026-04-06 draft)
+%%
+%%  Scope: ILM/CECL transition, Day-One adjustment mechanics,
+%%  treatment variable construction, adoption timeline, phase-in.
+%%  Identification arguments live in sec:identification.
+%% ============================================================
+
+\section{Institutional Background}
+\label{sec:background}
+
+\subsection{From Incurred Losses to Expected Credit Losses}
+\label{sec:background:transition}
+
+U.S.\ banks historically recognized credit losses under the \textit{incurred
+loss model} (ILM), codified in ASC~450-20 and ASC~310-10.  The ILM did not
+permit reserve recognition until a loss was ``probable and estimable,'' a
+standard anchored to observable credit events that had already occurred,
+typically a missed payment, a borrower downgrade, or an impairment trigger,
+rather than to forward-looking assessments of latent portfolio risk.  A large
+body of evidence documents the consequences: loan loss provisions lag realized
+defaults by one to two years over the business cycle
+\citep{beatty2011delays}, and the resulting delay in recognition reduces the
+informativeness of bank financial statements when outside monitors
+most need timely signals \citep{bushman2012accounting, bushman2015delayed}.
+From a depositor's perspective, the ILM meant that two otherwise identical
+banks could carry materially different allowances depending on portfolio
+vintage, borrower geography, and the timing of internal credit reviews, none
+of which necessarily reflected differences in underlying credit-risk exposure.
+
+The 2007--2009 financial crisis concentrated attention on the procyclical
+nature of delayed recognition and prompted the Financial Accounting Standards
+Board (FASB) to replace the ILM trigger with a forward-looking standard.  In
+June 2016, FASB issued Accounting Standards Update (ASU) 2016-13, introducing
+the \textit{Current Expected Credit Loss} model (CECL), codified in
+ASC~326 \citep{FASB2016}.  Under CECL, a bank must estimate and reserve for
+\textit{lifetime} expected credit losses at origination and at each subsequent
+reporting date, drawing on historical loss experience, current conditions, and
+reasonable and supportable forward-looking forecasts.  The size of the required
+allowance is a direct function of the credit-risk composition of the loan
+portfolio: loans with longer remaining maturities, weaker borrower quality, or
+thinner collateral coverage require materially larger CECL allowances than the
+ILM reserve previously carried against the same assets.
+
+The practical significance of this shift is that CECL surfaces credit-risk
+information that was economically present under the ILM but not yet required to
+be disclosed.  Consistent with this, recent evidence finds that CECL adoption
+increased the sensitivity of loan loss provisions to forward-looking credit
+signals \citep{granja2025current, kim2026current}, reduced the procyclicality
+of bank lending \citep{chen2022does}, and improved the decision-usefulness of
+reserve disclosures for outside investors \citep{gee2022decision}.  Our design
+exploits a specific moment in this transition---the adoption-date catch-up
+adjustment---as a natural experiment for studying whether disclosed
+credit-risk information disciplines uninsured depositors and how exposed banks
+respond to the resulting funding pressure.
+
+\subsection{The Day-One Adjustment and Treatment Variable}
+\label{sec:background:dayone}
+
+When a bank transitions from ILM to CECL, it must reclassify its entire existing
+loan portfolio under the new standard on a single date.  The difference between
+the CECL-required allowance and the legacy ILM allowance (the Day-One
+adjustment) is recorded as a cumulative-effect charge to retained earnings on
+the opening balance sheet of the adoption quarter.  For bank $i$ with adoption
+quarter $t^{*}$:
+\begin{equation}
+  \Delta_i
+  \;\equiv\;
+  \mathrm{ALLL}^{\mathrm{CECL}}_{i,\,t^{*}}
+  -
+  \mathrm{ALLL}^{\mathrm{ILM}}_{i,\,t^{*}-1},
+  \label{eq:dayone}
+\end{equation}
+where $\mathrm{ALLL}$ denotes the allowance for loan and lease losses reported
+on the Call Report.  The Day-One adjustment varies widely in the cross-section:
+a large share of community banks recorded a negligible adjustment
+($\Delta_i \approx 0$) in their first CECL-compliant Call Report, a subset
+recorded positive values where CECL required a materially larger allowance than
+the legacy ILM reserve, and a smaller number recorded negative values where the
+existing ILM reserve exceeded the CECL estimate.  We exploit this
+cross-sectional variation in $\Delta_i$ in the empirical design.
+
+Where the adjustment is positive, it reduces reported book equity and, absent
+any regulatory accommodation, risk-weighted regulatory capital ratios by an
+equivalent amount.
+Importantly, equation~\eqref{eq:dayone} records a pure accounting adjustment.
+It does not trigger a cash transfer, dividend cut, or change in the contractual
+terms of the underlying loans.  The bank's actual cash flows and its
+borrowers' repayment obligations are unchanged.  What the adjustment does is
+reveal, in a single mandatory disclosure, the gap between book equity as
+previously reported and book equity adjusted to reflect the bank's true
+forward-looking credit-loss exposure.
+
+Our primary treatment variable scales the Day-One charge by the bank's
+beginning-of-period equity:
+\begin{equation}
+  \texttt{CECL Adj}_{i}
+  \;=\;
+  \frac{\Delta_i}{\texttt{Equity}_{i,\,t-1^{*}}}
+  \times 100,
+  \label{eq:treatment}
+\end{equation}
+expressed in percentage points to facilitate comparison across banks of
+different sizes.  For our main specifications we also construct a binary
+indicator for banks in the right tail of the cross-sectional distribution:
+\begin{equation}
+  \texttt{High CECL}_{i}
+  \;=\;
+  \mathbf{1}\!\left\{
+    \texttt{CECL Adj}_{i} \geq \tau
+  \right\},
+  \label{eq:binary}
+\end{equation}
+where $\tau = 2.5$ percentage points, approximately the 95th percentile of the
+adoption-quarter distribution.  Results are robust to using the continuous
+\texttt{CECL Adj} measure in place of the binary indicator, to cutting the
+indicator at the 75th or 90th percentile instead, and to scaling the Day-One
+charge by total assets or total loans rather than equity
+(Section~\ref{sec:robustness}).  Scaling by equity is our baseline because
+equity is the quantity an uninsured depositor cares about: the adjustment
+measures the fraction of the loss-absorbing buffer that the new standard
+revealed to be already committed against expected credit losses.
+
+\subsection{Adoption Timeline and Regulatory Capital Phase-In}
+\label{sec:background:timeline}
+
+FASB phased the CECL transition by entity type.  Large SEC-filing registrants,
+primarily banks with assets above \$10 billion, were required to adopt
+beginning with fiscal years starting after December~15, 2019, which for
+calendar-year filers means 2020Q1.  Smaller reporting companies, non-accelerated
+filers, and non-public entities---the community banks that comprise our main
+sample---adopted on January~1, 2023, and appear in their first CECL-compliant
+Call Report in 2023Q1.\footnote{A small number of community banks with non-
+calendar fiscal years adopted in adjacent quarters.  Our algorithm assigns the
+first quarter in the 2022Q3--2023Q4 window with a non-missing
+\texttt{CECL Adj} observation as bank-specific adoption time $t^{*} = 0$.}
+We focus on the 2023 community-bank cohort throughout.  The large-bank 2020
+cohort serves a separate signal-validation role, discussed in
+Section~\ref{sec:identification}, but its adoption coincides with the onset of
+the COVID-19 pandemic, which precludes using that cohort to study deposit
+market responses.
+
+The timing of public disclosure matters for interpreting the 2023 cohort.
+Call Reports are due roughly thirty days after quarter-end and are posted
+publicly by the FFIEC and FDIC shortly after filing, so the Day-One adjustments
+recorded in 2023Q1 reports became publicly observable in late April and May
+2023---\emph{after} the failures of Silicon Valley Bank and Signature Bank in
+March 2023 and after the acute phase of the ensuing deposit stress.  Depositors
+reacting to the disclosed adjustment therefore did so against an information
+backdrop in which the March run had already occurred, a sequencing we exploit
+when separating the disclosure response from the aggregate stress in
+Section~\ref{sec:identification}.
+
+\medskip\noindent
+Three properties of the Day-One adjustment distinguish it from other credit-risk
+signals and motivate our identification strategy.  The disclosure timing is set
+by regulatory mandate, not bank choice; the magnitude reflects historical
+portfolio composition accumulated before the standard was finalized in 2016; and
+the adjustment is a pure accounting event that separates new information from
+concurrent changes in cash flows or financial condition.\footnote{Banking
+regulators separately permitted community banks to elect a three-year phase-in
+of the Day-One regulatory capital impact (2020 interim final rule).  The
+election had no effect on accounting recognition: a bank electing the phase-in
+still reported the full CECL reserve and retained-earnings charge on its Q1 2023
+Call Report, so depositors observed the same disclosed adjustment regardless of
+phase-in status.}
+
+\subsection{How Community-Bank Depositors Observe Call Report Information}
+\label{sec:background:observation}
+
+A natural question is how depositors at small, unlisted banks---institutions
+with no analyst coverage, equity price, or CDS spread---come to act on a line
+item in a regulatory filing.  The answer is that Call Report information
+reaches community-bank depositors through several well-established
+intermediated channels rather than through direct filings consumption.  First,
+the FDIC's BankFind Suite and commercial bank-rating services (Bauer Financial,
+Veribanc, Weiss Ratings, DepositAccounts' bank health grades) ingest each
+quarterly Call Report within weeks of filing and republish capital, asset
+quality, and earnings measures as letter grades and star ratings that retail
+and small-business depositors consult directly.  Second, deposit brokers and
+listing services that place certificates of deposit---the product category our
+outcome variables measure---routinely screen issuing banks on Call Report
+ratios, so a deterioration in disclosed credit quality changes the set of
+brokered and listed funding a bank can attract and the rate it must post.
+Third, municipal and other public-funds treasurers, who hold nontransaction
+balances averaging roughly 4 percent of assets (median 2.5 percent) at the
+banks in our sample, operate under statutory and policy mandates to monitor
+depository financial condition and to collateralize or move balances above the
+insurance limit when condition deteriorates.  Fourth, local and trade press
+report on community-bank financial condition using Call Report data.  These
+channels share a common feature: they transmit disclosed accounting
+information with a short lag and with intensity that varies across depositor
+types---a feature we exploit directly when we show that the deposit response
+concentrates in markets with more financially sophisticated depositors
+(Section~\ref{sec:heterogeneity}).

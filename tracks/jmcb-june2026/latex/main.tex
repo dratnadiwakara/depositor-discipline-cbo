@@ -1,0 +1,148 @@
+\documentclass[12pt]{article}
+\usepackage{fullpage}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{graphics}
+\usepackage{epsfig}
+\usepackage[longnamesfirst]{natbib}
+\usepackage{lscape}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{tabls}
+\usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage[multiple]{footmisc}
+\usepackage[margin=1in]{geometry}
+\usepackage{color,soul}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{ragged2e}
+\usepackage{geometry}
+\usepackage{pdflscape}
+\usepackage{dcolumn}
+\usepackage{enumerate}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage{epstopdf}
+\usepackage[title]{appendix}
+\usepackage{titlesec}
+\usepackage[normalem]{ulem}
+\usepackage[font=bf]{caption}
+\usepackage{mathpazo}
+\usepackage{hyperref}
+\usepackage{tikz} 
+\usepackage{tabularx,booktabs} 
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{graphicx}
+\setcounter{MaxMatrixCols}{10}
+%TCIDATA{OutputFilter=LATEX.DLL}
+%TCIDATA{Version=5.50.0.2960}
+%TCIDATA{Codepage=65001}
+%TCIDATA{<META NAME="SaveForMode" CONTENT="1">}
+%TCIDATA{BibliographyScheme=BibTeX}
+%TCIDATA{LastRevised=Thursday, July 23, 2020 13:46:23}
+%TCIDATA{<META NAME="GraphicsSave" CONTENT="32">}
+%TCIDATA{Language=American English}
+\usepackage[table]{xcolor}
+%\definecolor{maroon}{cmyk}{0,0.87,0.68,0.32}
+%\definecolor{mygray}{gray}{0.6}
+
+\usepackage[english]{babel}
+\usepackage[autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+
+\hypersetup{
+colorlinks=true,
+citecolor=blue,
+linkcolor=red,
+}
+\titlelabel{\thetitle.\quad}
+
+
+\newcommand{\adddescription}[1]{
+    \begin{minipage}{0.9\textwidth}
+    \vspace{0.2cm}
+     #1
+    \end{minipage}\\
+    \vspace{0.5cm}
+}
+\doublespacing
+%\floatstyle{ruled}
+\floatstyle{plaintop}
+\restylefloat{table}
+\restylefloat{figure}  
+\newcommand{\floatintro}[1]{
+\vspace*{0.1in}
+{\small
+#1
+}
+\vspace*{0.1in}
+}
+%\newcommand{\sym}{}
+\sloppy
+
+\begin{document}
+
+\title{Depositor Discipline in Community Banking: \\Evidence from the CECL Information Shock}
+% \footnote{The results and views expressed in this paper are those of the authors and do not reflect those of the Federal Reserve Bank of Richmond, or the Federal Reserve System.}
+
+\author{}
+
+% \author{Dimuthu Ratnadiwakara\thanks{The Federal Reserve Bank of Richmond; email: dimuthu.ratnadiwakara@gmail.com} }
+\autor{}
+
+\date{}
+
+\maketitle
+
+\begin{abstract}
+\begin{singlespace}
+\input{sections/abstract/abstract_current.tex}
+\medskip
+
+\noindent \textbf{Keywords:} depositor discipline, CECL, community banks, deposit insurance
+
+\noindent \textbf{JEL:} G21, G28, M41
+
+\end{singlespace}
+\end{abstract}
+
+
+
+\thispagestyle{empty}
+
+\clearpage
+
+\input{sections/intro/intro_current.tex}
+
+\input{sections/institutional-background/inst_bg_current.tex}
+
+\input{sections/data/data_current.tex}
+
+\input{sections/identification/identification_current.tex}
+
+\input{sections/results/results_current.tex}
+
+\input{sections/conclusion/conclusion_current.tex}
+
+\clearpage
+\onehalfspacing
+
+\bibliographystyle{chicago}
+\bibliography{main}
+
+\input{tables_figures}
+
+
+
+
+\end{document}
+

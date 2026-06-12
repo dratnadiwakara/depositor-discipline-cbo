@@ -1,0 +1,35 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{2}{c}{Deposits/Assets (\%)}\\
+   Model:                                                & (1)            & (2)\\  
+   \midrule
+   \emph{Variables}\\
+   Uninsured time dep                                    & -2.623$^{***}$ & -2.644$^{***}$\\   
+                                                         & (0.0865)       & (0.0867)\\   
+   CECL Adj $\times$ Uninsured time dep                  & -0.1781$^{**}$ &   \\   
+                                                         & (0.0753)       &   \\   
+   Post $\times$ Uninsured time dep                      & 1.168$^{***}$  & 1.172$^{***}$\\   
+                                                         & (0.0659)       & (0.0662)\\   
+   CECL Adj $\times$ Post $\times$ Uninsured time dep    & -0.0625        &   \\   
+                                                         & (0.0530)       &   \\   
+   High CECL $\times$ Uninsured time dep                 &                & -0.5124\\   
+                                                         &                & (0.3984)\\   
+   High CECL $\times$ Post $\times$ Uninsured time dep   &                & -0.4597\\   
+                                                         &                & (0.2843)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank x Quarter                                        & Yes            & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                                          & 145,474        & 145,474\\  
+   Adjusted R$^2$                                        & 0.47332        & 0.47281\\  
+   \midrule \midrule
+   \multicolumn{3}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{3}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

@@ -1,0 +1,136 @@
+%% ============================================================
+%%  Section: Heterogeneity by Depositor Sophistication
+%%  (2026-06-12, post-JMCB revision; addresses RA4)
+%%
+%%  Combines the JMCB sophistication subsection (moved out of
+%%  empirical_results) with three new exercises:
+%%    §1 main split results (event studies + triple interactions)
+%%    §2 index robustness: 2019 SOD weights
+%%    §3 early/late post-period split (statistical version of the
+%%       gradual-buildup visual claim)
+%%    §4 subsample baselines + magnitude reconciliation
+%%
+%%  Cross-references consumed:
+%%    fig:es_sophistication_split, tab:soph_triple_2022,
+%%    tab:soph_triple_2019w, tab:soph_earlylate, tab:soph_subsample
+%% ============================================================
+
+\section{Heterogeneity by Depositor Sophistication}
+\label{sec:heterogeneity}
+\label{sec:results:sophistication}
+\label{sec:results:heterogeneity}
+
+The disciplinary mechanism requires depositors who are willing and able to act
+on new risk information.  We test whether the response is amplified in markets
+with more financially sophisticated depositor bases, splitting the sample at the
+75th percentile of the deposit-weighted branch-market sophistication index of
+Section~\ref{sec:data:sophistication}.  Banks at or above this threshold
+are classified as operating in high-sophistication markets.
+
+\subsection{Main Split Results}
+\label{sec:heterogeneity:main}
+
+Figure~\ref{fig:es_sophistication_split} presents event-study estimates separately
+for high- and low-sophistication banks, and
+Table~\ref{tab:soph_triple_2022} reports the corresponding pooled triple
+interactions.  Panel~A shows that the uninsured deposit
+response is concentrated in high-sophistication markets: the event-study
+coefficient for that group drifts steadily downward after adoption, reaching
+approximately $-1.5$ to $-2$ percentage points of assets by quarters $+9$ to $+11$,
+while the low-sophistication group remains near zero throughout.  The gradual
+buildup explains why the pooled triple-interaction coefficient ($\mathrm{Post}
+\times \mathrm{High\,CECL} \times \mathrm{High\,Sophistication} = -0.022$,
+SE $= 0.468$) is statistically insignificant: the post-period average pools early
+quarters before the separation is visible with later quarters where the gap is
+large.  We test this interpretation formally in
+Section~\ref{sec:heterogeneity:earlylate}.  The pattern is consistent with
+sophisticated depositors redirecting
+balances gradually as time deposits mature, rather than breaking term contracts
+early \citep{iyer2016tale}.
+
+The sharpest statistical signal from the sophistication split appears in the price
+channel.  Panel~C shows that high-CECL banks in high-sophistication markets paid
+a distinctly steeper increase in interest expense after adoption; the
+triple-interaction coefficient is $+0.044$ percentage points per quarter
+($p = 0.020$), about 17--18 additional basis points annually on top of the
+pooled effect.  Panel~D confirms that the additional funding cost translated into
+larger profitability losses: the triple-interaction for ROA is $-0.076$ percentage
+points per quarter ($p = 0.010$), an annualized drag of approximately 30
+additional basis points.  Panel~E shows a directionally consistent but
+statistically imprecise effect on NIM ($-0.031$, $p = 0.175$).  Panel~B shows
+that high-sophistication banks also attracted fewer insured deposits than their
+low-sophistication counterparts after adoption ($-0.965$, SE $= 0.677$,
+$p = 0.154$), consistent with sophisticated depositors being more reluctant to
+serve as replacement insured funding at institutions whose credit quality has
+deteriorated.  Together, these results suggest a two-channel discipline
+mechanism: sophisticated depositors extract higher rates immediately upon
+observing the CECL disclosure, then gradually reduce balances as term instruments
+mature \citep{egan2017deposit}.  We are explicit about the evidentiary
+asymmetry: the price and profitability channels are statistically sharp, while
+the quantity channel in high-sophistication markets is visible in the event
+studies but imprecise in pooled interactions.  The remainder of this section
+subjects both channels to the natural objections.
+
+\subsection{Index Robustness: Pre-Period Branch Weights}
+\label{sec:heterogeneity:index}
+
+The baseline index weights branch ZIP-code characteristics by June 2022
+deposits, raising the possibility that branch footprints or deposit
+allocations had already adjusted in anticipation of the disclosure regime.
+We therefore rebuild the index using June 2019 deposit weights---branch
+structure fixed before both the CECL rollout and the pandemic.  The 2019- and
+2022-weighted indices correlate at 0.979 across 4,261 banks, and only 2.9
+percent of banks switch classification, which itself indicates that
+footprints did not reshuffle in anticipation of CECL.
+Table~\ref{tab:soph_triple_2019w} re-estimates the triple interactions under
+the pre-period index.  If anything, the results sharpen: the insured-deposit
+triple interaction becomes significant ($-1.418$, $p < 0.05$), and the
+interest-expense ($+0.045$, $p < 0.05$), ROA ($-0.062$, $p < 0.05$), and NIM
+($-0.039$, $p < 0.10$) interactions match the baseline.  The sophistication
+heterogeneity is not an artifact of post-treatment branch weighting.
+
+\subsection{Early Versus Late Post-Period}
+\label{sec:heterogeneity:earlylate}
+
+The event studies suggest that quantity discipline in sophisticated markets
+builds over time.  Table~\ref{tab:soph_earlylate} provides the statistical
+version of that visual claim, splitting the post period into early
+(quarters 0--4) and late (quarter 5 onward) windows.  The price and
+profitability channels strengthen with horizon exactly as the figures
+suggest: the interest-expense triple interaction grows from $+0.037$
+($p < 0.10$) in the early window to $+0.049$ ($p < 0.05$) in the late window,
+and the ROA interaction from $-0.059$ to $-0.084$ (both $p < 0.05$).  For
+uninsured quantities the late-window triple interaction is negative
+($-0.21$) but remains imprecise; the insured-deposit interaction is negative
+and marginally significant early ($-0.97$, $p < 0.10$) and larger but noisier
+late.  The honest summary is that the data statistically establish
+sophistication heterogeneity in \emph{pricing} and \emph{profitability},
+while the quantity heterogeneity rests on the event-study pattern and does
+not achieve conventional significance in pooled or split interactions.  We
+phrase our claims accordingly.
+
+\subsection{Subsample Baselines and Magnitude Reconciliation}
+\label{sec:heterogeneity:subsample}
+
+A triple interaction can obscure what each group's own
+difference-in-differences looks like, so Table~\ref{tab:soph_subsample}
+reports the baseline specification separately for high- and
+low-sophistication banks.  The pattern matches the channel decomposition
+above.  In high-sophistication markets, treated banks show large and
+significant price and profitability effects (interest expense $+0.054$,
+$p < 0.01$; ROA $-0.098$, $p < 0.01$; NIM $-0.049$, $p < 0.05$) with an
+uninsured-quantity point estimate of $-0.32$ that is imprecise in the
+54-treated-bank subsample.  In low-sophistication markets the quantity
+estimate is $-0.42$ ($p < 0.05$, 162 treated banks) while every price and
+profitability coefficient is small and insignificant.  The two subsamples
+reconcile exactly with the pooled estimate: weighting the subsample
+uninsured coefficients by treated-bank counts gives
+$(54 \times -0.32 + 162 \times -0.42)/216 = -0.39$, against a pooled
+estimate of $-0.40$ on the same sample.  The economically interesting
+contrast is therefore not that sophisticated markets exhibit \emph{more}
+quantity discipline---they do not, on average over the post period---but
+that discipline takes a different form: in sophisticated markets banks retain
+depositors by paying higher rates and absorb the cost in earnings, whereas in
+unsophisticated markets the adjustment runs through quantities at largely
+unchanged prices.  Both forms are discipline; they price the same disclosed
+risk through different margins.

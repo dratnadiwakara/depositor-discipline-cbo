@@ -1,0 +1,280 @@
+%% ============================================================
+%%  Section: Identification Strategy
+%%  Depositor Discipline in Modern Banking (2026-04-07 draft)
+%%
+%%  Changes from 20260404 version:
+%%    - Removed all [@@@ ...] placeholders and addressed each one.
+%%    - Toned down "silver bullet" / overselling language throughout.
+%%      "instrument" → "natural experiment"; softened "precisely identified"
+%%      and "orthogonal" claims.
+%%    - Removed all \paragraph{} headers; content flows as prose.
+%%    - Fewer em-dashes; replaced with commas or parentheses.
+%%    - Staggered-adoption paragraph shortened; removed Callaway/Sun/
+%%      de Chaisemartin citations and removed stacked-cohort robustness
+%%      claims that are not in the code.
+%%    - Phase-in election paragraph kept (mechanism-test role) but shortened.
+%%    - Threats to Identification: collapsed to one paragraph; removed
+%%      Anticipation paragraph and General Equilibrium paragraph per user
+%%      instruction.
+%%    - Signal Validation: shortened by ~half; removed \paragraph{} headers
+%%      and detailed coefficient recitation; retained key findings.
+%%    - Removed the BIB ENTRIES comment block at end of file.
+%%
+%%  Cross-references:
+%%    eq:dayone  (sec:background)
+%%    tab:descriptive_sumstats_cecl, tab:cecl_predictors_cross_section
+%%    fig:cecl_equity_distribution
+%%    fig:es_large_banks_market_cds
+%%    sec:results, sec:results:heterogeneity
+%% ============================================================
+
+\section{Identification Strategy}
+\label{sec:identification}
+
+Our goal is to identify the causal effect of a credit-risk disclosure on
+depositor behavior.  The empirical obstacle is familiar: riskier banks
+carry fewer uninsured deposits in equilibrium, so cross-sectional comparisons
+conflate depositors' information responses with pre-existing sorting and
+equilibrium co-determination \citep{covitz2004market, chen2022bank}.
+We address this problem by exploiting the CECL Day-One adjustment as a
+natural experiment that delivers a well-defined information shock, one whose
+timing is set by regulation and whose magnitude reflects the bank's assessment
+of lifetime expected losses on its existing loan portfolio---incorporating both
+historical lending decisions and current economic conditions at adoption.  The
+cross-sectional intensity of the shock is therefore largely fixed by past
+underwriting rather than by the deposit dynamics we study, a claim we treat as
+testable rather than definitional and probe with extended pre-trends,
+residualized treatments, and the within-bank composition design below.
+
+\subsection{Empirical Design}
+\label{sec:identification:did}
+
+Our baseline specification is a difference-in-differences estimator that
+exploits cross-sectional variation in CECL exposure and the common
+regulatory adoption date:
+\begin{equation}
+  y_{it}
+  = \alpha_i + \gamma_t
+  + \beta \cdot \mathrm{Post}_{it} \times \mathrm{CECL}_i
+  + \mathbf{X}_{it-1}'\boldsymbol{\delta}
+  + \varepsilon_{it},
+  \label{eq:did}
+\end{equation}
+where $y_{it}$ is the outcome for bank $i$ in quarter $t$; $\alpha_i$ and
+$\gamma_t$ are bank and calendar-quarter fixed effects; $\mathrm{Post}_{it}$
+equals one for all quarters at or after bank $i$'s CECL adoption date;
+$\mathrm{CECL}_i$ is either the continuous \texttt{CECL Adj} measure or the
+binary \texttt{High CECL} indicator, both defined in
+Section~\ref{sec:background}; and $\mathbf{X}_{it-1}$ is a vector of lagged
+controls (log assets, equity-to-assets ratio, interest expense-to-assets).
+Bank fixed effects absorb all time-invariant differences across institutions,
+including balance-sheet composition, business model, geographic market, and
+charter type, so that $\hat{\beta}$ is identified from within-bank changes
+in outcomes over time.  Quarter fixed effects absorb any aggregate
+macroeconomic force common to all banks in a given quarter, including the
+Federal Reserve's tightening cycle, aggregate deposit normalization, and any
+nationwide reaction to the 2023 banking stress.
+
+To evaluate the parallel-trends assumption and trace the dynamics of depositor
+responses, we also estimate an event-study specification:
+\begin{equation}
+  y_{it}
+  = \alpha_i + \gamma_t
+  + \sum_{\substack{k=-10 \\ k \neq -1}}^{10}
+    \beta_k \cdot \mathbf{1}\!\left\{\tau_{it} = k\right\}
+    \times \mathrm{CECL}_i
+  + \mathbf{X}_{it-1}'\boldsymbol{\delta}
+  + \varepsilon_{it},
+  \label{eq:eventstudy}
+\end{equation}
+where $\tau_{it} = t - t_i^{*}$ is event time in quarters relative to bank
+$i$'s CECL adoption date, and $k = -1$ is the omitted reference period.
+Coefficients $\{\hat{\beta}_k\}_{k=-10}^{-2}$ test for pre-adoption
+differential trends between high- and low-CECL banks, with $k=-1$ normalized
+to zero as the reference period; coefficients $\{\hat{\beta}_k\}_{k \geq 0}$
+trace the cumulative post-adoption effect.  A pattern of flat pre-trends
+followed by a post-adoption break supports the interpretation that observed
+differences are caused by the CECL disclosure rather than pre-existing
+divergence.  Our baseline window spans eleven quarters on each side of
+adoption, so the pre-period begins in 2020Q3 and excludes the COVID-19
+disruption quarters (2020Q1--2020Q2), whose aggregate liquidity dislocations
+complicate the interpretation of individual pre-trend coefficients.  Because
+this choice could in principle conceal unfavorable history, we
+also re-estimate the event study on the full panel back to 2018Q1, both
+including and excluding the COVID quarters, and report joint tests of the
+pre-adoption coefficients (Section~\ref{sec:robustness:pretrends}).
+
+
+\subsection{Treatment Exogeneity}
+\label{sec:identification:predetermination}
+
+For $\hat{\beta}$ in \eqref{eq:did} to have a causal interpretation,
+the CECL treatment must be uncorrelated with potential outcomes absent the
+disclosure.  This requires that neither the timing of the shock nor its
+magnitude was determined by, or correlated with, the deposit dynamics we
+study.
+
+The 2023Q1 adoption date was set by FASB's ASU 2016-13 and enforced by the
+federal banking agencies.  Institutions subject to the community-bank rollout
+had no ability to accelerate or delay adoption to coincide with favorable
+deposit market conditions, so the adoption date is unrelated to any
+bank-specific information about contemporaneous deposit flows.
+
+The size of the Day-One adjustment reflects the cumulative composition of the
+loan portfolio as it stood on the adoption date, itself the product of
+lending decisions made years or decades prior.  The CECL charge is large when
+a bank's portfolio contains loans with long remaining maturities, weak
+borrower credit quality, or thin collateral coverage, characteristics fixed
+by prior underwriting decisions rather than 2023 deposit conditions.  The
+cross-sectional regression in Table~\ref{tab:cecl_predictors_cross_section}
+confirms that the CECL adjustment is predicted by NPL ratios, size, and
+capital in the expected directions, and---in an expanded specification that
+adds deposit composition, eight-quarter profitability and asset-quality
+trends, and local deposit-market concentration---by the time-deposit and
+brokered shares of funding, with a maximum adjusted $R^2$ of roughly 1.4
+percent.  We are careful about what this low explanatory power does and does
+not establish.  It does not prove exogeneity: a treatment could be orthogonal
+to every observable and still correlate with unobserved determinants of
+deposit flows.  What it establishes is narrower and still useful: high-CECL
+banks are not simply the observably weak, deposit-fragile, or stress-exposed
+banks relabeled, so the treatment delivers variation that is largely
+unspanned by the characteristics a depositor---or an econometrician---could
+have used to sort banks in 2022.  We therefore lean on three complementary
+pieces of evidence rather than on the $R^2$ itself: flat extended
+pre-trends, robustness to a treatment \emph{residualized} on the full
+expanded predictor set (so that the identifying variation is by construction
+orthogonal to the observables), and the within-bank composition design of the
+triple-difference, which is immune to bank-level selection on unobservables.
+
+Two anticipation margins deserve separate treatment.  The standard itself was
+public from June 2016, so banks and depositors knew adoption was coming;
+what was not knowable in advance was the \emph{magnitude} of any given bank's
+Day-One charge, which depended on modeling choices, portfolio seasoning, and
+macroeconomic forecasts finalized only at adoption.  Anticipation of the
+event date without knowledge of treatment intensity does not bias the
+difference-in-differences estimate; anticipation of intensity would appear as
+pre-adoption divergence, which the extended event studies are designed to
+detect.  On the bank side, lenders could in principle have adjusted deposit
+pricing ahead of adoption; the lagged interest-expense control absorbs such
+pre-positioning, and the pre-period coefficients on funding costs are flat.
+
+
+\subsection{Information Content, Not Cash Flows}
+\label{sec:identification:mechanism}
+
+A central advantage of our design is the separation of information from
+concurrent changes in bank financial condition.  Prior depositor-discipline
+tests typically exploit realized distress events, rating downgrades, NPL
+spikes, or near-failure episodes, in which new information arrives
+simultaneously with deterioration in actual cash flows or liquidity
+\citep{flannery1996evidence, martinez2001depositors, iyer2016tale}.
+In such settings, the response to information is inseparable from the
+response to contemporaneous financial deterioration.  The CECL Day-One
+adjustment resolves this confound: as discussed in
+Section~\ref{sec:background}, it records a pure accounting charge that does
+not trigger a cash transfer, alter borrower repayment terms, reduce bank
+liquidity, or change the risk of the underlying loans.  A depositor who
+withdraws funds or demands a higher rate after observing a large CECL
+adjustment is responding to newly disclosed information about credit-risk
+composition, not to a concurrent worsening of the bank's actual financial
+condition.
+
+What distinguishes the CECL Day-One adjustment from routine Call Report
+disclosures---which are also mandatory, quantified, and audited---is the
+predetermined adoption date and the forced aggregation of forward-looking
+lifetime credit losses into a single disclosed figure.  Unlike NPL ratios or
+allowance levels reported each quarter at management's discretion within
+accounting rules, the Day-One adjustment requires banks to reveal their full
+expected-loss assessment in one number at a calendar date set by regulation,
+not by management's disclosure preferences.  This eliminates the endogeneity
+problem of voluntary disclosure events and the behavioral-constraint problem
+of supervisory rating changes.
+
+\subsection{The 2023 Banking Stress and Identification}
+\label{sec:identification:stress}
+
+The principal threat to identification is the coincidence of the primary
+adoption quarter (2023Q1) with the failures of Silicon Valley Bank and
+Signature Bank in March 2023.  Calendar-quarter fixed effects absorb only the
+\emph{common} component of that shock.  The sharper version of the concern is
+indirect: if exposure to the 2023 stress varied across banks with
+characteristics that correlate, even weakly, with the CECL adjustment, then
+the differential post-2023Q1 dynamics of high-CECL banks could reflect
+differential stress exposure rather than the disclosure.  Depositors ran in
+2023 on banks with large uninsured shares and unrealized securities losses
+\citep{caglio2024depositors, jiang2024monetary}; quarter fixed effects do not
+rule out high-CECL banks responding to that episode through such balance-sheet
+channels.  We confront this concern with three pieces of evidence, developed
+in Section~\ref{sec:robustness:stress}, beyond the timing fact established in
+Section~\ref{sec:background} that the Day-One figures became public only after
+the March panic.
+
+First, ex ante exposure to the stress channels is essentially uncorrelated
+with treatment: in Table~\ref{tab:cecl_predictors_cross_section}, unrealized
+securities losses and the uninsured deposit share---the two characteristics
+most predictive of 2023 run exposure---have no meaningful relationship with
+the CECL adjustment.  Second, we relax the common-shock restriction directly,
+interacting the full vector of 2022Q4 bank characteristics that governed 2023
+stress exposure with calendar-quarter fixed effects, so that each
+characteristic carries its own free time path.  The within-bank composition
+shift survives this saturation essentially intact.  The \emph{level} of the
+uninsured decline attenuates once deposit-composition variables receive their
+own time paths---a pattern we discuss at length, because deposit composition
+is partly an outcome of the channel under study and controlling for its time
+path absorbs part of the treatment effect itself.  Third, we exploit the
+staggered rollout: banks adopting in 2022Q3--2022Q4 and 2023Q2--2023Q4
+experienced the March 2023 shock at different event times than the primary
+cohort.  Event studies in calendar time show responses aligned with each
+cohort's own adoption quarter, and the difference-in-differences estimated
+without the 2023Q1 cohort carries the same sign, although the small number of
+treated banks outside the primary cohort limits power.  We also report a
+placebo using not-yet-adopted banks, and we are transparent that it is not
+clean: among late adopters, 2023Q1 deposit changes correlate with the size of
+the still-undisclosed future adjustment, a pattern consistent with the March
+stress loading partly on the same credit-risk fundamentals that CECL later
+capitalized.  This is precisely why the characteristics-by-quarter controls
+and the bank-by-quarter triple-difference, rather than any single placebo,
+carry the identification burden for the stress confound.
+
+A secondary concern is differential rate sensitivity: if high-CECL banks were
+more exposed to the Federal Reserve's 2022--2023 tightening cycle, their
+deposit dynamics would reflect rate pass-through rather than information.
+The lagged interest expense-to-assets control absorbs pre-existing
+differences in pricing strategy, calendar-quarter fixed effects absorb
+aggregate rate variation, and the characteristics-by-quarter specifications
+allow rate exposure proxies (size, deposit mix) their own time paths.
+
+\subsection{Signal Validation: Market Responses at Large-Bank Adoption}
+\label{sec:identification:signal}
+
+A necessary condition for our interpretation is that the CECL adjustment
+contained information about bank credit quality that was not already reflected
+in prices.  We test this using the cohort of large, publicly traded banks that
+adopted CECL in 2020Q1, for which equity prices and CDS spreads are observable
+around the adoption date.  We do not use this cohort for
+our main tests because the 2020Q1 adoption date coincides with the onset of
+the COVID-19 pandemic, which overwhelmed any deposit-market signal with
+aggregate liquidity demand and emergency policy interventions.
+
+Figure~\ref{fig:es_large_banks_market_cds} reports event-study estimates of
+the differential market response around CECL adoption, using the continuous
+\texttt{CECL Adj} ratio as treatment intensity with bank and
+calendar-month fixed effects.  Panel~A shows equity market capitalization:
+the pre-adoption coefficients across nine lead months are flat and
+statistically indistinguishable from zero, ruling out systematic anticipation
+by equity investors.  At the adoption month, market capitalization drops
+sharply and persistently for banks with larger CECL adjustments.  Panel~B
+shows CDS spreads: the pre-adoption pattern is similarly flat, and spreads
+widen materially at adoption and remain elevated in subsequent months.
+Both markets revised assessments sharply at the moment of disclosure, not
+before---though we note that banks with larger CECL adjustments (i.e.,
+riskier loan portfolios) also faced larger COVID-19 credit shocks in 2020Q1,
+an observationally equivalent alternative explanation for the adoption-month
+break.  The flat pre-adoption coefficients confirm that equity and CDS markets
+were not systematically anticipating the disclosure, but the pandemic's
+simultaneous arrival prevents cleanly attributing the adoption-month movement
+to CECL alone.  This evidence is consistent with the CECL adjustment conveying
+credit-risk information in a setting where market prices are observable; we
+view it as suggestive rather than definitive, and note that the
+community-bank depositor tests in Section~\ref{sec:results} do not rely on
+this cohort for identification.

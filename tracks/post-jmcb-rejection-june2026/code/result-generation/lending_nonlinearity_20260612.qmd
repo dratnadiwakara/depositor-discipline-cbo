@@ -1,0 +1,187 @@
+---
+title: "Lending, nonlinearity, tails, outlier — post-JMCB revision (RA8, RB-m3/m4)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+Implements implementation-plan-20260612.md §2.4.
+§1 Lending: loan/C&I/CRE growth DiD + event study
+§2 Nonlinearity: CECL quintile bins x post; alternative binary cutoffs (top quartile/decile)
+§3 Symmetric tails: bottom-decile (favorable) Day-One adjustment indicator
+§4 Figure 1 outlier: identify max-cecl_equity bank(s), drop-outlier baseline
+
+Inputs: panel_smallbank (01)
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "post-jmcb-rejection-june2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT,
+  ..did_dummy = ~ i(qtrs_since, high_cecl_equity, ref = -1)
+)
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+```
+
+## §1 Lending
+
+```{r}
+r1 <- list(
+  feols(loan_growth ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(loan_growth ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ci_growth   ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ci_growth   ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(cre_growth  ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(cre_growth  ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+print(etable(r1, dict = dict_did, order = order_did_tbl))
+export_track_tbl(r1, "tbl_lending", dict_did, order_did_tbl)
+
+rp <- feols(loan_growth ~ ..did_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(rp, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "fig_es_loan_growth")
+```
+
+## §2 Nonlinearity: CECL bins and alternative cutoffs
+
+```{r}
+# The adoption distribution has a mass point at zero (~60% of banks), so
+# quantile bins are degenerate. Economic bins instead, reference = exactly zero:
+# negative (favorable), zero, (0, median of positives], (median, p90], > p90.
+cs <- unique(dt_w[, .(ID_RSSD, cecl_equity)])
+pos <- cs[cecl_equity > 0, cecl_equity]
+p50p <- quantile(pos, 0.50, na.rm = TRUE)
+p90p <- quantile(pos, 0.90, na.rm = TRUE)
+cat(sprintf("Positive-adjustment cuts: p50=%.4f p90=%.4f\n", p50p, p90p))
+bin_lvls <- c("Negative", "Zero", "Small positive", "Large positive", "Extreme positive")
+cs[, cecl_bin := factor(fcase(
+  cecl_equity < 0, "Negative",
+  cecl_equity == 0, "Zero",
+  cecl_equity <= p50p, "Small positive",
+  cecl_equity <= p90p, "Large positive",
+  default = "Extreme positive"
+), levels = bin_lvls)]
+cat("Banks per bin:\n"); print(cs[, .N, by = cecl_bin][order(cecl_bin)])
+dt_b <- merge(dt_w, cs[, .(ID_RSSD, cecl_bin)], by = "ID_RSSD")
+
+m_bins <- feols(unins_time_deps_assets ~ i(cecl_bin, post, ref = "Zero") + ..controls +
+                  int_expense_assets_l1 | ..fe, data = dt_b, vcov = ~ID_RSSD)
+print(summary(m_bins))
+
+cf <- coef(m_bins); se_ <- se(m_bins)
+idx <- grepl("^cecl_bin::", names(cf))
+pd <- data.table(bin = sub("^cecl_bin::([^:]+):.*", "\\1", names(cf)[idx]),
+                 est = cf[idx], se = se_[idx])
+pd <- rbind(pd, data.table(bin = "Zero", est = 0, se = 0))
+pd[, bin := factor(bin, levels = bin_lvls)]
+setorder(pd, bin)
+pd[, `:=`(lo90 = est - CI_Z * se, hi90 = est + CI_Z * se)]
+p_bins <- ggplot(pd, aes(x = bin, y = est)) +
+  geom_hline(yintercept = 0, color = accent_gray, linewidth = 0.4, linetype = "dashed") +
+  geom_errorbar(aes(ymin = lo90, ymax = hi90), width = 0.1, color = primary_blue) +
+  geom_point(color = primary_blue, size = 2.5) +
+  theme_custom() +
+  theme(axis.text.x = element_text(size = 7)) +
+  labs(x = "Day-One CECL adjustment / equity (bin; reference = zero)",
+       y = "Post x Bin coefficient")
+print(p_bins); save_track_fig(p_bins, "fig_cecl_bins", width = 5, height = 3)
+
+# Alternative binary cutoffs: baseline (2.5% ~ p95), top quartile, top decile
+q75 <- quantile(cs$cecl_equity, 0.75, na.rm = TRUE)
+q90 <- quantile(cs$cecl_equity, 0.90, na.rm = TRUE)
+cat(sprintf("Cutoffs: baseline %.2f | p75 %.4f | p90 %.4f\n", CECL_THRESHOLD_PCT, q75, q90))
+dt_b[, high_p75 := as.integer(cecl_equity >= q75)]
+dt_b[, high_p90 := as.integer(cecl_equity >= q90)]
+
+dict_cut <- c(dict_did,
+              "high_p75" = "High CECL (top quartile)",
+              "post:high_p75" = "Post x High CECL (top quartile)",
+              "high_p90" = "High CECL (top decile)",
+              "post:high_p90" = "Post x High CECL (top decile)",
+              "bottom_decile" = "Bottom-Decile CECL (favorable)",
+              "post:bottom_decile" = "Post x Bottom-Decile CECL")
+```
+
+## §3 Symmetric tails (with §2 cutoffs, one table)
+
+```{r}
+# Bottom decile = most negative (favorable) Day-One adjustment vs middle 80%;
+# top decile excluded so the contrast is clean. Expected positive, weak prior.
+q10 <- quantile(cs$cecl_equity, 0.10, na.rm = TRUE)
+dt_b[, bottom_decile := as.integer(cecl_equity <= q10)]
+dt_tail <- dt_b[high_p90 == 0L]
+cat(sprintf("Bottom-decile cutoff: %.4f | banks: %d\n", q10,
+            uniqueN(dt_tail[bottom_decile == 1, ID_RSSD])))
+
+r23 <- list(
+  feols(unins_time_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_b, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ post * high_p75 + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_b, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ post * high_p90 + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_b, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ post * bottom_decile + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_tail, vcov = ~ID_RSSD)
+)
+print(etable(r23, dict = dict_cut, order = "Post x "))
+export_track_tbl(
+  r23, "tbl_alt_cutoffs", dict_cut, "Post x ",
+  notes = paste("Column (4) compares bottom-decile (most favorable) Day-One adjustments",
+                "to the middle of the distribution; top-decile banks are excluded.")
+)
+```
+
+## §4 Figure 1 outlier
+
+```{r}
+top <- cs[order(-cecl_equity)][1:5]
+cat("Top-5 adoption cecl_equity (post-winsorization values):\n"); print(top)
+out_ids <- cs[order(-cecl_equity)][1:1, ID_RSSD]
+info <- panel[ID_RSSD %in% out_ids & D_DT == adopt_dt,
+              .(ID_RSSD, adopt_dt, cecl_equity, total_assets, equity_assets)]
+cat("Max-CECL bank at adoption:\n"); print(info)
+
+r4 <- list(
+  feols(unins_time_deps_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_w, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_w[!ID_RSSD %in% out_ids], vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_w, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe,
+        data = dt_w[!ID_RSSD %in% out_ids], vcov = ~ID_RSSD)
+)
+print(etable(r4, dict = dict_did, order = order_did_tbl))
+export_track_tbl(
+  r4, "tbl_outlier", dict_did, order_did_tbl,
+  notes = "Columns (2) and (4) drop the bank with the largest Day-One adjustment."
+)
+
+cat("\n[lending_nonlinearity_20260612.qmd] complete.\n")
+```

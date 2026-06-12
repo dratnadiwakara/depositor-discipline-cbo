@@ -8,25 +8,42 @@
 
 ## Project Layout
 
+Track-based layout (ai-vault convention). Shared assets at root; each analytical attempt isolated in `tracks/<descriptor>-<monthyear>/`.
+
 ```
-data/raw/                     ← raw source data (never modified)
-data/constructed/             ← intermediate constructed datasets
-code/common.R                 ← shared libraries, paths, global options
-code/sample-construction/     ← plain .R scripts that build analytical samples
-code/result-generation/       ← .qmd documents that generate tables and figures
-code/archives/                ← old scripts (not sourced)
-latex/main.tex                ← master LaTeX document
-latex/main.bib                ← BibTeX references
-latex/figures/                ← figure output (.png, .pdf)
-latex/tables/                 ← table output (.tex)
-latex/sections/               ← section .tex files (\input{} from main.tex)
-latex/build/                  ← pdflatex output (gitignored)
-docs/slides/                  ← presentation files
-docs/memos/                   ← revision plans, referee responses, todo
-related-papers/               ← downloaded PDFs (gitignored)
-correspondence/               ← agent-generated reports and reviews
-scripts/                      ← new-project initialization scripts
+data/raw/                                 ← shared raw data (never modified)
+data/constructed/                         ← shared constructed datasets
+code/_common.R                            ← shared libraries, paths, ggplot/fixest globals
+code/sample-construction/                 ← shared sample-build .R scripts
+code/result-generation/                   ← (legacy; new work in tracks)
+code/archives/                            ← old shared scripts
+tracks/jmcb-june2026/                     ← current active track (JMCB version)
+    code/sample-construction/             ← track-local sample scripts
+    code/result-generation/               ← track-local analysis .R/.qmd
+    code/archives/                        ← retired track scripts
+    data/                                 ← track-local intermediates
+    latex/main.tex                        ← master LaTeX
+    latex/main.bib                        ← BibTeX (was depositor-discipline-references.bib)
+    latex/figures/                        ← .png outputs
+    latex/tables/                         ← .tex table fragments
+    latex/tables_figures.tex              ← aggregator \input'd after \bibliography
+    latex/sections/<name>/<name>_current.tex   ← live section text
+    latex/sections/<name>/archive/        ← old dated/_v* variants
+    latex/build/                          ← pdflatex output (gitignored)
+docs/slides/                              ← presentation files
+docs/memos/                               ← revision plans, referee responses, todo
+related-papers/                           ← downloaded PDFs (gitignored)
+correspondence/                           ← agent-generated reports and reviews
+scripts/                                  ← new-project initialization scripts
 ```
+
+**Skill invocation:** Skills that target a paper (latex-compile, write-section, snapshot) take track name as first arg, e.g. `/skills/latex-compile jmcb-june2026`.
+
+**Section folder mapping (sections folded into `results/` per ai-vault template):**
+- `desc-stats/` → `tracks/<t>/latex/sections/results/desc_stats_current.tex`
+- `empirical-results/` → `tracks/<t>/latex/sections/results/empirical_results_current.tex`
+- `inst_bg/` → `institutional-background/inst_bg_current.tex`
+- `data-section/` → `data/data_current.tex`
 
 ## Paper-Specific Context
 

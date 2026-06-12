@@ -1,0 +1,44 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{2}{c}{Deposits/Assets (\%)}\\
+   Model:                                                       & (1)            & (2)\\  
+   \midrule
+   \emph{Variables}\\
+   CECL Adj $\times$ Uninsured time dep                         & -0.0987$^{*}$  &   \\   
+                                                                & (0.0568)       &   \\   
+   Post $\times$ Uninsured time dep                             & -0.3346        & -0.3330\\   
+                                                                & (0.3084)       & (0.3078)\\   
+   CECL Adj $\times$ Post $\times$ Uninsured time dep           & -0.1359$^{**}$ &   \\   
+                                                                & (0.0576)       &   \\   
+   High CECL $\times$ Uninsured time dep                        &                & -0.5220$^{*}$\\   
+                                                                &                & (0.3004)\\   
+   High CECL $\times$ Post $\times$ Uninsured time dep          &                & -1.050$^{***}$\\   
+                                                                &                & (0.3355)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank x Quarter                                               & Yes            & Yes\\  
+   Quarter $\times$ Uninsured                                   & Yes            & Yes\\
+   \midrule
+   \emph{Varying Slopes}\\
+   Uninsured Dep. Share 2022Q4 $\times$ Quarter $\times$ Uninsured & Yes            & Yes\\
+   log(Assets) 2022Q4 $\times$ Quarter $\times$ Uninsured       & Yes            & Yes\\
+   Equity/Assets 2022Q4 $\times$ Quarter $\times$ Uninsured     & Yes            & Yes\\
+   NPL/Loans 2022Q4 $\times$ Quarter $\times$ Uninsured         & Yes            & Yes\\
+   ROA 2022Q4 $\times$ Quarter $\times$ Uninsured               & Yes            & Yes\\
+   CRE/Loans 2022Q4 $\times$ Quarter $\times$ Uninsured         & Yes            & Yes\\
+   Brokered Share 2022Q4 $\times$ Quarter $\times$ Uninsured    & Yes            & Yes\\
+   Unrealized Losses/Assets 2022Q4 $\times$ Quarter $\times$ Uninsured & Yes            & Yes\\
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                                                 & 191,062        & 191,062\\  
+   Adjusted R$^2$                                               & 0.55941        & 0.55973\\  
+   \midrule \midrule
+   \multicolumn{3}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{3}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

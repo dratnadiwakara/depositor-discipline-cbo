@@ -1,0 +1,172 @@
+---
+title: "Sophistication heterogeneity — post-JMCB revision (RA4)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+Implements implementation-plan-20260612.md §2.3.
+§1 Index robustness: triple interactions + split event studies under
+   high_soph_2022 (replication anchor) and high_soph_2019w (pre-period weights)
+§2 Early/late post split: post_early (0<=k<=4), post_late (k>=5) triple interactions
+§3 Subsample baselines: DiD separately for high-/low-sophistication banks
+
+Inputs: panel_smallbank (01), sophistication (02)
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "post-jmcb-rejection-june2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+soph <- readRDS(latest_track_file("sophistication"))
+setDT(soph)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+dt_w <- merge(dt_w, soph, by = "ID_RSSD", all.x = TRUE)
+
+setFixest_fml(
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT,
+  ..did_dummy = ~ i(qtrs_since, high_cecl_equity, ref = -1)
+)
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+
+both <- unique(dt_w[!is.na(high_soph_2022) & !is.na(high_soph_2019w),
+                    .(ID_RSSD, frac_soph_2022, frac_soph_2019w,
+                      high_soph_2022, high_soph_2019w)])
+cat(sprintf("Index correlation (continuous, %d banks): %.3f | classification switchers: %.1f%%\n",
+            nrow(both), cor(both$frac_soph_2022, both$frac_soph_2019w),
+            100 * mean(both$high_soph_2022 != both$high_soph_2019w)))
+
+outcome_specs <- list(
+  list(lhs = "unins_time_deps_assets", add_ie_lag = TRUE),
+  list(lhs = "ins_time_deps_assets",   add_ie_lag = TRUE),
+  list(lhs = "int_expense_assets",     add_ie_lag = FALSE),
+  list(lhs = "roa",                    add_ie_lag = FALSE),
+  list(lhs = "nim",                    add_ie_lag = FALSE)
+)
+```
+
+## §1 Index robustness: triple interactions and split event studies
+
+```{r}
+run_soph_block <- function(soph_var, tbl_stub, fig_suffix) {
+  dat <- dt_w[!is.na(get(soph_var))]
+  dat[, high_sophistication := get(soph_var)]
+  cat(sprintf("\n--- %s: %d banks (%d high-soph) ---\n", soph_var,
+              uniqueN(dat$ID_RSSD),
+              uniqueN(dat[high_sophistication == 1, ID_RSSD])))
+
+  triple_models <- list()
+  for (spec in outcome_specs) {
+    rhs <- paste0("post * high_cecl_equity * high_sophistication + ..controls",
+                  if (spec$add_ie_lag) " + int_expense_assets_l1" else "")
+    triple_models[[spec$lhs]] <-
+      feols(as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe")), data = dat, vcov = ~ID_RSSD)
+  }
+  print(etable(triple_models, dict = dict_did))
+  export_track_tbl(triple_models, tbl_stub, dict_did)
+
+  triple_term <- "post:high_cecl_equity:high_sophistication"
+  for (spec in outcome_specs) {
+    rhs <- paste0("..did_dummy + ..controls",
+                  if (spec$add_ie_lag) " + int_expense_assets_l1" else "")
+    fml <- as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe"))
+    m_hi <- feols(fml, data = dat[high_sophistication == 1L], vcov = ~ID_RSSD)
+    m_lo <- feols(fml, data = dat[high_sophistication == 0L], vcov = ~ID_RSSD)
+    tm <- triple_models[[spec$lhs]]
+    note_txt <- if (triple_term %in% names(coef(tm))) {
+      sprintf("Post x High CECL x High Sophistication = %.4f (SE = %.4f).",
+              coef(tm)[[triple_term]], se(tm)[[triple_term]])
+    } else "Triple interaction not estimated."
+    p <- make_split_es_plot(
+      pd_list = list(extract_es_data(m_hi), extract_es_data(m_lo)),
+      group_names = c("High Sophistication", "Low Sophistication"),
+      colors = c(primary_blue, primary_gold),
+      title_str = "", ylab_str = "Coefficient"
+    ) + labs(subtitle = NULL, caption = note_txt,
+             x = "Quarters Relative to CECL Adoption (k = 0)")
+    print(p)
+    save_track_fig(p, paste0("es_soph_split_", spec$lhs, fig_suffix),
+                   width = 6, height = 3.5)
+  }
+  invisible(triple_models)
+}
+
+run_soph_block("high_soph_2022",  "tbl_soph_2022",  "")
+run_soph_block("high_soph_2019w", "tbl_soph_2019w", "_2019w")
+```
+
+## §2 Early/late post-period split
+
+```{r}
+dt_h <- dt_w[!is.na(high_soph_2022)]
+dt_h[, high_sophistication := high_soph_2022]
+dt_h[, post_early := as.integer(qtrs_since >= 0L & qtrs_since <= 4L)]
+dt_h[, post_late  := as.integer(qtrs_since >= 5L)]
+
+el_models <- list()
+for (spec in outcome_specs) {
+  rhs <- paste0("(post_early + post_late) * high_cecl_equity * high_sophistication + ..controls",
+                if (spec$add_ie_lag) " + int_expense_assets_l1" else "")
+  el_models[[spec$lhs]] <-
+    feols(as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe")), data = dt_h, vcov = ~ID_RSSD)
+}
+print(etable(el_models, dict = dict_did))
+export_track_tbl(
+  el_models, "tbl_soph_earlylate", dict_did,
+  notes = paste("Post (0--4 qtrs) indicates event quarters 0 to 4 after CECL adoption;",
+                "Post ($\\geq$5 qtrs) indicates quarter 5 onward.")
+)
+```
+
+## §3 Subsample baselines (magnitude reconciliation)
+
+```{r}
+sub_models <- list()
+for (spec in outcome_specs) {
+  rhs <- paste0("post * high_cecl_equity + ..controls",
+                if (spec$add_ie_lag) " + int_expense_assets_l1" else "")
+  fml <- as.formula(paste0(spec$lhs, " ~ ", rhs, " | ..fe"))
+  sub_models[[paste0(spec$lhs, "_hi")]] <- feols(fml, data = dt_h[high_sophistication == 1L], vcov = ~ID_RSSD)
+  sub_models[[paste0(spec$lhs, "_lo")]] <- feols(fml, data = dt_h[high_sophistication == 0L], vcov = ~ID_RSSD)
+}
+print(etable(sub_models, dict = dict_did, order = "Post x High CECL"))
+export_track_tbl(
+  sub_models, "tbl_soph_subsample", dict_did, "Post x High CECL",
+  notes = paste("Odd columns: high-sophistication banks; even columns:",
+                "low-sophistication banks (top-quartile split of the 2022 index).")
+)
+
+# Reconciliation: treated-bank-weighted average of subsample effects vs. pooled
+n_hi <- uniqueN(dt_h[high_sophistication == 1L & high_cecl_equity == 1, ID_RSSD])
+n_lo <- uniqueN(dt_h[high_sophistication == 0L & high_cecl_equity == 1, ID_RSSD])
+b_hi <- coef(sub_models[["unins_time_deps_assets_hi"]])[["post:high_cecl_equity"]]
+b_lo <- coef(sub_models[["unins_time_deps_assets_lo"]])[["post:high_cecl_equity"]]
+pooled <- feols(unins_time_deps_assets ~ post * high_cecl_equity + ..controls +
+                  int_expense_assets_l1 | ..fe, data = dt_h, vcov = ~ID_RSSD)
+cat(sprintf("\nReconciliation (uninsured time deps): hi = %.4f (%d treated), lo = %.4f (%d treated)\n",
+            b_hi, n_hi, b_lo, n_lo))
+cat(sprintf("Treated-weighted avg = %.4f vs pooled (soph-matched sample) = %.4f\n",
+            (b_hi * n_hi + b_lo * n_lo) / (n_hi + n_lo),
+            coef(pooled)[["post:high_cecl_equity"]]))
+
+cat("\n[heterogeneity_20260612.qmd] complete.\n")
+```

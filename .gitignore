@@ -1,5 +1,6 @@
 # LaTeX build output
 latex/build/
+tracks/*/latex/build/
 *.aux
 *.log
 *.out

@@ -1,0 +1,382 @@
+---
+title: "Main results — post-JMCB revision (Tier 1)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+Implements implementation-plan-20260612.md §2.1.
+§0 Baseline replication gate (must match JMCB numbers; same data vintage)
+§1 Flexible 2022Q4-characteristics-by-time controls (RA2/RB1)
+§2 Adoption-timing tests: cohort event studies, drop-2023Q1 DiD, not-yet placebo (RB1)
+§3 Extended pre-trends 2018Q1+, with/without COVID quarters (RA1/RA6)
+§4 Residualized CECL treatment (RA1)
+§5 Alternative scalings: CECL/assets, CECL/loans (RA5)
+§6 Fully saturated triple-diff (RA-m3)
+
+Panel built by tracks/post-jmcb-rejection-june2026/code/sample-construction/01_build_panel_20260612.R
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "post-jmcb-rejection-june2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+# Event window and post definition exactly as JMCB qmd (lines 207-209):
+# window |k| < 12; post = 1 iff k > 0 (adoption quarter k = 0 is NOT post).
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT,
+  ..did_dummy = ~ i(qtrs_since, high_cecl_equity, ref = -1),
+  ..did_cont  = ~ i(qtrs_since, cecl_equity, ref = -1),
+  ..dv1.1 = ~ unins_time_deps_assets,
+  ..dv1.2 = ~ ins_time_deps_assets,
+  ..dv2.1 = ~ int_expense_assets,
+  ..dv2.2 = ~ roa,
+  ..dv2.3 = ~ nim
+)
+
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+```
+
+## §0 Baseline replication gate
+
+```{r}
+cat("\n================ §0 REPLICATION GATE ================\n")
+cat("Compare against tracks/jmcb-june2026 Tables 3-5 / Figure 4.\n")
+
+r0_dep <- list(
+  feols(..dv1.1 ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.2 ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.2 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+etable(r0_dep, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r0_dep, "tbl_did_time_deposits", dict_did, order_did_tbl)
+
+r0_fin <- list(
+  feols(..dv2.1 ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.1 ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.3 ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.3 ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+etable(r0_fin, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r0_fin, "tbl_did_financial_outcomes", dict_did, order_did_tbl)
+
+# Event studies (uninsured / insured, binary + continuous)
+rp_u_bin <- feols(..dv1.1 ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp_i_bin <- feols(..dv1.2 ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp_u_cont <- feols(..dv1.1 ~ ..did_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+rp_i_cont <- feols(..dv1.2 ~ ..did_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+
+p <- make_es_plot(rp_u_bin, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "es_unins_time_deps_assets")
+p <- make_es_plot(rp_i_bin, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "es_ins_time_deps_assets")
+p <- make_es_plot(rp_u_cont, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "es_unins_time_deps_assets_cecl_cont")
+p <- make_es_plot(rp_i_cont, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "es_ins_time_deps_assets_cecl_cont")
+
+# Triple-difference (baseline bank x quarter FE)
+unins <- copy(dt_w); unins[, dep_assets := unins_time_deps_assets]; unins[, deposit_uninsured := 1L]
+ins   <- copy(dt_w); ins[, dep_assets := ins_time_deps_assets];     ins[, deposit_uninsured := 0L]
+stacked <- rbind(unins, ins)
+stacked[, deposit_uninsured := as.factor(deposit_uninsured)]
+stacked <- stacked[!is.na(dep_assets)]
+stacked[, bank_qt := paste0(ID_RSSD, "_", D_DT)]
+
+dict_td <- c(dict_did,
+             "deposit_uninsured1" = "Uninsured time dep",
+             "bank_qt" = "Bank x Quarter")
+order_td <- c("CECL Adj x Post x Uninsured time dep", "CECL Adj x Uninsured time dep",
+              "CECL Adj x Post", "High CECL x Post x Uninsured time dep",
+              "High CECL x Uninsured time dep", "High CECL x Post",
+              "Post x Uninsured time dep")
+
+r0_td <- list(
+  feols(dep_assets ~ cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ high_cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD)
+)
+etable(r0_td, dict = dict_td, order = order_td)
+export_track_tbl(r0_td, "tbl_triple_diff_time_deposits", dict_td, order_td)
+```
+
+## §1 Flexible characteristics-by-time controls (RA2/RB1)
+
+```{r}
+# 2022Q4 characteristics x quarter FE via fixest varying slopes.
+chars_size <- c("log_ta_22q4", "equity_assets_22q4")
+chars_mix  <- c(chars_size, "unins_dep_share_22q4", "brokered_share_22q4")
+chars_full <- CHARS_22Q4
+
+vs_fe <- function(chars) {
+  as.formula(paste0("~ ID_RSSD + D_DT[", paste(chars, collapse = ", "), "]"))
+}
+
+r1_cont <- list(
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | .[vs_fe(chars_size)], data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | .[vs_fe(chars_mix)],  data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | .[vs_fe(chars_full)], data = dt_w, vcov = ~ID_RSSD)
+)
+etable(r1_cont, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r1_cont, "tbl_flexcontrols", dict_did, order_did_tbl)
+
+r1_bin <- list(
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | .[vs_fe(chars_size)], data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | .[vs_fe(chars_mix)],  data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | .[vs_fe(chars_full)], data = dt_w, vcov = ~ID_RSSD)
+)
+etable(r1_bin, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r1_bin, "tbl_flexcontrols_binary", dict_did, order_did_tbl)
+
+# Event study under the full characteristic set
+rp_flex <- feols(..dv1.1 ~ ..did_dummy + ..controls + int_expense_assets_l1 | .[vs_fe(chars_full)],
+                 data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(rp_flex, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "fig_es_flexcontrols")
+
+# Triple-diff under chars x quarter x deposit-type slopes (bank x quarter FE
+# already absorbs chars x quarter; the relevant margin is chars x quarter x uninsured)
+vs_fe_td <- as.formula(paste0("~ bank_qt + D_DT^deposit_uninsured[",
+                              paste(chars_full, collapse = ", "), "]"))
+r1_td <- list(
+  feols(dep_assets ~ cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | .[vs_fe_td],
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ high_cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | .[vs_fe_td],
+        data = stacked, vcov = ~ID_RSSD)
+)
+etable(r1_td, dict = dict_td, order = order_td)
+export_track_tbl(r1_td, "tbl_flexcontrols_td", dict_td, order_td)
+```
+
+## §2 Adoption-timing tests (RB1)
+
+```{r}
+dt_w[, cohort := fifelse(adopt_dt <= as.Date("2022-12-31"), "Early (2022Q3-Q4)",
+                  fifelse(adopt_dt == as.Date("2023-03-31"), "Main (2023Q1)",
+                          "Late (2023Q2-Q4)"))]
+cat("\nCohort sizes (banks, high-CECL banks):\n")
+print(dt_w[, .(banks = uniqueN(ID_RSSD),
+               high_cecl = uniqueN(ID_RSSD[high_cecl_equity == 1])), by = cohort])
+
+# Event-time event studies by cohort (binary treatment), overlaid
+cohorts <- c("Early (2022Q3-Q4)", "Main (2023Q1)", "Late (2023Q2-Q4)")
+pd_list <- list(); ok <- character(0)
+for (ch in cohorts) {
+  m <- tryCatch(
+    feols(..dv1.1 ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe,
+          data = dt_w[cohort == ch], vcov = ~ID_RSSD),
+    error = function(e) { cat("  [skip]", ch, ":", conditionMessage(e), "\n"); NULL }
+  )
+  if (!is.null(m)) { pd_list[[ch]] <- extract_es_data(m); ok <- c(ok, ch) }
+}
+p_coh <- make_split_es_plot(pd_list, ok,
+                            colors = c(primary_gold, primary_blue, negative_red)[seq_along(ok)],
+                            title_str = "", ylab_str = "Coefficient")
+print(p_coh); save_track_fig(p_coh, "fig_es_cohorts", width = 6, height = 3.5)
+
+# Calendar-time version: i(D_DT, high_cecl_equity) by cohort, 2023Q1 marked.
+# Reference = last quarter before the cohort's first adoption.
+cal_refs <- c("Early (2022Q3-Q4)" = "2022-06-30",
+              "Main (2023Q1)"     = "2022-12-31",
+              "Late (2023Q2-Q4)"  = "2023-03-31")
+cal_es <- function(dat, ref_lvl) {
+  m <- feols(unins_time_deps_assets ~ i(D_DT, high_cecl_equity, ref = ref_lvl) +
+               log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1 |
+               ID_RSSD + D_DT, data = dat, vcov = ~ID_RSSD)
+  cf <- coef(m); se_ <- se(m)
+  idx <- grepl("^D_DT::", names(cf))
+  pd <- data.table(date = as.Date(sub("^D_DT::([0-9-]+):.*", "\\1", names(cf)[idx])),
+                   est = cf[idx], se = se_[idx])
+  pd <- rbind(pd, data.table(date = as.Date(ref_lvl), est = 0, se = 0))
+  setorder(pd, date)
+  pd[, `:=`(lo90 = est - CI_Z * se, hi90 = est + CI_Z * se)]
+  pd[]
+}
+pd_cal <- rbindlist(lapply(ok, function(ch) {
+  pd <- tryCatch(cal_es(dt_w[cohort == ch], cal_refs[[ch]]),
+                 error = function(e) NULL)
+  if (is.null(pd)) return(NULL)
+  pd[, cohort := ch]; pd
+}))
+p_cal <- ggplot(pd_cal, aes(x = date, y = est, color = cohort, fill = cohort)) +
+  geom_hline(yintercept = 0, color = accent_gray, linewidth = 0.4, linetype = "dashed") +
+  geom_vline(xintercept = as.Date("2023-03-31"), color = "darkred",
+             linewidth = 0.8, linetype = "dotted") +
+  annotate("text", x = as.Date("2023-04-30"), y = Inf, label = "2023Q1 (SVB)",
+           color = accent_gray, vjust = 1.5, hjust = 0, size = 2.8) +
+  geom_ribbon(aes(ymin = lo90, ymax = hi90), alpha = 0.10, color = NA) +
+  geom_line(linewidth = 0.8) + geom_point(size = 1.6) +
+  scale_color_manual(values = setNames(c(primary_gold, primary_blue, negative_red)[seq_along(ok)], ok)) +
+  scale_fill_manual(values  = setNames(c(primary_gold, primary_blue, negative_red)[seq_along(ok)], ok)) +
+  theme_custom() +
+  labs(x = "Calendar quarter", y = "Coefficient", color = NULL, fill = NULL)
+print(p_cal); save_track_fig(p_cal, "fig_es_cohorts_calendar", width = 6, height = 3.5)
+
+# Drop-2023Q1-cohort DiD (early + late cohorts only)
+dt_nomain <- dt_w[cohort != "Main (2023Q1)"]
+cat(sprintf("\nDrop-2023Q1 sample: %d banks (%d high-CECL)\n",
+            uniqueN(dt_nomain$ID_RSSD),
+            uniqueN(dt_nomain[high_cecl_equity == 1, ID_RSSD])))
+r2_drop <- list(
+  feols(..dv1.1 ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_nomain, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_nomain, vcov = ~ID_RSSD)
+)
+etable(r2_drop, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r2_drop, "tbl_cohort_timing", dict_did, order_did_tbl)
+
+# Not-yet-adopted placebo: late-cohort banks, outcome = change in uninsured time
+# deposits over 2023Q1 (the SVB quarter, before their own adoption); regressor =
+# the bank's (future) CECL adjustment. Expected: zero.
+late_ids <- unique(panel[adopt_dt >= as.Date("2023-06-30"), ID_RSSD])
+cs_q4 <- panel[ID_RSSD %in% late_ids & D_DT == as.Date("2022-12-31"),
+               .(ID_RSSD, unins_q4 = unins_time_deps_assets, cecl_equity,
+                 high_cecl_equity, log_total_assets, equity_assets, int_expense_assets)]
+cs_q1 <- panel[ID_RSSD %in% late_ids & D_DT == as.Date("2023-03-31"),
+               .(ID_RSSD, unins_q1 = unins_time_deps_assets)]
+cs_pl <- merge(cs_q4, cs_q1, by = "ID_RSSD")
+cs_pl[, d_unins := unins_q1 - unins_q4]
+r2_pl <- list(
+  feols(d_unins ~ cecl_equity + log_total_assets + equity_assets + int_expense_assets,
+        data = cs_pl, vcov = "hetero"),
+  feols(d_unins ~ high_cecl_equity + log_total_assets + equity_assets + int_expense_assets,
+        data = cs_pl, vcov = "hetero")
+)
+cat(sprintf("\nPlacebo sample: %d late-cohort banks\n", nrow(cs_pl)))
+etable(r2_pl, dict = dict_did)
+export_track_tbl(r2_pl, "tbl_placebo_notyet", dict_did)
+```
+
+## §3 Extended pre-trends, 2018Q1 onward (RA1/RA6)
+
+```{r}
+dt_long <- panel[D_DT >= as.Date("2018-03-31")]
+dt_long[, D_DT := as.factor(D_DT)]
+dt_long[, post := ifelse(qtrs_since > 0, 1, 0)]
+covid_qtrs <- c("2020-03-31", "2020-06-30")
+dt_long_nc <- dt_long[!(as.character(D_DT) %in% covid_qtrs)]
+
+long_specs <- list(
+  list(dat = "full",    dv = "unins_time_deps_assets", stub = "fig_es_long_unins"),
+  list(dat = "nocovid", dv = "unins_time_deps_assets", stub = "fig_es_long_unins_nocovid"),
+  list(dat = "full",    dv = "ins_time_deps_assets",   stub = "fig_es_long_ins"),
+  list(dat = "nocovid", dv = "ins_time_deps_assets",   stub = "fig_es_long_ins_nocovid")
+)
+cat("\n--- Joint pre-trend tests (k <= -2), binary treatment ---\n")
+for (s in long_specs) {
+  dat <- if (s$dat == "full") dt_long else dt_long_nc
+  m <- feols(.[s$dv] ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dat, vcov = ~ID_RSSD)
+  w <- wald(m, keep = "qtrs_since::-", print = FALSE)
+  cat(sprintf("  %-28s F=%.3f  p=%.3f\n", s$stub, w$stat, w$p))
+  p <- make_es_plot(m, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+  if (s$dat == "full") {
+    # COVID band drawn at k = -12/-11, the 2020Q1-Q2 position for the 2023Q1
+    # cohort (92.5% of banks); approximate for other cohorts.
+    p <- p + annotate("rect", xmin = -12.5, xmax = -10.5, ymin = -Inf, ymax = Inf,
+                      fill = accent_gray, alpha = 0.15) +
+      annotate("text", x = -11.5, y = -Inf, label = "COVID", color = accent_gray,
+               vjust = -0.5, size = 2.5)
+  }
+  print(p); save_track_fig(p, s$stub, width = 6, height = 3)
+}
+```
+
+## §4 Residualized CECL treatment (RA1)
+
+```{r}
+# cecl_resid = residual from 2022Q4 cross-section regression of cecl_equity on
+# the expanded Table 2 predictor set (built in 01_build_panel; first stage Adj R2 = 0.013).
+r4 <- list(
+  feols(..dv1.1 ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv1.1 ~ post * cecl_resid + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.1 ~ ..reg_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.1 ~ post * cecl_resid + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ ..reg_cont + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(..dv2.2 ~ post * cecl_resid + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+etable(r4, dict = dict_did, order = c(order_did_tbl, "Post x CECL Adj (Residual)"))
+export_track_tbl(r4, "tbl_resid_cecl", dict_did,
+                 c(order_did_tbl, "Post x CECL Adj (Residual)"))
+
+rp_resid <- feols(..dv1.1 ~ i(qtrs_since, high_cecl_resid, ref = -1) +
+                    ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(rp_resid, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "fig_es_resid")
+```
+
+## §5 Alternative scalings (RA5)
+
+```{r}
+alt_tbl <- function(treat_cont, treat_bin, stub) {
+  r <- list(
+    feols(..dv1.1 ~ post * .[treat_cont] + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+    feols(..dv1.1 ~ post * .[treat_bin]  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+    feols(..dv2.1 ~ post * .[treat_cont] + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+    feols(..dv2.1 ~ post * .[treat_bin]  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+    feols(..dv2.2 ~ post * .[treat_cont] + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+    feols(..dv2.2 ~ post * .[treat_bin]  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+  )
+  print(etable(r, dict = dict_did, order = "Post x "))
+  export_track_tbl(r, stub, dict_did, "Post x ")
+  invisible(r)
+}
+alt_tbl("cecl_assets", "high_cecl_assets", "tbl_alt_scaling_assets")
+alt_tbl("cecl_loans",  "high_cecl_loans",  "tbl_alt_scaling_loans")
+```
+
+## §6 Fully saturated triple-diff (RA-m3)
+
+```{r}
+# Columns (2)/(4): bank FE + quarter FE only, so all lower-order interactions are
+# reported (post x cecl is identified off cohort variation in adoption timing).
+r6 <- list(
+  feols(dep_assets ~ cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | ID_RSSD + D_DT,
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ high_cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ high_cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | ID_RSSD + D_DT,
+        data = stacked, vcov = ~ID_RSSD)
+)
+etable(r6, dict = dict_td, order = order_td)
+export_track_tbl(
+  r6, "tbl_triple_diff_saturated", dict_td, order_td,
+  notes = paste("Columns (1) and (3) include bank-by-quarter fixed effects, which absorb",
+                "Post, CECL Adj, and Post $\\times$ CECL Adj (all constant within",
+                "bank-quarter); columns (2) and (4) replace them with bank and quarter",
+                "fixed effects so all lower-order interactions are reported.")
+)
+
+cat("\n[main_results_20260612.qmd] complete.\n")
+```

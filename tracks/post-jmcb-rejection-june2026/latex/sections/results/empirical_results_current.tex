@@ -1,0 +1,199 @@
+%% ============================================================
+%%  Section: Main Results  (2026-04-07 — addresses all [@@@ ...] comments)
+%%  Depositor Discipline in Modern Banking
+%%
+%%  Changes from empirical_results_20260404_v2.tex:
+%%    - Removed all [@@@ ...] placeholders and addressed each one.
+%%    - Removed all \paragraph{} headers; content flows as prose.
+%%    - Triple-difference folded into time deposits subsection (not standalone).
+%%    - Opening paragraph shortened; "Why time deposits" condensed to one paragraph.
+%%    - Controls paragraph removed; defers to Section~\ref{sec:identification}.
+%%    - Economic magnitudes expressed as percent of sample mean, not dollar amounts.
+%%    - Overconfident phrasing ("immune by construction", "cleanly validates",
+%%      "central threat", "cleanest test") softened throughout.
+%%    - Insured-deposit interpretation condensed; mechanical reclassification noted.
+%%    - Removed the Post x Uninsured explanatory paragraph from triple-diff.
+%%    - Financial consequences and sophistication sections shortened.
+%%    - Summary subsection deleted.
+%%    - NIM binary coefficient reported as 0.024 pp/quarter (consistent with table).
+%%    - \label{sec:results:heterogeneity} added as cross-reference alias.
+%%
+%%  Cross-references created:
+%%    sec:results
+%%    sec:results:time_deposits
+%%    sec:results:financial
+%%    sec:results:sophistication
+%%    sec:results:heterogeneity  (alias for sophistication)
+%%
+%%  Cross-references consumed:
+%%    tab:small_bank_did_time_deposits
+%%    tab:small_bank_triple_diff_time_deposits
+%%    tab:small_bank_did_financial_outcomes
+%%    fig:es_time_deps_cecl
+%%    fig:es_financial_outcomes_cecl
+%%    fig:es_sophistication_split
+%%    sec:identification
+%% ============================================================
+
+\section{Main Results}
+\label{sec:results}
+
+We test whether the CECL Day-One disclosure triggered a disciplinary response from
+uninsured depositors.  Three predictions follow from the theory: banks whose CECL
+adjustment revealed larger latent credit losses should experience relative declines
+in uninsured deposit balances after adoption, should face higher funding costs to
+replace those balances, and should suffer lower profitability as a consequence.
+The results confirm all three.  Throughout, we treat the within-bank
+composition shift between uninsured and insured deposits---identified under
+bank-by-quarter fixed effects---as the anchor result, because it is the
+estimate that survives every specification we throw at it in
+Section~\ref{sec:robustness}, including controls that allow 2023-stress
+exposure characteristics their own time paths.
+
+\subsection{Time Deposits}
+\label{sec:results:time_deposits}
+
+We focus on time deposits because they are the deposit category most susceptible
+to disciplinary withdrawal.  Certificates of deposit and other fixed-term
+instruments are held for investment rather than transaction purposes, so discipline
+operates at the rollover margin: a depositor who declines to renew a maturing CD
+is acting on a risk judgment without bearing the switching costs that complicate
+responses in demand accounts \citep{calomiris1991role, iyer2016tale}.  Uninsured
+deposits above the \$250{,}000 FDIC threshold are disproportionately held by
+businesses, municipalities, and financially sophisticated households with both
+the incentive and the capacity to act on new risk disclosures \citep{flannery1998using,
+gee2022decision}.  Prior evidence for depositor discipline is strongest in
+time-deposit data \citep{maechler2006dynamic, egan2017deposit}.
+
+Table~\ref{tab:small_bank_did_time_deposits} presents difference-in-differences
+estimates for uninsured and insured time deposits, using the specification in
+Section~\ref{sec:identification}.  The interaction of the post-adoption indicator
+with the binary High-CECL treatment (column~2) yields a coefficient of $-0.394$
+percentage points of assets (standard error $0.182$, $p < 0.05$), roughly 7
+percent of the sample mean for uninsured time deposits.  The continuous
+specification (column~1) is consistent: each additional percentage point of CECL
+exposure reduces uninsured time deposits by $0.072$ percentage points of assets
+($p < 0.05$).
+
+These magnitudes are economically meaningful without being implausibly large.
+For the median treated bank (\$340~million in assets), the binary estimate
+corresponds to about \$1.3~million in uninsured time deposits withdrawn or not
+renewed; aggregated across the 217 high-CECL banks (mean assets
+\$746~million), the implied reallocation is on the order of \$0.6~billion.
+Set against the deposit-discipline literature, an effect of 7 percent of the
+outcome mean from a single disclosure sits comfortably within the range of
+estimated uninsured-deposit sensitivities to bank fundamentals
+\citep{martinez2001depositors, egan2017deposit}, and is an order of magnitude
+smaller than run-driven outflows in 2023 at the failed institutions---as one
+would expect from an informational repricing rather than a panic.
+
+Insured time deposits respond in the opposite direction.  The High-CECL
+coefficient in column~4 is $+0.712$ percentage points ($p < 0.05$), indicating
+that high-exposure banks attracted more insured balances after adoption.  The
+continuous estimate (column~3, $+0.070$ pp) is positive but imprecise.  The
+insured response is broadly consistent with banks substituting toward
+insurance-protected funding after losing uninsured deposits, as theory predicts
+\citep{calomiris1991role}.  The positive insured coefficient may also partly
+reflect mechanical reclassification as some depositors reduce balances below the
+\$250{,}000 threshold rather than exit the bank entirely.
+
+Figure~\ref{fig:es_time_deps_cecl} plots event-study coefficients for a
+ten-quarter window on either side of CECL adoption ($k = -1$ omitted).
+Pre-adoption coefficients for uninsured time deposits are clustered near zero
+across all ten lead quarters and are jointly indistinguishable from the reference
+period, consistent with the parallel-trends assumption.  The post-adoption break
+emerges within the first adoption quarter and persists through the end of the
+sample horizon, while the insured series moves in the opposite direction with
+comparable timing.  The insured series displays a modest dip in the early
+pre-adoption quarters; the individual coefficients are statistically
+indistinguishable from zero, and the extended-window event studies in
+Section~\ref{sec:robustness:pretrends} show that the dip does not extend
+backward as a trend, but we flag it rather than pass over it, and we report
+joint pre-trend tests over the full 2018--2022 pre-period there.  The absence
+of systematic pre-adoption divergence in either series
+argues against the interpretation that the post-adoption pattern reflects a
+differential trend predating the disclosure.
+
+A remaining concern is that high-CECL banks may have faced bank-specific funding
+pressures after 2023 that depressed their entire time-deposit portfolio
+independently of depositor discipline.  If CECL merely compressed aggregate
+deposit demand at high-exposure institutions, insured and uninsured balances
+would co-move, and the difference-in-differences estimate would overstate
+discipline effects \citep{covitz2004market}.  To address this, we stack the
+insured and uninsured time-deposit series in a single panel and estimate a
+triple difference:
+\begin{equation*}
+\begin{split}
+  y_{idt}
+  = \alpha_{it}
+  + \beta_1 \cdot \mathrm{Uninsured}_d
+  + \beta_2 \cdot \mathrm{Post}_{t} \times \mathrm{Uninsured}_d
+  + \beta_3 \cdot \mathrm{CECL}_i \times \mathrm{Uninsured}_d \\
+  \quad + \beta_4 \cdot \mathrm{CECL}_i \times \mathrm{Post}_{t} \times \mathrm{Uninsured}_d
+  + \varepsilon_{idt},
+\end{split}
+\end{equation*}
+where $d \in \{\text{uninsured}, \text{insured}\}$ indexes deposit type and
+$\alpha_{it}$ are bank $\times$ quarter fixed effects.  These absorb the full
+vector of bank-specific time-varying shocks in each period, so identification
+comes from the differential movement of uninsured relative to insured deposits
+within the same bank and the same quarter.  The triple-interaction coefficient
+$\hat{\beta}_4$ captures the within-bank composition shift.
+
+Table~\ref{tab:small_bank_triple_diff_time_deposits} reports the estimates.  The
+triple interaction in the binary specification (column~2) is $-1.252$ (standard
+error $0.340$, $p < 0.01$): relative to their own pre-adoption composition and
+relative to low-CECL banks, high-CECL banks experienced a 125-basis-point
+widening of the insured-to-uninsured gap as a share of assets after adoption.
+The continuous analog (column~1, $-0.177$, SE $0.058$, $p < 0.01$) confirms a
+smooth dose-response relationship across the CECL distribution rather than a
+threshold phenomenon concentrated in the extreme tail.  Because bank $\times$
+quarter fixed effects absorb any level shift in total time-deposit demand at each
+bank in each quarter, these estimates are not consistent with any story in which
+CECL simply depressed aggregate funding at high-exposure institutions.  In
+Section~\ref{sec:robustness:stress} we push this design further, reporting a
+fully saturated version that includes every lower-order interaction and a
+version that allows the 2022Q4 stress-exposure characteristics to shift the
+uninsured--insured gap flexibly by quarter; the triple interaction is
+essentially unchanged in both.
+
+\subsection{Financial Consequences}
+\label{sec:results:financial}
+
+Table~\ref{tab:small_bank_did_financial_outcomes} reports difference-in-differences
+estimates for interest expense, return on assets, and net interest margin.
+High-CECL banks paid $0.021$ percentage points more per quarter in interest
+expense per dollar of assets after adoption (column~2, $p < 0.01$), an
+annualized increase of approximately 8--9 basis points, or about 9 percent of
+the sample quarterly mean.  The continuous specification implies that each
+additional percentage point of CECL exposure raises quarterly interest expense
+by 0.37 basis points of assets (column~1, $p < 0.05$).  Having lost lower-cost
+uninsured balances, high-CECL banks replaced them with insured time deposits at
+rates sufficient to attract depositors who would not otherwise bear uninsured
+credit risk at these institutions, the price channel of depositor discipline
+\citep{nier2006market, billett1998cost}.
+
+The higher funding cost was not offset elsewhere.  Return on assets fell by
+$0.038$ percentage points per quarter for high-CECL banks (column~4, $p < 0.01$),
+an annualized drag of about 15 basis points and roughly 13 percent of the sample
+mean.  Net interest margin contracted by $0.024$ percentage points per quarter
+(column~6, $p < 0.05$).  The joint decline in ROA and NIM is consistent with
+higher liability costs not being passed through to borrowers, in line with
+community banks typically facing competitive local loan markets where
+short-run asset-side repricing is limited \citep{hannan1988bank}.
+Continuous estimates scale proportionally: each percentage point of CECL equity
+shock reduces quarterly ROA by $0.009$ percentage points ($p < 0.01$) and
+quarterly NIM by $0.005$ percentage points ($p < 0.05$).  In dollar terms, the
+annualized interest-expense effect amounts to roughly \$0.3~million per year
+for the median treated bank and the ROA effect to about \$0.5~million of
+foregone annual net income---small relative to a panic, but a permanent tax
+on the franchise imposed by a one-time disclosure.
+
+Figure~\ref{fig:es_financial_outcomes_cecl} plots event-study coefficients for
+all three financial outcomes.  Pre-adoption leads are flat across both treatment
+specifications, and the post-adoption divergence for ROA and NIM persists through
+the end of the sample horizon.
+
+The heterogeneity of these responses across depositor sophistication, and the
+robustness of the sophistication split itself, are developed in
+Section~\ref{sec:heterogeneity}.

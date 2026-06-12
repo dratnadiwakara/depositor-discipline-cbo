@@ -1,0 +1,177 @@
+---
+title: "Deposit destination and spillovers — post-JMCB revision (RB2)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+Implements implementation-plan-20260612.md §2.2.
+§1 Substitution into insured wholesale funding: brokered (total / insured /
+   uninsured <1yr) and reciprocal deposits as direct outcomes
+§2 Composition-shift robustness: triple-diff excluding top-quartile
+   post-adoption insured-brokered growers
+§3 SOD spillover test (SUTVA): low-CECL banks' deposit growth vs. exposure to
+   high-CECL competitors; bank-year and county-year versions
+
+Inputs: panel_smallbank (01), spillover_exposure / spillover_county (03)
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "post-jmcb-rejection-june2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT,
+  ..did_dummy = ~ i(qtrs_since, high_cecl_equity, ref = -1)
+)
+
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+```
+
+## §1 Substitution into insured wholesale funding
+
+```{r}
+# Reciprocal deposits reported only from 2018Q3 (EGRRCPA); insured-brokered split
+# from 2018. Estimation drops pre-availability rows via NA.
+cat("\nOutcome coverage within event window:\n")
+for (v in c("brokered_assets", "brokered_ins_assets", "brokered_unins_lt1yr_assets",
+            "reciprocal_assets")) {
+  cat(sprintf("  %-30s nonmissing=%6d  nonzero=%.1f%%\n", v,
+              sum(!is.na(dt_w[[v]])), 100 * mean(dt_w[[v]] > 0, na.rm = TRUE)))
+}
+
+r1 <- list(
+  feols(brokered_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_ins_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_ins_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_unins_lt1yr_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_unins_lt1yr_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(reciprocal_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(reciprocal_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+print(etable(r1, dict = dict_did, order = order_did_tbl))
+export_track_tbl(r1, "tbl_brokered", dict_did, order_did_tbl)
+
+# Event studies: insured brokered and reciprocal
+rp_bi <- feols(brokered_ins_assets ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe,
+               data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(rp_bi, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "fig_es_brokered_ins")
+
+rp_rec <- feols(reciprocal_assets ~ ..did_dummy + ..controls + int_expense_assets_l1 | ..fe,
+                data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(rp_rec, ylab_str = "Coefficient", title_str = "", vline_x = -1)
+print(p); save_track_fig(p, "fig_es_reciprocal")
+```
+
+## §2 Composition shift excluding insured-brokered substitutors
+
+```{r}
+# Per-bank post-minus-pre change in insured brokered deposits / assets; exclude
+# the top quartile of changers and re-run the triple-diff.
+chg <- dt_w[, .(
+  d_bins = mean(brokered_ins_assets[post == 1], na.rm = TRUE) -
+           mean(brokered_ins_assets[post == 0], na.rm = TRUE)
+), by = ID_RSSD]
+q75_chg <- quantile(chg$d_bins, 0.75, na.rm = TRUE)
+keep_ids <- chg[is.na(d_bins) | d_bins < q75_chg, ID_RSSD]
+cat(sprintf("\nExcluding top-quartile insured-brokered growers: cutoff %.3f pp, %d of %d banks kept\n",
+            q75_chg, length(keep_ids), nrow(chg)))
+
+dt_ex <- dt_w[ID_RSSD %in% keep_ids]
+unins <- copy(dt_ex); unins[, dep_assets := unins_time_deps_assets]; unins[, deposit_uninsured := 1L]
+ins   <- copy(dt_ex); ins[, dep_assets := ins_time_deps_assets];     ins[, deposit_uninsured := 0L]
+stacked <- rbind(unins, ins)
+stacked[, deposit_uninsured := as.factor(deposit_uninsured)]
+stacked <- stacked[!is.na(dep_assets)]
+stacked[, bank_qt := paste0(ID_RSSD, "_", D_DT)]
+
+dict_td <- c(dict_did,
+             "deposit_uninsured1" = "Uninsured time dep",
+             "bank_qt" = "Bank x Quarter")
+order_td <- c("CECL Adj x Post x Uninsured time dep", "CECL Adj x Uninsured time dep",
+              "High CECL x Post x Uninsured time dep", "High CECL x Uninsured time dep",
+              "Post x Uninsured time dep")
+
+r2 <- list(
+  feols(dep_assets ~ cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD),
+  feols(dep_assets ~ high_cecl_equity * post * deposit_uninsured + ..controls + int_expense_assets_l1 | bank_qt,
+        data = stacked, vcov = ~ID_RSSD)
+)
+print(etable(r2, dict = dict_td, order = order_td))
+export_track_tbl(r2, "tbl_td_excl_brokered", dict_td, order_td)
+```
+
+## §3 SOD spillover test (SUTVA)
+
+```{r}
+# Bank-year SOD panel, low-CECL banks only. Expected: positive (deposits flowing
+# out of high-CECL banks land at exposed competitors). Annual frequency; modest power.
+sp <- readRDS(latest_track_file("spillover_exposure"))
+setDT(sp)
+sp_low <- sp[high_cecl_equity == 0 & !is.na(expo_high_cecl) & !is.na(sod_dep_growth)]
+# Winsorize growth within year (1/99), consistent with project standard
+winsorize_by_date(sp_low, vars = "sod_dep_growth", date_var = "YEAR")
+cat(sprintf("\nSpillover bank-year sample: %d banks, %d bank-years\n",
+            uniqueN(sp_low$ID_RSSD), nrow(sp_low)))
+
+r3a <- feols(sod_dep_growth ~ expo_high_cecl * post_2023 | ID_RSSD + YEAR,
+             data = sp_low, vcov = ~ID_RSSD)
+
+cy <- readRDS(latest_track_file("spillover_county"))
+setDT(cy)
+cy <- cy[!is.na(cnty_dep_growth_lowcecl) & !is.na(high_share_2022)]
+winsorize_by_date(cy, vars = "cnty_dep_growth_lowcecl", date_var = "YEAR")
+cat(sprintf("County-year sample: %d counties, %d county-years\n",
+            uniqueN(cy$STCNTYBR), nrow(cy)))
+
+r3b <- feols(cnty_dep_growth_lowcecl ~ high_share_2022 * post_2023 | STCNTYBR + YEAR,
+             data = cy, vcov = ~STCNTYBR)
+
+dict_sp <- c(dict_did,
+             "expo_high_cecl" = "Exposure to High-CECL Competitors",
+             "expo_high_cecl:post_2023" = "Exposure x Post-2023",
+             "high_share_2022" = "County High-CECL Share (2022)",
+             "high_share_2022:post_2023" = "County High-CECL Share x Post-2023",
+             "sod_dep_growth" = "SOD Deposit Growth (\\%)",
+             "cnty_dep_growth_lowcecl" = "County Low-CECL Deposit Growth (\\%)",
+             "STCNTYBR" = "County", "YEAR" = "Year")
+r3 <- list(r3a, r3b)
+print(etable(r3, dict = dict_sp))
+export_track_tbl(
+  r3, "tbl_spillover", dict_sp,
+  notes = paste("Column (1): bank-year panel of low-CECL banks; exposure is the",
+                "2022 deposit-weighted leave-out share of high-CECL competitors in the",
+                "bank's counties. Column (2): county-year panel; outcome is deposit",
+                "growth of low-CECL banks' branches. SOD is annual (June 30), which",
+                "limits power relative to the quarterly Call Report tests.")
+)
+
+cat("\n[destination_spillovers_20260612.qmd] complete.\n")
+```
