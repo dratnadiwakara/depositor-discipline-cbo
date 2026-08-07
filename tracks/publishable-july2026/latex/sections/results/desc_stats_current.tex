@@ -1,0 +1,52 @@
+\section{Descriptive Statistics}
+\label{sec:descriptive}
+
+Figure~\ref{fig:cecl_equity_distribution} plots the cross-sectional
+distribution of \texttt{CECL Adj}.  The distribution is right-skewed:
+the full-sample mean is 0.28 percent of equity, the median is
+essentially zero, and roughly half of community banks adopted CECL with
+loan portfolios whose forward-looking expected credit losses required
+little incremental reserve above the incurred-loss standard.  The right
+tail is substantial: the High-CECL threshold at 2.5 percent of equity
+sits at approximately the 95th percentile, and the 217 banks that
+exceed it record a mean adjustment of 4 percent of equity.
+Section~\ref{sec:robustness:scaling} examines the full shape of the
+dose-response, including the left tail of negative adjustments.
+
+Figure~\ref{fig:cecl_adoption_quarter_distribution} shows the
+distribution of adoption quarters.  Adoption is concentrated in 2023Q1
+(3,997 of 4,320 sample banks, 92.5 percent); the remaining 323 banks
+adopt in adjacent quarters due to non-calendar fiscal years or minor
+filing lags.  We use bank-specific event time throughout, so off-cycle
+adopters contribute symmetric pre- and post-adoption windows.
+
+Table~\ref{tab:descriptive_sumstats_cecl} compares High- and Low-CECL
+banks at the adoption cross-section.  High-CECL banks enter with weaker
+loan quality, higher NPL and allowance ratios, modestly higher CRE
+concentration, and thinner capital buffers, consistent with more
+credit-sensitive portfolios requiring larger expected-loss reserves.
+Pre-adoption deposit structure is broadly similar on dimensions central
+to our outcome variables.  Uninsured time deposits do not differ
+significantly; the total uninsured deposit share is, if anything,
+slightly \emph{lower} at high-CECL banks---the opposite of what a
+run-exposure story would require.  High-CECL banks hold about 1.9
+percentage points more insured time deposits at baseline, reflecting
+greater reliance on retail certificate funding; bank fixed effects
+absorb this level, and the pre-period event-study coefficients on both
+series are flat.
+
+Table~\ref{tab:cecl_predictors_cross_section} regresses \texttt{CECL Adj}
+on 2022Q4 bank characteristics.  Column~(1) uses balance-sheet and
+credit-quality fundamentals; column~(2) adds deposit composition and
+eight-quarter pre-adoption performance trends; column~(3) adds local
+deposit-market concentration.  The adjustment loads on NPL ratios, size,
+capital, and deteriorating profitability trends in the expected
+directions.  Among funding variables, the time-deposit and brokered
+shares enter positively but with small coefficients, and the uninsured
+deposit share---the variable most relevant to run exposure---is
+unrelated to the adjustment.  Unrealized securities losses lose
+significance once expanded controls enter.  Adjusted $R^2$ reaches 1.4
+percent in the most saturated specification.  As discussed in
+Section~\ref{sec:identification}, we do not treat the low $R^2$ as proof
+of exogeneity; column~(2) serves as the first stage for the residualized
+treatment used in Section~\ref{sec:robustness}.

@@ -1,0 +1,168 @@
+\section{Institutional Background}
+\label{sec:background}
+
+\subsection{From Incurred Losses to Expected Credit Losses}
+\label{sec:background:transition}
+
+Under the historical incurred loss model (ILM), U.S.\ banks recognized
+credit losses only when a loss became "probable and estimable,"
+producing loan-loss provisions that lagged realized defaults
+\citep{beatty2011delays} and reduced the informativeness of bank
+disclosures \citep{bushman2012accounting, bushman2015delayed}.  Following
+the 2007--2009 crisis, FASB issued ASU 2016-13, introducing the Current
+Expected Credit Loss (CECL) model, codified in ASC~326
+\citep{FASB2016}: banks estimate and reserve for \emph{lifetime}
+expected credit losses at origination and at each reporting date.  The
+required allowance is a direct function of loan-portfolio credit-risk
+composition---longer maturities, weaker borrowers, and thinner collateral
+require larger allowances than the ILM reserve.  Recent evidence finds
+CECL adoption increased provision sensitivity to forward-looking credit
+signals \citep{granja2025current, kim2026current}, reduced procyclicality
+of bank lending \citep{chen2022does}, and improved decision-usefulness of
+reserve disclosures \citep{gee2022decision}.
+
+\subsection{The Day-One Adjustment and Treatment Variable}
+\label{sec:background:dayone}
+
+When a bank transitions from ILM to CECL, it must reclassify its entire
+existing loan portfolio under the new standard on a single date.  The
+difference between the CECL-required allowance and the legacy ILM allowance
+(the Day-One adjustment) is recorded as a cumulative-effect charge to
+retained earnings on the opening balance sheet of the adoption quarter.  For
+bank $i$ with adoption quarter $t^{*}$:
+\begin{equation}
+  \Delta_i
+  \;\equiv\;
+  \mathrm{ALLL}^{\mathrm{CECL}}_{i,\,t^{*}}
+  -
+  \mathrm{ALLL}^{\mathrm{ILM}}_{i,\,t^{*}-1},
+  \label{eq:dayone}
+\end{equation}
+where $\mathrm{ALLL}$ is the allowance for loan and lease losses on the Call
+Report.  The Day-One adjustment varies widely: a large share of community
+banks recorded a negligible adjustment, a subset recorded positive values
+where CECL required a materially larger allowance, and a smaller number
+recorded negative values.
+
+Where positive, the adjustment reduces reported book equity and, absent
+regulatory accommodation, risk-weighted capital ratios by an equivalent
+amount.  It is a pure accounting event: cash flows and borrower repayment
+terms are unchanged.  What the adjustment reveals, in a single mandatory
+disclosure, is the gap between book equity as previously reported and book
+equity adjusted for the bank's forward-looking credit-loss exposure.
+
+The primary treatment scales the Day-One charge by beginning-of-period
+equity:
+\begin{equation}
+  \texttt{CECL Adj}_{i}
+  \;=\;
+  \frac{\Delta_i}{\texttt{Equity}_{i,\,t-1^{*}}}
+  \times 100,
+  \label{eq:treatment}
+\end{equation}
+expressed in percentage points.  For binary specifications I construct
+\begin{equation}
+  \texttt{High CECL}_{i}
+  \;=\;
+  \mathbf{1}\!\left\{
+    \texttt{CECL Adj}_{i} \geq \tau
+  \right\},
+  \label{eq:binary}
+\end{equation}
+with $\tau = 2.5$ percentage points (approximately the 95th percentile).
+Equity scaling is the baseline because it measures the fraction of the
+loss-absorbing buffer that the new standard revealed to be already
+committed against expected credit losses.
+
+\subsection{Is the Adjustment Predetermined?}
+\label{sec:background:predetermination}
+
+The 2023Q1 adoption date was set by regulation and cannot have been
+chosen to coincide with favorable deposit conditions.  The size of the
+Day-One adjustment reflects the cumulative composition of the loan
+portfolio---long maturities, weak borrower credit, thin collateral---%
+fixed by prior underwriting.
+Table~\ref{tab:cecl_predictors_cross_section} regresses
+\texttt{CECL Adj} on 2022Q4 bank characteristics: balance-sheet and
+credit-quality fundamentals in column~(1), deposit composition and
+eight-quarter performance trends in column~(2), and local
+deposit-market concentration in column~(3).  The adjustment loads on
+NPL ratios, size, capital, and deteriorating profitability trends in
+the expected directions.  Among funding variables, the time-deposit and
+brokered shares enter positively but with small coefficients, and the
+uninsured deposit share---the variable most relevant to run
+exposure---is unrelated to the adjustment.  Adjusted $R^2$ reaches
+roughly 1.4 percent in the most saturated specification.  Low
+explanatory power does not prove exogeneity, but it establishes that
+high-CECL banks are not simply the observably weak, deposit-fragile, or
+stress-exposed banks relabeled.  The standard was public from June
+2016, but the \emph{magnitude} of any given bank's Day-One charge was
+not knowable to outsiders in advance; anticipation of the event date
+without knowledge of intensity does not bias a
+difference-in-differences design, and outside anticipation of intensity
+would appear as pre-adoption divergence in depositor-facing outcomes,
+which I test for directly.
+
+Two components of the Day-One magnitude deserve separate treatment.
+The first is legacy loan composition---maturity structure, borrower
+credit quality, collateral coverage---which was fixed by prior
+underwriting and is uncorrelated with 2023 deposit dynamics under any
+reasonable assumption.  The second is the forecast and modeling
+component required by ASC~326: banks combine historical loss experience
+with reasonable-and-supportable forward-looking forecasts of
+macroeconomic conditions and choose a lifetime-loss estimation
+approach.  This component is a contemporaneous choice at adoption and
+is in principle correlated with 2022--2023 macro conditions.  I am
+careful throughout not to claim more than the design delivers: the
+Day-One adjustment is predetermined with respect to legacy loan
+composition, and the within-bank composition design does not require
+the modeling-choice component to be pure noise---only that it not
+differentially move uninsured relative to insured deposits within the
+same bank and quarter through any channel other than the disclosure.
+
+\subsection{What the Disclosure Does---and Does Not---Change}
+\label{sec:background:mechanism}
+
+Prior depositor-discipline tests typically exploit realized distress in
+which new information arrives simultaneously with deterioration in cash
+flows or liquidity \citep{flannery1996evidence, martinez2001depositors,
+iyer2016tale}.  The CECL Day-One adjustment separates the two: it
+records a pure accounting charge that does not trigger a cash transfer,
+alter borrower repayment terms, reduce bank liquidity, or change the
+risk of the underlying loans.  A depositor who withdraws or demands a
+higher rate responds to newly disclosed credit-risk information, not to
+concurrent worsening of the bank's actual condition.
+
+\subsection{Adoption Timeline and Market Validation}
+\label{sec:background:timeline}
+
+Large SEC-filing registrants adopted CECL in 2020Q1; non-public
+entities---the community banks in the main sample---adopted in 2023Q1.
+Call Reports are posted publicly by the FFIEC and FDIC roughly thirty
+days after quarter-end, so 2023Q1 Day-One adjustments became publicly
+observable in late April and May 2023---after the March 2023 failures of
+Silicon Valley Bank and Signature Bank.  Depositors reacting to the
+disclosure did so against an information backdrop in which the March run
+had already occurred.
+
+The 2020 large-bank cohort shows that market participants treat the
+Day-One number as material news.
+Figure~\ref{fig:es_large_banks_market_cds} reports monthly event
+studies around the 2020Q1 adoption for the SEC-filing cohort,
+interacting event-time dummies with each holding company's CECL
+adjustment scaled by equity.  Equity markets respond immediately:
+relative to the month before adoption, the coefficient on normalized
+market capitalization drops to $-0.947$ per unit of CECL-to-equity at
+the adoption month ($p = 0.006$) and reaches a trough of $-2.771$
+($p < 0.001$) two months later---a ten-percentage-point higher
+adjustment is associated with roughly 28~percent lower market
+capitalization.  Credit markets price
+the same information with a lag: five-year CDS spreads for the 103
+banks with active contracts widen by $190.8$~basis points per unit of
+CECL-to-equity four months after adoption ($p = 0.047$), about
+19~basis points per ten percentage points of adjustment.  Pre-adoption
+coefficients in both markets are flat.  Because the 2020 adoption
+coincides with the COVID-19 onset, I treat this evidence as validating
+the signal content of the disclosure rather than as a deposit-response
+estimate, and the community-bank tests that follow do not use this
+cohort.

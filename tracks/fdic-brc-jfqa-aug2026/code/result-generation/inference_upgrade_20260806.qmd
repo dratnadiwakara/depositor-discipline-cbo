@@ -1,0 +1,268 @@
+---
+title: "Inference upgrade — two-way clustering and permutation inference"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision, Phase 1.1 (plan i-am-planning-to-enchanted-codd.md).
+§0 Load panel, replicate baseline specs (bank-clustered) as anchor.
+§1 Gap-regression equivalence check: within-pair (uninsured - insured) DiD with
+   bank + quarter FE must reproduce the stacked bank x quarter FE triple-diff
+   coefficient (Table 5). Hard stop if it does not.
+§2 Two-way clustered (bank + calendar quarter) SEs for all headline specs.
+§3 Cross-sectional permutation inference: reshuffle the bank-level treatment
+   pair (cecl_equity, high_cecl_equity) across banks, keeping each bank's own
+   adoption timing; 1,000 draws; two-sided empirical p-values.
+Panel: tracks/post-jmcb-rejection-june2026/data/panel_smallbank_20260612.rds
+(built by that track's 01_build_panel_20260612.R; unchanged vintage).
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+```
+
+## §1 Gap-regression equivalence to stacked triple-diff
+
+```{r}
+# Stacked triple (Table 5 spec): bank x quarter FE
+unins <- copy(dt_w); unins[, dep_assets := unins_time_deps_assets]; unins[, deposit_uninsured := 1L]
+ins   <- copy(dt_w); ins[, dep_assets := ins_time_deps_assets];     ins[, deposit_uninsured := 0L]
+stacked <- rbind(unins, ins)
+stacked <- stacked[!is.na(dep_assets)]
+stacked[, bank_qt := paste0(ID_RSSD, "_", D_DT)]
+
+r_tri_cont <- feols(dep_assets ~ deposit_uninsured * post * cecl_equity | bank_qt,
+                    data = stacked, vcov = ~ID_RSSD)
+r_tri_bin  <- feols(dep_assets ~ deposit_uninsured * post * high_cecl_equity | bank_qt,
+                    data = stacked, vcov = ~ID_RSSD)
+
+# Gap regression: within-pair difference. Differencing kills the bank x quarter
+# FE exactly; the surviving terms are the uninsured-interacted ones, so the
+# algebraic twin of the stacked triple is dep_gap ~ post * cecl with NO FE.
+gap <- dt_w[!is.na(unins_time_deps_assets) & !is.na(ins_time_deps_assets)]
+gap[, dep_gap := unins_time_deps_assets - ins_time_deps_assets]
+
+r_gap_cont <- feols(dep_gap ~ post * cecl_equity, data = gap, vcov = ~ID_RSSD)
+r_gap_bin  <- feols(dep_gap ~ post * high_cecl_equity, data = gap, vcov = ~ID_RSSD)
+
+b_tri_cont <- coef(r_tri_cont)[["deposit_uninsured:post:cecl_equity"]]
+b_gap_cont <- coef(r_gap_cont)[["post:cecl_equity"]]
+b_tri_bin  <- coef(r_tri_bin)[["deposit_uninsured:post:high_cecl_equity"]]
+b_gap_bin  <- coef(r_gap_bin)[["post:high_cecl_equity"]]
+
+cat("\n================ §1 EQUIVALENCE CHECK ================\n")
+cat(sprintf("Triple (cont): %.6f | Gap (cont): %.6f | diff: %.2e\n",
+            b_tri_cont, b_gap_cont, b_tri_cont - b_gap_cont))
+cat(sprintf("Triple (bin):  %.6f | Gap (bin):  %.6f | diff: %.2e\n",
+            b_tri_bin, b_gap_bin, b_tri_bin - b_gap_bin))
+stopifnot(abs(b_tri_cont - b_gap_cont) < 1e-6,
+          abs(b_tri_bin  - b_gap_bin)  < 1e-6)
+cat("Equivalence holds; gap regression used for permutation draws.\n")
+```
+
+## §2 Two-way clustered standard errors
+
+```{r}
+vc2 <- ~ ID_RSSD + D_DT
+
+r2_dep <- list(
+  feols(unins_time_deps_assets ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  feols(unins_time_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  feols(ins_time_deps_assets   ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  feols(ins_time_deps_assets   ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  summary(r_gap_cont, vcov = vc2),
+  summary(r_gap_bin,  vcov = vc2)
+)
+cat("\n================ §2 TWO-WAY SEs: DEPOSITS (cols 5-6 = gap/triple) ================\n")
+etable(r2_dep, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r2_dep, "tbl_twoway_deposits", dict_did, order_did_tbl)
+
+r2_fin <- list(
+  feols(int_expense_assets ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(int_expense_assets ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(roa ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(roa ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(nim ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(nim ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = vc2)
+)
+cat("\n================ §2 TWO-WAY SEs: FINANCIAL OUTCOMES ================\n")
+etable(r2_fin, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r2_fin, "tbl_twoway_financial", dict_did, order_did_tbl)
+
+r2_real <- list(
+  feols(brokered_ins_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  feols(reciprocal_assets   ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = vc2),
+  feols(loan_growth ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = vc2),
+  feols(cre_growth  ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = vc2)
+)
+cat("\n================ §2 TWO-WAY SEs: SUBSTITUTION AND LENDING ================\n")
+etable(r2_real, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r2_real, "tbl_twoway_substitution_lending", dict_did, order_did_tbl)
+```
+
+## §3 Permutation inference
+
+```{r}
+set.seed(20260806)
+R_PERM <- 1000
+
+# Bank-level treatment pair, permuted jointly so the binary indicator always
+# matches the permuted continuous value.
+bank_treat <- unique(dt_w[, .(ID_RSSD, cecl_equity, high_cecl_equity)])
+stopifnot(anyDuplicated(bank_treat$ID_RSSD) == 0)
+n_banks <- nrow(bank_treat)
+
+perm_spec <- list(
+  unins_cont = list(data = "dt_w", fml = unins_time_deps_assets ~ post * cecl_equity_p +
+                      log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1 | ID_RSSD + D_DT,
+                    coef = "post:cecl_equity_p"),
+  unins_bin  = list(data = "dt_w", fml = unins_time_deps_assets ~ post * high_cecl_equity_p +
+                      log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1 | ID_RSSD + D_DT,
+                    coef = "post:high_cecl_equity_p"),
+  gap_cont   = list(data = "gap", fml = dep_gap ~ post * cecl_equity_p,
+                    coef = "post:cecl_equity_p"),
+  gap_bin    = list(data = "gap", fml = dep_gap ~ post * high_cecl_equity_p,
+                    coef = "post:high_cecl_equity_p"),
+  intexp_bin = list(data = "dt_w", fml = int_expense_assets ~ post * high_cecl_equity_p +
+                      log_total_assets_l1 + equity_assets_l1 | ID_RSSD + D_DT,
+                    coef = "post:high_cecl_equity_p"),
+  roa_bin    = list(data = "dt_w", fml = roa ~ post * high_cecl_equity_p +
+                      log_total_assets_l1 + equity_assets_l1 | ID_RSSD + D_DT,
+                    coef = "post:high_cecl_equity_p")
+)
+
+# Actual estimates under the true assignment (same formulas, _p = actual)
+dt_w[, cecl_equity_p := cecl_equity][, high_cecl_equity_p := high_cecl_equity]
+gap[, cecl_equity_p := cecl_equity][, high_cecl_equity_p := high_cecl_equity]
+
+actual <- sapply(names(perm_spec), function(nm) {
+  sp <- perm_spec[[nm]]
+  m <- feols(sp$fml, data = get(sp$data), vcov = ~ID_RSSD)
+  coef(m)[[sp$coef]]
+})
+cat("\nActual coefficients:\n"); print(round(actual, 4))
+
+perm_draws <- matrix(NA_real_, nrow = R_PERM, ncol = length(perm_spec),
+                     dimnames = list(NULL, names(perm_spec)))
+
+t0 <- Sys.time()
+for (r in 1:R_PERM) {
+  idx <- sample.int(n_banks)
+  perm_map <- data.table(ID_RSSD = bank_treat$ID_RSSD,
+                         cecl_equity_p = bank_treat$cecl_equity[idx],
+                         high_cecl_equity_p = bank_treat$high_cecl_equity[idx])
+  for (dnm in c("dt_w", "gap")) {
+    d <- get(dnm)
+    d[, c("cecl_equity_p", "high_cecl_equity_p") := NULL]
+    d[perm_map, on = "ID_RSSD",
+      c("cecl_equity_p", "high_cecl_equity_p") := .(i.cecl_equity_p, i.high_cecl_equity_p)]
+  }
+  for (nm in names(perm_spec)) {
+    sp <- perm_spec[[nm]]
+    m <- tryCatch(feols(sp$fml, data = get(sp$data), vcov = "iid", notes = FALSE),
+                  error = function(e) NULL)
+    if (!is.null(m)) perm_draws[r, nm] <- coef(m)[[sp$coef]]
+  }
+  if (r %% 100 == 0) cat(sprintf("  draw %d / %d (%.1f min elapsed)\n", r, R_PERM,
+                                 as.numeric(difftime(Sys.time(), t0, units = "mins"))))
+}
+
+perm_p <- sapply(names(perm_spec), function(nm) {
+  d <- perm_draws[, nm]; d <- d[!is.na(d)]
+  (1 + sum(abs(d) >= abs(actual[[nm]]))) / (length(d) + 1)
+})
+
+cat("\n================ §3 PERMUTATION P-VALUES ================\n")
+print(data.frame(coef = round(actual, 4), perm_p = round(perm_p, 4)))
+
+saveRDS(list(actual = actual, draws = perm_draws, p = perm_p),
+        file.path(TRACK_DATA, paste0("permutation_inference_", format(Sys.time(), "%Y%m%d"), ".rds")))
+```
+
+## §4 Combined inference table (bank-cluster SE, two-way SE, permutation p)
+
+```{r}
+# Row spec: label, model with bank clustering, model index in two-way lists, perm name
+grab <- function(m, coefname) {
+  s <- summary(m)
+  c(b = coef(s)[[coefname]], se = se(s)[[coefname]], p = pvalue(s)[[coefname]])
+}
+
+rows <- list(
+  list(lab = "Uninsured time deposits (cont.)",
+       bank = feols(unins_time_deps_assets ~ ..reg_cont + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+       two = r2_dep[[1]], cf = "post:cecl_equity", perm = "unins_cont"),
+  list(lab = "Uninsured time deposits (binary)",
+       bank = feols(unins_time_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+       two = r2_dep[[2]], cf = "post:high_cecl_equity", perm = "unins_bin"),
+  list(lab = "Composition gap / triple-diff (cont.)",
+       bank = r_gap_cont, two = r2_dep[[5]], cf = "post:cecl_equity", perm = "gap_cont"),
+  list(lab = "Composition gap / triple-diff (binary)",
+       bank = r_gap_bin, two = r2_dep[[6]], cf = "post:high_cecl_equity", perm = "gap_bin"),
+  list(lab = "Interest expense / assets (binary)",
+       bank = feols(int_expense_assets ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+       two = r2_fin[[2]], cf = "post:high_cecl_equity", perm = "intexp_bin"),
+  list(lab = "Return on assets (binary)",
+       bank = feols(roa ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+       two = r2_fin[[4]], cf = "post:high_cecl_equity", perm = "roa_bin")
+)
+
+fmt <- function(x, d = 3) formatC(x, digits = d, format = "f")
+lines <- vapply(rows, function(rw) {
+  a <- grab(rw$bank, rw$cf); b <- grab(rw$two, rw$cf)
+  sprintf("%s & %s & (%s) & (%s) & %s & %s \\\\",
+          rw$lab, fmt(a[["b"]]), fmt(a[["se"]]), fmt(b[["se"]]),
+          fmt(b[["p"]]), fmt(perm_p[[rw$perm]]))
+}, character(1))
+
+tex <- c("\\begin{tabular}{lccccc}",
+         "\\toprule",
+         " & Coefficient & \\multicolumn{2}{c}{Std. error} & \\multicolumn{2}{c}{$p$-value} \\\\",
+         "\\cmidrule(lr){3-4} \\cmidrule(lr){5-6}",
+         " & & Bank & Two-way & Two-way & Permutation \\\\",
+         "\\midrule",
+         lines,
+         "\\bottomrule",
+         "\\end{tabular}")
+tex_file <- file.path(TRACK_TBL, paste0("tbl_inference_summary_", format(Sys.time(), "%Y%m%d"), ".tex"))
+writeLines(tex, tex_file)
+cat("Wrote", tex_file, "\n")
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("dt_w rows:", nrow(dt_w), "| banks:", uniqueN(dt_w$ID_RSSD),
+    "| quarters:", uniqueN(dt_w$D_DT), "\n")
+cat("gap rows:", nrow(gap), "| permutation draws used:",
+    colSums(!is.na(perm_draws)), "\n")
+```

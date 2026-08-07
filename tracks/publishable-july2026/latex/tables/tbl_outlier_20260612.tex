@@ -1,0 +1,39 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{4}{c}{Unins. Time Dep./Assets (\%)}\\
+   Model:                         & (1)             & (2)             & (3)             & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj                & -0.0724$^{**}$  & -0.0681$^{*}$   &                 &   \\   
+                                  & (0.0357)        & (0.0362)        &                 &   \\   
+   Post x High CECL               &                 &                 & -0.3935$^{**}$  & -0.3808$^{**}$\\   
+                                  &                 &                 & (0.1815)        & (0.1819)\\   
+   Post                           & 0.0576          & 0.0541          & 0.0552          & 0.0531\\   
+                                  & (0.0920)        & (0.0922)        & (0.0915)        & (0.0917)\\   
+   log(Assets), $t{-}1$           & -0.3484         & -0.3500         & -0.3559         & -0.3567\\   
+                                  & (0.2366)        & (0.2366)        & (0.2358)        & (0.2358)\\   
+   Equity/Assets (\%), $t{-}1$    & -0.0555$^{***}$ & -0.0554$^{***}$ & -0.0558$^{***}$ & -0.0557$^{***}$\\   
+                                  & (0.0114)        & (0.0114)        & (0.0114)        & (0.0114)\\   
+   Int. Exp/Assets (\%), $t{-}1$  & 5.042$^{***}$   & 5.039$^{***}$   & 5.043$^{***}$   & 5.041$^{***}$\\   
+                                  & (0.3096)        & (0.3096)        & (0.3100)        & (0.3100)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                           & Yes             & Yes             & Yes             & Yes\\  
+   Quarter                        & Yes             & Yes             & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                   & 97,064          & 97,041          & 97,064          & 97,041\\  
+   Adjusted R$^2$                 & 0.82123         & 0.82125         & 0.82123         & 0.82126\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Columns (2) and (4) drop the bank with the largest Day-One adjustment.
+\par\endgroup
+
+

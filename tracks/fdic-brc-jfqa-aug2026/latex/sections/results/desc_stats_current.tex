@@ -1,0 +1,30 @@
+\section{Descriptive Statistics}
+\label{sec:descriptive}
+
+Figure~\ref{fig:cecl_equity_distribution} plots the cross-sectional
+distribution of \texttt{CECL Adj}.  The distribution is right-skewed:
+the full-sample mean is 0.28 percent of equity, the median is
+essentially zero, and roughly half of community banks adopted CECL with
+loan portfolios whose forward-looking expected credit losses required
+little incremental reserve above the incurred-loss standard.  The right
+tail is substantial: the High-CECL threshold at 2.5 percent of equity
+sits at approximately the 95th percentile, and the 217 banks that
+exceed it record a mean adjustment of 4 percent of equity.
+
+Adoption is concentrated in 2023Q1 (3,997 of 4,320 sample banks, 92.5
+percent); the remaining 323 banks adopt in adjacent quarters
+(2022Q3--2023Q4) due to non-calendar fiscal years or minor filing lags.
+I use bank-specific event time throughout, so off-cycle adopters
+contribute symmetric pre- and post-adoption windows.
+
+Table~\ref{tab:descriptive_sumstats_cecl} compares High- and Low-CECL
+banks at the adoption cross-section.  High-CECL banks enter with weaker
+loan quality, higher NPL and allowance ratios, modestly higher CRE
+concentration, and thinner capital buffers, consistent with more
+credit-sensitive portfolios requiring larger expected-loss reserves.
+Pre-adoption deposit structure is broadly similar on the dimensions
+central to the outcome variables: uninsured time deposits do not differ
+significantly across the two groups.  High-CECL banks hold about 1.9
+percentage points more insured time deposits at baseline, reflecting
+greater reliance on retail certificate funding; bank fixed effects
+absorb this level.

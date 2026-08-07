@@ -1,0 +1,44 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{4}{c}{Unins. Time Dep./Assets (\%)}\\
+   Model:                                  & (1)             & (2)             & (3)             & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj                         & -0.0724$^{**}$  & -0.0688$^{*}$   & -0.0427         & -0.0367\\   
+                                           & (0.0357)        & (0.0354)        & (0.0350)        & (0.0351)\\   
+   Post                                    & 0.0576          & 0.0430          & 0.0116          & -0.0266\\   
+                                           & (0.0920)        & (0.0921)        & (0.0921)        & (0.0905)\\   
+   log(Assets), $t{-}1$                    & -0.3484         & -0.2284         & 0.0029          & 0.0696\\   
+                                           & (0.2366)        & (0.2324)        & (0.2522)        & (0.2750)\\   
+   Equity/Assets (\%), $t{-}1$             & -0.0555$^{***}$ & -0.0495$^{***}$ & -0.0442$^{***}$ & -0.0449$^{***}$\\   
+                                           & (0.0114)        & (0.0112)        & (0.0118)        & (0.0149)\\   
+   Int. Exp/Assets (\%), $t{-}1$           & 5.042$^{***}$   & 5.421$^{***}$   & 6.596$^{***}$   & 6.749$^{***}$\\   
+                                           & (0.3096)        & (0.3339)        & (0.3388)        & (0.3465)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                                    & Yes             & Yes             & Yes             & Yes\\  
+   Quarter                                 & Yes             & Yes             & Yes             & Yes\\  
+   \midrule
+   \emph{Varying Slopes}\\
+   log(Assets) 2022Q4 $\times$ Quarter                 &                 & Yes             & Yes             & Yes\\  
+   Equity/Assets 2022Q4 $\times$ Quarter          &                 & Yes             & Yes             & Yes\\  
+   Uninsured Dep. Share 2022Q4 $\times$ Quarter       &                 &                 & Yes             & Yes\\  
+   Brokered Share 2022Q4 $\times$ Quarter         &                 &                 & Yes             & Yes\\  
+   NPL/Loans 2022Q4 $\times$ Quarter              &                 &                 &                 & Yes\\  
+   ROA 2022Q4 $\times$ Quarter                     &                 &                 &                 & Yes\\  
+   CRE/Loans 2022Q4 $\times$ Quarter       &                 &                 &                 & Yes\\  
+   Unrealized Losses/Assets 2022Q4 $\times$ Quarter    &                 &                 &                 & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                            & 97,064          & 97,064          & 96,489          & 95,531\\  
+   Adjusted R$^2$                          & 0.82123         & 0.82290         & 0.82502         & 0.82421\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

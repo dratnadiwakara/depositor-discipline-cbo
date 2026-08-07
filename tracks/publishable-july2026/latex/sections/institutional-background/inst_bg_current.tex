@@ -1,0 +1,92 @@
+\section{Institutional Background}
+\label{sec:background}
+
+\subsection{From Incurred Losses to Expected Credit Losses}
+\label{sec:background:transition}
+
+Under the historical incurred loss model (ILM), U.S.\ banks recognized
+credit losses only when a loss became "probable and estimable,"
+producing loan-loss provisions that lagged realized defaults
+\citep{beatty2011delays} and reduced the informativeness of bank
+disclosures \citep{bushman2012accounting, bushman2015delayed}.  Following
+the 2007--2009 crisis, FASB issued ASU 2016-13, introducing the Current
+Expected Credit Loss (CECL) model, codified in ASC~326
+\citep{FASB2016}: banks estimate and reserve for \emph{lifetime}
+expected credit losses at origination and at each reporting date.  The
+required allowance is a direct function of loan-portfolio credit-risk
+composition---longer maturities, weaker borrowers, and thinner collateral
+require larger allowances than the ILM reserve.  Recent evidence finds
+CECL adoption increased provision sensitivity to forward-looking credit
+signals \citep{granja2025current, kim2026current}, reduced procyclicality
+of bank lending \citep{chen2022does}, and improved decision-usefulness of
+reserve disclosures \citep{gee2022decision}.
+
+\subsection{The Day-One Adjustment and Treatment Variable}
+\label{sec:background:dayone}
+
+When a bank transitions from ILM to CECL, it must reclassify its entire
+existing loan portfolio under the new standard on a single date.  The
+difference between the CECL-required allowance and the legacy ILM allowance
+(the Day-One adjustment) is recorded as a cumulative-effect charge to
+retained earnings on the opening balance sheet of the adoption quarter.  For
+bank $i$ with adoption quarter $t^{*}$:
+\begin{equation}
+  \Delta_i
+  \;\equiv\;
+  \mathrm{ALLL}^{\mathrm{CECL}}_{i,\,t^{*}}
+  -
+  \mathrm{ALLL}^{\mathrm{ILM}}_{i,\,t^{*}-1},
+  \label{eq:dayone}
+\end{equation}
+where $\mathrm{ALLL}$ is the allowance for loan and lease losses on the Call
+Report.  The Day-One adjustment varies widely: a large share of community
+banks recorded a negligible adjustment, a subset recorded positive values
+where CECL required a materially larger allowance, and a smaller number
+recorded negative values.
+
+Where positive, the adjustment reduces reported book equity and, absent
+regulatory accommodation, risk-weighted capital ratios by an equivalent
+amount.  It is a pure accounting event: cash flows and borrower repayment
+terms are unchanged.  What the adjustment reveals, in a single mandatory
+disclosure, is the gap between book equity as previously reported and book
+equity adjusted for the bank's forward-looking credit-loss exposure.
+
+Our primary treatment scales the Day-One charge by beginning-of-period
+equity:
+\begin{equation}
+  \texttt{CECL Adj}_{i}
+  \;=\;
+  \frac{\Delta_i}{\texttt{Equity}_{i,\,t-1^{*}}}
+  \times 100,
+  \label{eq:treatment}
+\end{equation}
+expressed in percentage points.  For binary specifications we construct
+\begin{equation}
+  \texttt{High CECL}_{i}
+  \;=\;
+  \mathbf{1}\!\left\{
+    \texttt{CECL Adj}_{i} \geq \tau
+  \right\},
+  \label{eq:binary}
+\end{equation}
+with $\tau = 2.5$ percentage points (approximately the 95th percentile).
+Results are robust to using the continuous measure, to alternative
+percentile cutoffs, and to scaling by assets or loans instead of equity
+(Section~\ref{sec:robustness}).  Equity scaling is our baseline because it
+measures the fraction of the loss-absorbing buffer that the new standard
+revealed to be already committed against expected credit losses.
+
+\subsection{Adoption Timeline}
+\label{sec:background:timeline}
+
+Large SEC-filing registrants adopted CECL in 2020Q1; non-public
+entities---the community banks in our main sample---adopted in 2023Q1.
+Call Reports are posted publicly by the FFIEC and FDIC roughly thirty
+days after quarter-end, so 2023Q1 Day-One adjustments became publicly
+observable in late April and May 2023---after the March 2023 failures of
+Silicon Valley Bank and Signature Bank.  Depositors reacting to the
+disclosure did so against an information backdrop in which the March run
+had already occurred, a sequencing we exploit in
+Section~\ref{sec:identification}.  The 2020 large-bank cohort coincides
+with the COVID-19 onset, which precludes using it to study deposit
+responses.

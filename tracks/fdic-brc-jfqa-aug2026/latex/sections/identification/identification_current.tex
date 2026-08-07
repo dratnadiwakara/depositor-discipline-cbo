@@ -1,0 +1,60 @@
+\section{Identification Strategy}
+\label{sec:identification}
+
+Cross-sectional comparisons of deposit flows and bank risk conflate
+information responses with pre-existing sorting
+\citep{covitz2004market, chen2022bank}: riskier banks carry fewer
+uninsured deposits in equilibrium.  I therefore identify the effect of
+the disclosure from within-bank changes around a regulatorily timed
+event, using the Day-One adjustment as cross-sectional treatment
+intensity.
+
+The baseline is a difference-in-differences estimator:
+\begin{equation}
+  y_{it}
+  = \alpha_i + \gamma_t
+  + \beta \cdot \mathrm{Post}_{it} \times \mathrm{CECL}_i
+  + \mathbf{X}_{it-1}'\boldsymbol{\delta}
+  + \varepsilon_{it},
+  \label{eq:did}
+\end{equation}
+where $y_{it}$ is the outcome for bank $i$ in quarter $t$; $\alpha_i$
+and $\gamma_t$ are bank and calendar-quarter fixed effects;
+$\mathrm{Post}_{it}$ equals one at or after bank $i$'s adoption date;
+$\mathrm{CECL}_i$ is either continuous \texttt{CECL Adj} or binary
+\texttt{High CECL}; and $\mathbf{X}_{it-1}$ collects lagged controls
+(log assets, equity-to-assets, interest expense-to-assets).  Bank fixed
+effects absorb all time-invariant differences; quarter fixed effects
+absorb aggregate macroeconomic forces common to all banks in a quarter,
+including the tightening cycle and any nationwide reaction to the 2023
+banking stress.  I also estimate an event-study specification that
+replaces $\mathrm{Post}_{it}$ with event-time dummies
+$k\in[-10,10]$, $k=-1$ omitted, and an extended version beginning in
+2018Q1 with binned endpoints.
+
+The composition test stacks the insured and uninsured time-deposit
+series in a single panel and estimates a triple difference:
+\begin{equation}
+\begin{split}
+  y_{idt}
+  = \alpha_{it}
+  + \beta_1 \cdot \mathrm{Uninsured}_d
+  + \beta_2 \cdot \mathrm{Post}_{t} \times \mathrm{Uninsured}_d
+  + \beta_3 \cdot \mathrm{CECL}_i \times \mathrm{Uninsured}_d \\
+  \quad + \beta_4 \cdot \mathrm{CECL}_i \times \mathrm{Post}_{t} \times \mathrm{Uninsured}_d
+  + \varepsilon_{idt},
+\end{split}
+\label{eq:triple}
+\end{equation}
+where $d \in \{\text{uninsured}, \text{insured}\}$ and $\alpha_{it}$
+are bank $\times$ quarter fixed effects.  These absorb the full vector
+of bank-specific time-varying shocks in each period---any level shift
+in total time-deposit demand, any bank-specific effect of the 2023
+stress, any change in liability strategy---so the triple-interaction
+coefficient $\beta_4$ is identified strictly from the differential
+movement of uninsured relative to insured deposits within the same
+bank-quarter cell.  This within-bank composition contrast is the
+paper's anchor because it is invariant to every bank-level determinant
+of total funding.
+
+Standard errors are clustered at the bank level throughout.

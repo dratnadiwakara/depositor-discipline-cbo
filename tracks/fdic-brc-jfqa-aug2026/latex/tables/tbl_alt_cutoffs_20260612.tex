@@ -1,0 +1,43 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{4}{c}{Unins. Time Dep./Assets (\%)}\\
+   Model:                          & (1)             & (2)             & (3)             & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x High CECL                & -0.3935$^{**}$  &                 &                 &   \\   
+                                   & (0.1815)        &                 &                 &   \\   
+   Post x High CECL (top quartile) &                 & -0.2833$^{***}$ &                 &   \\   
+                                   &                 & (0.0981)        &                 &   \\   
+   Post x High CECL (top decile)   &                 &                 & -0.2900$^{**}$  &   \\   
+                                   &                 &                 & (0.1381)        &   \\   
+   Post x Bottom-Decile CECL       &                 &                 &                 & -0.2672$^{*}$\\   
+                                   &                 &                 &                 & (0.1372)\\   
+   Post                            & 0.0552          & 0.1110          & 0.0654          & 0.0161\\   
+                                   & (0.0915)        & (0.0960)        & (0.0923)        & (0.0987)\\   
+   log(Assets), $t{-}1$            & -0.3559         & -0.3333         & -0.3505         & -0.3064\\   
+                                   & (0.2358)        & (0.2380)        & (0.2365)        & (0.2666)\\   
+   Equity/Assets (\%), $t{-}1$     & -0.0558$^{***}$ & -0.0546$^{***}$ & -0.0559$^{***}$ & -0.0612$^{***}$\\   
+                                   & (0.0114)        & (0.0114)        & (0.0114)        & (0.0115)\\   
+   Int. Exp/Assets (\%), $t{-}1$   & 5.043$^{***}$   & 5.086$^{***}$   & 5.050$^{***}$   & 5.235$^{***}$\\   
+                                   & (0.3100)        & (0.3112)        & (0.3100)        & (0.3266)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                            & Yes             & Yes             & Yes             & Yes\\  
+   Quarter                         & Yes             & Yes             & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                    & 97,064          & 97,064          & 97,064          & 87,334\\  
+   Adjusted R$^2$                  & 0.82123         & 0.82132         & 0.82124         & 0.82201\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+ 
+\par \raggedright 
+Column (4) compares bottom-decile (most favorable) Day-One adjustments to the middle of the distribution; top-decile banks are excluded.
+\par\endgroup
+
+

@@ -1,0 +1,139 @@
+---
+title: "Figure rebuild — overlay composition, balanced long ES, binned loan growth"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision, Phase 1.4 (plan i-am-planning-to-enchanted-codd.md).
+§1 Overlay figure: uninsured vs insured time-deposit event studies in ONE panel.
+§2 Balanced long event study: 2018Q1+ with binned endpoints (k clamped to
+   [-20, +11]) so unbalanced-cohort edge quarters no longer produce the
+   exploding k = -23..-21 / +12..+13 artifacts.
+§3 Loan growth: 4-quarter event-time bins (ref [-4,-1]) replacing the noisy
+   quarterly ES.
+Panel: tracks/post-jmcb-rejection-june2026/data/panel_smallbank_20260612.rds
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+
+setFixest_fml(
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+```
+
+## §1 Overlay composition figure
+
+```{r}
+m_u <- feols(unins_time_deps_assets ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+m_i <- feols(ins_time_deps_assets ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+
+pd_u <- extract_es_data(m_u)
+pd_i <- extract_es_data(m_i)
+
+p <- make_split_es_plot(
+  pd_list = list(pd_u, pd_i),
+  group_names = c("Uninsured time deposits", "Insured time deposits"),
+  colors = c(primary_blue, primary_gold),
+  title_str = "", ylab_str = "Coefficient (pp of assets)"
+)
+print(p)
+save_track_fig(p, "fig_overlay_composition", width = 6.5, height = 4)
+```
+
+## §2 Balanced long event study (binned endpoints)
+
+```{r}
+dt_long <- panel[D_DT >= as.Date("2018-03-31")]
+dt_long[, D_DT := as.factor(D_DT)]
+dt_long[, k_bal := pmax(pmin(qtrs_since, 11L), -20L)]
+
+cat("\n--- Balanced long ES: joint pre-trend tests (k in [-20,-2]) ---\n")
+for (s in list(
+  list(dv = "unins_time_deps_assets", stub = "fig_es_long_unins_balanced"),
+  list(dv = "ins_time_deps_assets",   stub = "fig_es_long_ins_balanced")
+)) {
+  m <- feols(.[s$dv] ~ i(k_bal, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dt_long, vcov = ~ID_RSSD)
+  w <- wald(m, keep = "k_bal::-", print = FALSE)
+  cat(sprintf("  %-30s F=%.3f  p=%.3f\n", s$stub, w$stat, w$p))
+  p <- make_es_plot(m, ylab_str = "Coefficient", title_str = "",
+                    event_var = "k_bal", vline_x = -1) +
+    annotate("rect", xmin = -12.5, xmax = -10.5, ymin = -Inf, ymax = Inf,
+             fill = accent_gray, alpha = 0.15) +
+    annotate("text", x = -11.5, y = -Inf, label = "COVID", color = accent_gray,
+             vjust = -0.5, size = 2.5)
+  print(p)
+  save_track_fig(p, s$stub, width = 6, height = 3)
+}
+cat("Endpoint bins: k = -20 pools all k <= -20; k = 11 pools all k >= 11.\n")
+```
+
+## §3 Loan growth, binned event time
+
+```{r}
+dt_w[, k_bin := cut(qtrs_since, breaks = c(-12, -8, -4, 0, 4, 8, 12),
+                    right = FALSE, labels = c("[-12,-9]", "[-8,-5]", "[-4,-1]",
+                                              "[0,3]", "[4,7]", "[8,11]"))]
+m_lg <- feols(loan_growth ~ i(k_bin, high_cecl_equity, ref = "[-4,-1]") +
+                ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+print(etable(m_lg, dict = covariate_labels_dict))
+
+cf <- coef(m_lg); sev <- se(m_lg)
+idx <- grepl("^k_bin::", names(cf))
+pd <- data.table(
+  bin = sub("^k_bin::(.*):high_cecl_equity$", "\\1", names(cf)[idx]),
+  est = cf[idx], se = sev[idx]
+)
+pd <- rbind(pd, data.table(bin = "[-4,-1]", est = 0, se = 0))
+pd[, bin := factor(bin, levels = c("[-12,-9]", "[-8,-5]", "[-4,-1]",
+                                   "[0,3]", "[4,7]", "[8,11]"))]
+setorder(pd, bin)
+pd[, `:=`(lo90 = est - CI_Z * se, hi90 = est + CI_Z * se)]
+
+# Integer x positions: mixing a discrete factor axis with numeric annotate()/
+# vline() coordinates errors at render time (blank PNG).
+pd[, x := as.integer(bin)]
+p <- ggplot(pd, aes(x = x, y = est)) +
+  geom_hline(yintercept = 0, color = accent_gray, linewidth = 0.4, linetype = "dashed") +
+  geom_vline(xintercept = 3.5, color = "darkred", linewidth = 1, linetype = "dotted") +
+  annotate("text", x = 3.6, y = Inf, label = "CECL Adoption",
+           color = accent_gray, vjust = 1.5, hjust = 0, size = 2.8) +
+  geom_pointrange(aes(ymin = lo90, ymax = hi90), color = primary_blue,
+                  linewidth = 0.7, size = 0.45) +
+  scale_x_continuous(breaks = pd$x, labels = levels(pd$bin)) +
+  theme_custom() +
+  labs(x = "Quarters relative to CECL adoption (4-quarter bins)",
+       y = "Coefficient (quarterly loan growth, %)")
+print(p)
+save_track_fig(p, "fig_es_loan_growth_binned", width = 6, height = 3)
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("dt_w rows:", nrow(dt_w), "| dt_long rows:", nrow(dt_long), "\n")
+cat("Loan-growth bin estimates:\n"); print(pd)
+```

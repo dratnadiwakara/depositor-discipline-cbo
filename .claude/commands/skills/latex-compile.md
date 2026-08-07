@@ -35,6 +35,15 @@ cd <tex_dir> && mkdir -p build && latexmk -pdf -recorder -silent -output-directo
 - If this **succeeds** (exit code 0 and `build/<stem>.pdf` exists): report the page count (if printed), the PDF path, and **stop** — skip all remaining steps.
 - If this **fails** (exit code non-zero, latexmk not found, or PDF not produced): note the failure briefly and continue to the pdflatex fallback below.
 
+**Bibtex on MiKTeX + `-output-directory` bug.** If the bibliography file (`build/<stem>.bbl`) is produced but is empty (`\begin{thebibliography}{}\end{thebibliography}`) and the `.blg` shows `Warning--I didn't find a database entry for ...` for every cite key, bibtex was launched against `build/<stem>.aux` but could not resolve the `.bib` file in the parent dir. Fix by dropping a `.latexmkrc` next to `<stem>.tex` with:
+
+```
+$bibtex_use = 2;
+ensure_path( 'BIBINPUTS', '..' );
+```
+
+then `rm -rf build` and rerun latexmk. New tracks scaffolded via `scripts/new-track.{ps1,sh}` already include this file.
+
 ## Step 1 — Detect bibliography backend
 
 Before running any commands, read the first ~100 lines of `<stem>.tex` (or grep it) to check:

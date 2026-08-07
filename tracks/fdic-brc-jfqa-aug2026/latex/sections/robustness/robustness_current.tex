@@ -1,0 +1,150 @@
+\section{Robustness}
+\label{sec:robustness}
+
+We address the two most demanding threats---the 2023 banking stress and
+inference under a common adoption quarter---then pre-trends, the scope
+of the response, and a set of compressed additional checks.
+
+\subsection{The 2023 Stress: Characteristics-by-Quarter Controls}
+\label{sec:robustness:stress}
+
+If high-CECL banks were differentially exposed to the March 2023 stress
+through observable balance-sheet characteristics, quarter fixed effects
+alone would not remove the confound.  We therefore allow the eight
+2022Q4 characteristics the literature identifies as run-risk
+drivers---log assets, equity-to-assets, uninsured deposit share,
+brokered share, NPL/loans, ROA, CRE share, and unrealized securities
+losses \citep{caglio2024depositors}---to enter interacted with
+calendar-quarter fixed effects.  In the level DiD, size and capital
+interactions leave the estimate essentially unchanged ($-0.069$,
+$p<0.10$), while adding quarter-specific slopes in the 2022Q4 deposit-mix
+variables attenuates it ($-0.037$ continuous, $-0.238$ binary,
+unreported table).  Those deposit-mix controls are mechanically
+entangled with the outcome---the bad-control problem that motivates the
+composition design.  Table~\ref{tab:flexcontrols_td} applies the same
+saturation \emph{within} the triple difference, where the entanglement
+does not arise; the triple interaction survives essentially intact
+($-0.136$ per percentage point of exposure, $p<0.05$; $-1.05$ percentage
+points for high-CECL banks, $p<0.01$; baseline: $-0.177$ and $-1.25$).
+Whatever differential stress exposure the 2022Q4 characteristics carry,
+it does not explain why uninsured deposits fell \emph{relative to
+insured deposits within the same bank} in proportion to the disclosed
+adjustment.  The weekly posted-rate evidence of
+Section~\ref{sec:results:anticipation} reinforces the point from
+outside the Call Report: high-CECL banks showed no differential retail
+funding-market response during the stress window itself.
+
+\subsection{Inference under a Common Adoption Quarter}
+\label{sec:robustness:inference}
+
+Because 92 percent of the sample adopts CECL in 2023Q1, the design has a
+strong common-shock component, and standard errors clustered only at the
+bank level could understate uncertainty if cross-sectional residuals
+share the post-shock disturbance.  Table~\ref{tab:inference_summary}
+addresses this two ways.  First, two-way clustering by bank and calendar
+quarter leaves the standard errors of the headline estimates essentially
+unchanged (the triple-difference standard error in fact falls slightly).
+Second, we conduct randomization inference in the spirit of a
+design-based Fisher test: we reassign the bank-level treatment pair
+(continuous adjustment and the derived High-CECL indicator) at random
+across banks, holding each bank's adoption timing fixed, re-estimate the
+headline specifications on 1{,}000 permuted assignments, and compute
+two-sided $p$-values as the share of placebo coefficients at least as
+large in magnitude as the actual estimate.  The composition
+triple-difference has a permutation $p$-value of 0.001 in both
+continuous and binary form; interest expense (0.006) and ROA (0.001)
+are similarly sharp.  The level uninsured DiD is marginal under
+permutation ($p \approx 0.05$), consistent with our anchoring the paper
+on the composition contrast rather than the level result.
+
+\subsection{Cohort Timing and the Not-Yet-Adopted Placebo}
+\label{sec:robustness:timing}
+
+The staggered rollout offers a lever in principle: 323 banks adopted in
+quarters other than 2023Q1.  In practice this margin has limited power,
+and we do not lean on it.  Dropping the entire 2023Q1 cohort leaves only
+13 high-CECL banks; the resulting DiD carries the right sign (continuous
+$-0.081$; binary $-0.133$) but is imprecise.
+
+A placebo on the 231 late-cohort banks that had not yet adopted as of
+2023Q1---regressing the 2023Q1 change in uninsured time deposits on the
+size of their still-undisclosed \emph{future} Day-One adjustment---does
+not come out clean: the coefficient is negative and significant
+($-0.101$ continuous, $p<0.05$).  Two readings are consistent with this
+pattern.  Under the first, the March 2023 stress loaded on the same
+credit-risk fundamentals that CECL later capitalized into a single
+number, and the placebo captures that common fundamental.  Under the
+second, forward-looking depositors anticipated the disclosure itself in
+the weeks between the March failures and the 2023Q1 filings.  We do not
+view the placebo as decisive between these readings.  What it
+establishes is that the level DiD around 2023Q1 cannot by itself
+separate disclosure from stress at the primary cohort---which is
+precisely why identification rests on the characteristics-by-quarter
+saturation of the triple difference and on the private-versus-public
+timing evidence of Section~\ref{sec:results:anticipation}, neither of
+which this cross-sectional 2023Q1 correlation can contaminate.
+
+\subsection{Extended Pre-Trends, Including the Pandemic Quarters}
+\label{sec:robustness:pretrends}
+
+The baseline event window begins in 2020Q3.
+Figure~\ref{fig:es_long_balanced} extends the event study back to 2018Q1
+with endpoint bins at $k=-20$ and $k=+11$, so that the thinly populated
+edge quarters contributed only by off-cycle cohorts are pooled rather
+than estimated from a handful of banks.  Point estimates for uninsured
+time deposits over the five-year pre-period sit near zero with no slope
+toward the adoption-date divergence, and the post-adoption break remains
+the dominant feature.  Joint tests of the pre-adoption coefficients do
+not reject parallel trends (uninsured $p = 0.18$; insured $p = 0.37$).
+In earlier unbinned versions the same tests rejected marginally
+($p \approx 0.04$--$0.06$); the rejections were driven entirely by the
+unbalanced edge quarters, not by any trend near adoption.  The COVID
+quarters contribute noise but no differential trend.  The one visible
+pre-adoption movement---the late upward drift in the insured
+series---is the balance-sheet footprint of the bank-side pre-funding
+documented in Section~\ref{sec:results:anticipation}.
+
+\subsection{Scope of the Response: Total Uninsured Deposits}
+\label{sec:robustness:scope}
+
+Table~\ref{tab:total_uninsured} estimates the baseline DiD on total
+uninsured and total insured deposits scaled by assets.  Neither moves
+detectably (total uninsured: continuous $+0.073$, SE $0.085$; binary
+$-0.177$, SE $0.458$).  The disciplinary response we document is
+confined to the time-deposit rollover margin.  We regard this as the
+mechanism's fingerprint rather than a shortcoming: transaction and
+operating balances deliver liquidity services, are costly to relocate,
+and have no natural decision point at which a depositor reconsiders the
+bank; certificates mature, and the disclosure arrives while the renewal
+decision is live.  The null also bounds the aggregate
+interpretation---the CECL disclosure reallocated term funding at the
+margin; it did not trigger broad deposit flight.
+
+\subsection{Additional Checks}
+\label{sec:robustness:additional}
+
+Four further sets of results, reported compactly here (tables available
+on request).  \emph{Treatment specification.}  Scaling the Day-One
+charge by total assets or by loans instead of equity preserves the
+pattern (uninsured time deposits $-0.714$, $p<0.10$; interest expense
+and ROA significant at 1\%), and binary cutoffs at the 75th and 90th
+percentiles deliver estimates of $-0.28$ and $-0.29$, so neither the
+scaling nor the threshold is doing the work.  Dropping the single bank
+with the largest adjustment leaves the baseline essentially unchanged.
+\emph{Residualized treatment.}  Replacing the adjustment with the
+residual from the expanded 2022Q4 predictor regression of
+Table~\ref{tab:cecl_predictors_cross_section} column (2) preserves sign
+at roughly two-thirds the baseline magnitude, though imprecisely,
+suggesting the estimate is not driven purely by selection on
+observables.  \emph{Local reallocation.}  In annual branch-level SOD
+data, deposit growth after 2023 is faster at low-CECL banks more
+exposed to high-CECL competitors in their counties ($+2.4$ percentage
+points per unit of leave-out exposure, $p<0.10$; county-level analog
+$+5.2$, $p<0.01$), so part of the withdrawn funding re-intermediates
+locally---spillovers that bias the within-market estimates toward zero.
+\emph{Lending.}  Quarterly loan growth at high-CECL banks is lower
+after adoption relative to the four preceding quarters ($-0.65$,
+$p<0.01$, concentrated in CRE), but growth in those four quarters was
+unusually strong, and measured against a longer pre-period the slowdown
+is modest at best; we therefore treat the lending margin as suggestive
+only and draw no headline conclusion from it.

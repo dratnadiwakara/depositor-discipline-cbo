@@ -1,0 +1,54 @@
+\section{Heterogeneity by Branch-Market Sophistication}
+\label{sec:heterogeneity}
+\label{sec:results:sophistication}
+\label{sec:results:heterogeneity}
+
+The disciplinary mechanism requires depositors willing and able to act
+on new risk information.  We proxy for depositor financial
+sophistication with a bank-level index of the ZIP-code demographics of
+a bank's branch footprint---the deposit-weighted share of branches in
+above-median-education, above-median-investment-income ZIP codes---and
+split the sample at the 75th percentile of the index
+(Section~\ref{sec:data:sophistication}).  The proxy is imperfect: it
+captures the demographic composition of the banking market, not the
+sophistication of the depositors of record, and cannot distinguish
+retail-branch banking from commercial-banking activity in a given
+ZIP code.  We interpret significant coefficients on this index as
+evidence that the disclosure response is amplified in markets where
+depositors have observable characteristics associated with financial
+literacy, not as a direct sophistication measurement.
+
+Figure~\ref{fig:es_sophistication_split} presents event-study estimates
+separately for high- and low-sophistication banks;
+Table~\ref{tab:soph_triple_2022} reports pooled triple interactions.
+The uninsured deposit response is concentrated in high-sophistication
+markets (Panel~A): the event-study coefficient drifts downward after
+adoption, reaching $-1.5$ to $-2$ percentage points of assets by
+quarters $+9$ to $+11$, while low-sophistication banks remain near zero.
+The gradual buildup explains why the pooled quantity triple
+($-0.022$, SE $0.468$) is statistically insignificant despite the visual
+separation.  Splitting the post-period into early (quarters 0--4) and
+late (quarter 5+) windows confirms the buildup: the uninsured-quantity
+triple grows in absolute size with horizon.
+
+The sharpest statistical signal is in the price channel.  Panel~C shows
+that high-CECL banks in high-sophistication markets paid a steeper
+increase in interest expense; the triple is $+0.044$ percentage points
+per quarter ($p=0.020$), about 17--18 additional basis points annually
+on top of the pooled effect.  ROA falls by an additional 30 basis points
+annually ($-0.076$ per quarter, $p=0.010$); NIM is directionally
+consistent but imprecise ($-0.031$, $p=0.175$).  Panel~B shows
+high-sophistication banks also attracted fewer insured deposits than
+their low-sophistication counterparts ($-0.965$, SE $0.677$).  Two
+channels operate: sophisticated depositors extract higher rates
+immediately upon observing the disclosure, then reduce balances as term
+instruments mature \citep{egan2017deposit}.  The price and profitability
+channels are statistically sharp; the quantity channel in
+high-sophistication markets is visible in the event studies but does
+not achieve conventional significance in pooled interactions.
+
+Rebuilding the index with June 2019 SOD weights---branch structure fixed
+before the CECL rollout and the pandemic---leaves the pattern intact and
+if anything sharpens it (insured-deposit triple $-1.418$, $p<0.05$;
+interest expense, ROA, and NIM triples match baseline).  The two indices
+correlate at 0.98 and reclassify fewer than 3 percent of banks.

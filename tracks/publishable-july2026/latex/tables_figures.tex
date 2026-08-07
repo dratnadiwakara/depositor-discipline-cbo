@@ -1,0 +1,358 @@
+%% Consolidated float file. Order follows first reference in text.
+
+%% Headline summary
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Headline post-adoption effects at high-CECL community banks (CECL Day-One adjustment at or above 2.5\% of pre-adoption equity, roughly the 95th percentile). All coefficients are on Post $\times$ High-CECL, from bank and calendar-quarter fixed-effects specifications with lagged controls; bank-clustered standard errors in parentheses. Panel A reports level DiD estimates for time-deposit categories and the triple-difference composition shift with bank $\times$ quarter fixed effects. Panel B reports quarterly financial-outcome DiD estimates; annualized magnitudes are approximately four times the reported coefficient. Panel C reports quarterly loan-growth DiD estimates in percent. Individual specifications and continuous-treatment analogs are reported in the underlying tables. *, **, *** denote significance at 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.85\textwidth}{!}{\input{tables/tab00_headline_summary}}
+    \caption{Headline post-adoption effects at high-CECL community banks}
+    \label{tab:headline_summary}
+\end{table}
+
+%% Descriptive statistics
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+This figure plots the cross-sectional distribution of the CECL Day-One retained-earnings adjustment scaled by pre-adoption equity (percentage points) for community banks at the adoption quarter. The vertical dashed line marks the high-CECL threshold of 2.5 percent of equity (approximately the 95th percentile).
+    }
+    \includegraphics[width=0.75\textwidth]{figures/fig01_cecl_dist_20260612.png}
+    \caption{Distribution of CECL adjustment relative to equity}
+    \label{fig:cecl_equity_distribution}
+\end{figure}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Number of community banks by fiscal quarter of first non-missing CECL Day-One adjustment in the eligible adoption window (2022Q3--2023Q4). The highlighted bar corresponds to 2023Q1.
+    }
+    \includegraphics[width=0.75\textwidth]{figures/fig02_adoption_dist_20260612.png}
+    \caption{Distribution of CECL adoption quarters}
+    \label{fig:cecl_adoption_quarter_distribution}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Summary statistics at each bank's CECL adoption quarter. Columns present the full sample, banks with a high CECL Day-One adjustment (at or above 2.5 percent of equity), the remaining low-CECL banks, and the high-minus-low mean difference with two-sample $t$-test significance. Ratio variables are in percentage points, winsorized within quarter at the 1st and 99th percentiles. *, **, *** denote significance at 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tab01_sumstats_20260612}}
+    \caption{Summary statistics at CECL adoption}
+    \label{tab:descriptive_sumstats_cecl}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+OLS regressions of the CECL Day-One adjustment (percent of pre-adoption equity) on 2022Q4 bank characteristics. Column (1) uses balance-sheet, loan-composition, and credit-quality fundamentals. Column (2) adds deposit composition and eight-quarter pre-adoption trends in profitability and asset quality; this column serves as the first stage for the residualized-treatment robustness of Section~\ref{sec:robustness}. Column (3) adds county-level deposit-market concentration (HHI). Heteroskedasticity-robust (HC1) standard errors in parentheses. *, **, *** denote significance at 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    {\small\input{tables/tab02_cecl_predictors_20260612}}
+    \caption{Predictors of CECL adjustment scaled by equity}
+    \label{tab:cecl_predictors_cross_section}
+\end{table}
+
+%% Main results
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Difference-in-differences estimates. Dependent variables: uninsured time deposits/assets (cols 1--2) and insured time deposits/assets (cols 3--4), in percentage points. Odd columns interact Post with continuous CECL Day-One adjustment relative to equity; even columns use the High-CECL indicator. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tbl_did_time_deposits_20260612}}
+    \caption{Difference-in-differences: time deposits and CECL exposure}
+    \label{tab:small_bank_did_time_deposits}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates. Horizontal axis: quarters relative to each bank's CECL adoption, $k=-1$ omitted. Panel A: uninsured time deposits/assets under the High-CECL indicator interaction. Panel B: insured time deposits/assets. Bank and calendar-quarter FE; lagged controls; bank-clustered standard errors. Shaded bands are pointwise 90\% CIs.
+    }
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel A: Uninsured time deposits/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_unins_time_deps_assets_20260612.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel B: Insured time deposits/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_ins_time_deps_assets_20260612.png}
+    \end{minipage}
+    \caption{Event studies: time deposits around CECL adoption}
+    \label{fig:es_time_deps_cecl}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Triple-difference estimates. Stacked panel: each bank-quarter contributes two rows (uninsured and insured time deposits/assets) with an uninsured indicator. Column (1) uses continuous CECL adjustment relative to equity; column (2) uses the High-CECL indicator. Bank $\times$ quarter fixed effects absorb all bank-specific time-varying shocks; identification comes from the within-bank, within-quarter uninsured-vs-insured differential. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tbl_triple_diff_time_deposits_20260612}}
+    \caption{Triple difference: time deposits, CECL, and uninsured status}
+    \label{tab:small_bank_triple_diff_time_deposits}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Difference-in-differences estimates for financial outcomes. Dependent variables: interest expense/assets (cols 1--2), ROA (cols 3--4), and NIM (cols 5--6), each in quarterly percentage points. Odd columns use continuous CECL adjustment; even use High-CECL. Bank and calendar-quarter FE; lagged log assets and equity-to-assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tbl_did_financial_outcomes_20260612}}
+    \caption{Difference-in-differences: financial outcomes and CECL exposure}
+    \label{tab:small_bank_did_financial_outcomes}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates for financial outcomes under the High-CECL indicator. Horizontal axis: quarters relative to CECL adoption, $k=-1$ omitted. Bank and calendar-quarter FE; bank-clustered standard errors. Shaded bands are pointwise 90\% CIs.
+    }
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel A: Interest expense/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_int_expense_assets_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel B: Return on assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_roa_20260403.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel C: Net interest margin}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_nim_20260403.png}
+    \end{minipage}
+    \caption{Event studies: financial outcomes around CECL adoption}
+    \label{fig:es_financial_outcomes_cecl}
+\end{figure}
+
+%% Heterogeneity
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates by depositor sophistication. Each panel overlays banks in high-sophistication markets (top quartile of the 2022-weighted deposit-weighted branch-market sophistication index) and the remaining banks. Bank and calendar-quarter FE; bank-clustered standard errors. Shaded bands are pointwise 90\% CIs.
+    }
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel A: Uninsured time deposits/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_unins_time_deps_assets_20260612.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\textwidth}
+        \centering
+        {\small Panel B: Insured time deposits/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_ins_time_deps_assets_20260612.png}
+    \end{minipage}
+    \vspace{0.4cm}\\
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel C: Interest expense/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_int_expense_assets_20260612.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel D: ROA}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_roa_20260612.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.32\textwidth}
+        \centering
+        {\small Panel E: NIM}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/es_soph_split_nim_20260612.png}
+    \end{minipage}
+    \caption{Event studies by depositor sophistication}
+    \label{fig:es_sophistication_split}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Triple-interaction estimates Post $\times$ High CECL $\times$ High Sophistication. Sophistication index: deposit-weighted share of bank branches in ZIP codes with above-median bachelor's-degree share and above-median investment-income filing share, using June 2022 SOD branch weights; High Sophistication denotes top-quartile banks. Dependent variables: uninsured and insured time deposits/assets, interest expense/assets, ROA, NIM. Bank and calendar-quarter FE; all lower-order interactions; lagged controls. Bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{\textwidth}{!}{\input{tables/tbl_soph_2022_20260612}}
+    \caption{Sophistication triple interactions}
+    \label{tab:soph_triple_2022}
+\end{table}
+
+%% Robustness: 2023 stress
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Difference-in-differences estimates for uninsured time deposits/assets (percentage points) allowing 2022Q4 bank characteristics to shift the outcome flexibly by calendar quarter. Column (1) baseline. Column (2) adds quarter-specific slopes in 2022Q4 log assets and equity-to-assets. Column (3) adds quarter-specific slopes in the 2022Q4 uninsured deposit share and brokered share. Column (4) adds slopes in 2022Q4 NPL/loans, ROA, CRE share, and unrealized securities losses/assets. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.9\textwidth}{!}{\input{tables/tbl_flexcontrols_20260612}}
+    \caption{Level DiD with 2022Q4 characteristics $\times$ quarter controls}
+    \label{tab:flexcontrols}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Triple-difference re-estimated with the eight 2022Q4 characteristics allowed quarter-specific slopes on the uninsured--insured deposit gap. Column (1) continuous; column (2) High-CECL. Bank $\times$ quarter FE; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tbl_flexcontrols_td_20260612}}
+    \caption{Triple difference with 2022Q4 characteristics $\times$ quarter $\times$ uninsured controls}
+    \label{tab:flexcontrols_td}
+\end{table}
+
+%% Residualized treatment
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+DiD replacing the CECL adjustment with the residual from column (2) of Table~\ref{tab:cecl_predictors_cross_section}, orthogonal by construction to 2022Q4 fundamentals, deposit composition, and eight-quarter pre-adoption trends. Dependent variables: uninsured time deposits/assets (cols 1--2), interest expense/assets (cols 3--4), ROA (cols 5--6). Odd columns raw continuous treatment; even columns residualized. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.9\textwidth}{!}{\input{tables/tbl_resid_cecl_20260612}}
+    \caption{DiD with residualized CECL treatment}
+    \label{tab:resid_cecl}
+\end{table}
+
+%% Scaling, cutoffs, nonlinearity
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+DiD with the CECL adjustment scaled by 2022Q4 total assets instead of pre-adoption equity. Dependent variables: uninsured time deposits/assets (cols 1--2), interest expense/assets (cols 3--4), ROA (cols 5--6). Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.9\textwidth}{!}{\input{tables/tbl_alt_scaling_assets_20260612}}
+    \caption{Alternative treatment scaling: CECL adjustment relative to assets}
+    \label{tab:alt_scaling_assets}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Binary DiD for uninsured time deposits/assets under alternative treatment cutoffs. Column (1) baseline (2.5\% of equity, roughly 95th percentile). Column (2) top quartile. Column (3) top decile. Column (4) bottom decile (most favorable adjustments) vs.\ middle of the distribution excluding top-decile banks. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    {\small\input{tables/tbl_alt_cutoffs_20260612}}
+    \caption{Alternative treatment cutoffs and the favorable tail}
+    \label{tab:alt_cutoffs}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Post-adoption DiD coefficients for uninsured time deposits/assets by bins of the CECL adjustment distribution (negative, small positive, large positive, extreme), each relative to banks with adjustments near zero. Vertical bars are 90\% CIs.
+    }
+    \includegraphics[width=0.75\textwidth]{figures/fig_cecl_bins_20260612.png}
+    \caption{Dose-response across the CECL adjustment distribution}
+    \label{fig:cecl_bins}
+\end{figure}
+
+%% Destination of funds and spillovers
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+DiD for wholesale and insurance-structured funding outcomes, each scaled by assets (percentage points): total brokered (cols 1--2), insured brokered (cols 3--4), uninsured brokered maturing within one year (cols 5--6), reciprocal deposits (cols 7--8). Odd columns continuous; even High-CECL. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{\textwidth}{!}{\input{tables/tbl_brokered_20260612}}
+    \caption{Destination of funding: brokered and reciprocal deposits}
+    \label{tab:brokered}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates for insured brokered deposits/assets around CECL adoption. Horizontal axis: quarters relative to adoption, $k=-1$ omitted. Bank-clustered SEs; shaded bands are 90\% CIs.
+    }
+    \includegraphics[width=0.7\textwidth]{figures/fig_es_brokered_ins_20260612.png}
+    \caption{Event study: insured brokered deposits}
+    \label{fig:es_brokered_ins}
+\end{figure}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Local-market spillovers via annual SOD. Column (1): unit is a low-CECL bank-year; dependent variable is annual branch-deposit growth; regressor of interest is the bank's 2022 deposit-weighted leave-out share of high-CECL competitors in its counties $\times$ post-2023; bank and year FE. Column (2): unit is a county-year; dependent variable is deposit growth at low-CECL banks' branches; regressor is county high-CECL deposit share $\times$ post-2023; county and year FE. SEs clustered at bank (col 1) or county (col 2). *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    {\small\input{tables/tbl_spillover_20260612}}
+    \caption{Local-market spillovers: deposit growth at low-CECL competitors}
+    \label{tab:spillover}
+\end{table}
+
+%% Real effects: lending
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+DiD for quarterly loan growth (percent): total loans (cols 1--2), commercial and industrial (cols 3--4), CRE (cols 5--6). Odd columns continuous; even High-CECL. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{0.9\textwidth}{!}{\input{tables/tbl_lending_20260612}}
+    \caption{DiD: loan growth and CECL exposure}
+    \label{tab:lending}
+\end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates for total loan growth. Horizontal axis: quarters relative to adoption, $k=-1$ omitted. Bank-clustered SEs; shaded bands are 90\% CIs.
+    }
+    \includegraphics[width=0.7\textwidth]{figures/fig_es_loan_growth_20260612.png}
+    \caption{Event study: loan growth}
+    \label{fig:es_loan_growth}
+\end{figure}

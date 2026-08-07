@@ -1,0 +1,122 @@
+---
+title: "Time-deposit rate spread and total uninsured deposits"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision, Phase 1.2-1.3 (plan i-am-planning-to-enchanted-codd.md).
+§1 Direct price-of-discipline test: implied rates on uninsured (>$250k) vs
+   insured (<=$250k) time deposits; DiD on each rate and the within-bank spread.
+§2 Event study for the spread.
+§3 Total uninsured deposits (all categories, excl. retirement): DiD + ES.
+Inputs: panel_smallbank (post-jmcb vintage, via fallback) and
+        td_rates_20260806.rds (01c_build_td_rates_20260806.R).
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+save_tables  <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+rates <- readRDS(latest_track_file("td_rates"))
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+# Merge on Date BEFORE factor conversion (factor-level mismatch would misjoin)
+dt_w[, D_DT := as.Date(D_DT)]
+rates[, D_DT := as.Date(D_DT)]
+dt_w[rates, on = c("ID_RSSD", "D_DT"),
+     `:=`(rate_ins_td = i.rate_ins_td, rate_unins_td = i.rate_unins_td,
+          rate_spread_td = i.rate_spread_td)]
+dt_w[, D_DT := as.factor(D_DT)]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+
+dict_did <- c(covariate_labels_dict, "(Intercept)" = "Constant",
+              "rate_ins_td" = "Ins. TD Rate (\\%)",
+              "rate_unins_td" = "Unins. TD Rate (\\%)",
+              "rate_spread_td" = "TD Rate Spread (\\%)")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+
+cat("Merged rate coverage in window:",
+    dt_w[, mean(!is.na(rate_spread_td))] * 100, "% of bank-quarters\n")
+```
+
+## §1 Rate DiD: uninsured rate, insured rate, spread
+
+```{r}
+r1 <- list(
+  feols(rate_unins_td  ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(rate_unins_td  ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(rate_ins_td    ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(rate_ins_td    ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(rate_spread_td ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(rate_spread_td ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+cat("\n================ §1 TD RATE DiD ================\n")
+etable(r1, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r1, "tbl_td_rates", dict_did, order_did_tbl)
+
+# Two-way clustered variant for the spread (inference appendix consistency)
+cat("\nSpread DiD, two-way clustered:\n")
+print(summary(r1[[6]], vcov = ~ID_RSSD + D_DT))
+```
+
+## §2 Event study: rate spread
+
+```{r}
+m_es <- feols(rate_spread_td ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+                ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(m_es, ylab_str = "Coefficient (annualized %)", title_str = "",
+                  vline_x = -1)
+print(p)
+save_track_fig(p, "fig_es_td_rate_spread", width = 6, height = 3)
+```
+
+## §3 Total uninsured deposits (excl. retirement)
+
+```{r}
+r3 <- list(
+  feols(unins_deps_assets ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(unins_deps_assets ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ins_deps_assets   ~ ..reg_cont  + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ins_deps_assets   ~ ..reg_dummy + ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+cat("\n================ §3 TOTAL UNINSURED / INSURED DEPOSITS DiD ================\n")
+etable(r3, dict = dict_did, order = order_did_tbl)
+export_track_tbl(r3, "tbl_total_uninsured", dict_did, order_did_tbl)
+
+m_es3 <- feols(unins_deps_assets ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+                 ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+p <- make_es_plot(m_es3, ylab_str = "Coefficient (pp of assets)", title_str = "",
+                  vline_x = -1)
+print(p)
+save_track_fig(p, "fig_es_total_unins", width = 6, height = 3)
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("Window rows:", nrow(dt_w), "| banks:", uniqueN(dt_w$ID_RSSD), "\n")
+cat("rate_spread_td non-missing:", dt_w[, sum(!is.na(rate_spread_td))], "\n")
+cat("unins_deps_assets non-missing:", dt_w[, sum(!is.na(unins_deps_assets))], "\n")
+cat("Sample means: spread", round(dt_w[, mean(rate_spread_td, na.rm = TRUE)], 3),
+    "| unins_deps_assets", round(dt_w[, mean(unins_deps_assets, na.rm = TRUE)], 2), "\n")
+```

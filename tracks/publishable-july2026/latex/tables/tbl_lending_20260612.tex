@@ -1,0 +1,34 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{2}{c}{Loan Growth (\%)} & \multicolumn{2}{c}{C\&I Loan Growth (\%)} & \multicolumn{2}{c}{CRE Loan Growth (\%)}\\
+   Model:                       & (1)             & (2)             & (3)            & (4)            & (5)             & (6)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj              & -0.1166$^{***}$ &                 & -0.0644        &                & -0.1839$^{***}$ &   \\   
+                                & (0.0364)        &                 & (0.0814)       &                & (0.0537)        &   \\   
+   Post x High CECL             &                 & -0.6492$^{***}$ &                & -0.4815        &                 & -0.9022$^{***}$\\   
+                                &                 & (0.1976)        &                & (0.4636)       &                 & (0.2876)\\   
+   Post                         & 0.3078$^{*}$    & 0.3046$^{*}$    & 0.2672         & 0.2712         & 0.2743          & 0.2638\\   
+                                & (0.1781)        & (0.1776)        & (0.6683)       & (0.6687)       & (0.3400)        & (0.3401)\\   
+   log(Assets), $t{-}1$         & -4.679$^{***}$  & -4.691$^{***}$  & -8.514$^{***}$ & -8.515$^{***}$ & -3.753$^{***}$  & -3.777$^{***}$\\   
+                                & (0.6273)        & (0.6265)        & (1.082)        & (1.081)        & (0.6313)        & (0.6317)\\   
+   Equity/Assets (\%), $t{-}1$  & 0.0262          & 0.0257          & 0.2056$^{***}$ & 0.2053$^{***}$ & -0.0041         & -0.0050\\   
+                                & (0.0220)        & (0.0220)        & (0.0641)       & (0.0641)       & (0.0295)        & (0.0295)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                         & Yes             & Yes             & Yes            & Yes            & Yes             & Yes\\  
+   Quarter                      & Yes             & Yes             & Yes            & Yes            & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                 & 96,008          & 96,008          & 93,643         & 93,643         & 94,760          & 94,760\\  
+   Adjusted R$^2$               & 0.22471         & 0.22472         & 0.33255        & 0.33256        & 0.05845         & 0.05842\\  
+   \midrule \midrule
+   \multicolumn{7}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

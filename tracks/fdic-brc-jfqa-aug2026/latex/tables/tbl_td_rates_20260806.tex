@@ -1,0 +1,34 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{2}{c}{Unins. TD Rate (\%)} & \multicolumn{2}{c}{Ins. TD Rate (\%)} & \multicolumn{2}{c}{TD Rate Spread (\%)}\\
+   Model:                       & (1)            & (2)            & (3)            & (4)            & (5)             & (6)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj              & -0.0080        &                & 0.0023         &                & -0.0076         &   \\   
+                                & (0.0094)       &                & (0.0076)       &                & (0.0099)        &   \\   
+   Post x High CECL             &                & -0.0819        &                & 0.0239         &                 & -0.1103$^{*}$\\   
+                                &                & (0.0518)       &                & (0.0382)       &                 & (0.0574)\\   
+   Post                         & 0.0195         & 0.0211         & 0.0085         & 0.0080         & 0.0023          & 0.0054\\   
+                                & (0.0458)       & (0.0458)       & (0.0342)       & (0.0342)       & (0.0515)        & (0.0515)\\   
+   log(Assets), $t{-}1$         & 0.3224$^{***}$ & 0.3236$^{***}$ & 0.6387$^{***}$ & 0.6384$^{***}$ & -0.2935$^{***}$ & -0.2907$^{***}$\\   
+                                & (0.0456)       & (0.0457)       & (0.0396)       & (0.0396)       & (0.0460)        & (0.0459)\\   
+   Equity/Assets (\%), $t{-}1$  & 0.0064$^{**}$  & 0.0064$^{*}$   & 0.0047$^{*}$   & 0.0047$^{*}$   & -0.0018         & -0.0018\\   
+                                & (0.0033)       & (0.0033)       & (0.0027)       & (0.0027)       & (0.0036)        & (0.0036)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                         & Yes            & Yes            & Yes            & Yes            & Yes             & Yes\\  
+   Quarter                      & Yes            & Yes            & Yes            & Yes            & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                 & 93,489         & 93,489         & 95,507         & 95,507         & 93,164          & 93,164\\  
+   Adjusted R$^2$               & 0.79421        & 0.79423        & 0.89444        & 0.89444        & 0.23306         & 0.23320\\  
+   \midrule \midrule
+   \multicolumn{7}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

@@ -1,0 +1,126 @@
+\section{Introduction}
+\label{sec:intro}
+
+Whether uninsured depositors discipline bank risk remains one of the
+central open questions in banking.  Theory predicts they should
+\citep{calomiris1991role, diamond2001liquidity}, and a large empirical
+literature documents that riskier banks pay higher deposit rates and
+experience larger uninsured outflows \citep{park1995market,
+martinez2001depositors, maechler2006dynamic, iyer2016tale, egan2017deposit,
+chen2024liquidity}.  Whether these patterns reflect a causal disciplinary
+response or equilibrium correlation remains unsettled.  The question is
+pressing: against a backdrop of expanding government protection for
+uninsured depositors---the Main Street Depositor Protection Act (S.~2999,
+reintroduced March 2026) would formally extend coverage to \$10~million
+per account---it matters whether this discipline operates before the
+incentives that sustain it are further weakened.  Early state deposit
+insurance programs eliminated market discipline and enabled excessive
+risk-taking \citep{calomiris2019stealing}.  We ask whether uninsured
+depositors respond to mandatory credit-risk disclosures, using
+U.S.\ community banks, where institutions below \$10~billion in assets
+carry no credible government backstop and identification conditions are
+favorable \citep{o1990deposit, flannery1996evidence}.
+
+Clean identification requires resolving three problems.  Simultaneity: a
+bank's risk profile, deposit composition, and depositor behavior
+co-evolve, so regressions of flows on risk measures capture equilibrium
+sorting rather than isolated disciplinary responses.  Accounting
+opacity: under the incurred-loss model, banks could delay recognition
+and systematically understate risk in disclosures
+\citep{bushman2012accounting, bushman2015delayed}.  Aggregate stress:
+periods with the greatest variation in bank distress are precisely those
+in which government interventions and depositors' own liquidity needs
+contaminate the response \citep{bennett2015market}.  We address the
+first two by exploiting mandatory CECL adoption for community banks in
+2023 as an information shock whose cross-sectional intensity was fixed
+before the event.  CECL requires banks to recognize lifetime expected
+credit losses on existing loan portfolios at adoption, producing a
+one-time adjustment to retained earnings whose magnitude reflects loan
+vintages assembled years earlier.  Banks knew the standard was coming,
+but the size of the Day-One charge---the treatment variation we
+use---was pinned down by the composition and seasoning of the existing
+loan book rather than by contemporaneous deposit-market conditions.
+The third problem we confront directly: community banks adopted CECL in
+the same quarter that the failures of Silicon Valley Bank and Signature
+Bank put bank risk on every depositor's mind.  We show that our
+estimates are robust to allowing deposit dynamics to vary flexibly with
+the full 2022Q4 balance-sheet characteristics that governed exposure to
+the 2023 stress---uninsured deposit shares, size, capital, asset
+quality, profitability, CRE concentration, and unrealized securities
+losses---each interacted with calendar-quarter fixed effects, and that
+response patterns line up with each cohort's own adoption quarter rather
+than with March 2023.  \citet{kim2026current} and \citet{gee2022decision}
+confirm the Day-One adjustment is informative;
+\citet{nier2006market} and \citet{chen2022bank} establish that
+disclosure improvements enable depositors to act on credit-risk signals.
+
+Our central result, estimated on more than 4,000 community banks over
+quarterly data from 2016 to 2025, is a within-bank shift in the
+composition of time deposits away from uninsured and toward insured
+balances.  A triple-difference specification with bank-by-quarter fixed
+effects implies that each percentage point of CECL exposure reduces
+uninsured time deposits by 0.18 percentage points of assets
+\emph{relative to} insured time deposits within the same bank and
+quarter.  This composition result survives characteristics-by-quarter
+controls, alternative treatment scalings and cutoffs, and the exclusion
+of the largest-adjustment bank.  The level DiD is consistent: banks in
+the right tail of CECL exposure lost 0.394 percentage points of
+uninsured time deposits (roughly 7 percent of the sample mean) and
+gained 0.712 percentage points of insured time deposits.  Event studies
+confirm parallel pre-adoption trajectories and a divergence that emerged
+at adoption and persisted.  The level uninsured decline attenuates when
+deposit-composition characteristics receive their own time paths, as it
+mechanically must, since those controls absorb part of the uninsured
+channel itself---which is why we anchor the paper on the within-bank
+composition contrast.
+
+High-CECL banks replace the lost uninsured balances with \emph{insured}
+wholesale funding: insured brokered deposits rise by roughly 0.5
+percentage points of assets and reciprocal deposits---which split large
+accounts across network banks to obtain full coverage---also increase,
+while uninsured brokered funding does not move.  Branch-level SOD data
+show that deposit growth after 2023 is faster at low-CECL banks
+operating in counties more exposed to high-CECL competitors, direct
+evidence that part of the withdrawn funding re-intermediates locally.
+Both margins are what a disciplinary mechanism predicts.  The
+reallocation carries real costs.  High-CECL banks paid approximately
+8--9 basis points more annually in interest expense, ROA fell by
+roughly 15 basis points, and NIM compressed by approximately 9 basis
+points.  Quarterly loan growth slows by 0.65 percentage points,
+concentrated in CRE, linking the funding shock to credit supply in the
+spirit of \citet{granja2025current}.  Effects are amplified by depositor
+sophistication: high-CECL banks in high-sophistication markets paid an
+additional 17--18 basis points annually in interest expense and
+suffered an additional 30 basis point drag on ROA; the pattern is
+unchanged under a pre-period (2019) branch-weight index.
+
+This paper contributes to three literatures.  First, on depositor and
+market discipline, prior evidence documents higher rates and larger
+outflows at riskier banks \citep{park1995market, egan2017deposit,
+flannery1996evidence, nier2006market}, but causal interpretation has
+been elusive: government guarantees attenuate estimates in the crisis
+episodes that generate the most variation \citep{bennett2015market,
+berger2015depositors, jacewitz2018deposit}, and cross-sectional
+comparisons cannot separate information responses from equilibrium
+sorting.  Recent work on the 2023 episode shows depositors ran on banks
+with high uninsured shares and unrealized losses
+\citep{caglio2024depositors}; we exploit orthogonal variation
+\emph{within} that high-attention period, uncorrelated with the
+balance-sheet characteristics that governed run exposure.  Second, on
+CECL and mandatory credit-risk disclosure, \citet{bushman2012accounting}
+and \citet{bushman2015delayed} document that delayed loss recognition
+under the incurred-loss model attenuated the informativeness of bank
+statements and, by extension, the market's ability to price bank risk.
+Prior CECL work focuses on the supply side---lending
+\citep{granja2025current}, provisioning \citep{kim2026current}---and on
+information users other than depositors, particularly analysts
+\citep{gee2022decision} and equity investors.  We complement this
+literature by tracing the disclosure to depositor behavior and
+downstream to funding costs, profitability, and credit supply, closing
+a channel that the analyst-and-equity strand does not observe.  Third,
+on deposit insurance design, broader coverage reduces the incentive to
+monitor \citep{demirgucc2004market, flannery2019market}; the substitution
+we document toward insured brokered and reciprocal deposits
+\citep{kim2024insurance} shows that much of the response takes the form
+of repurchasing insurance through market arrangements rather than
+exiting the banking system.

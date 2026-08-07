@@ -1,0 +1,36 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables:           & Ins. Brokered Dep./Assets (\%)  & Reciprocal Dep./Assets (\%)  & Loan Growth (\%)  & CRE Loan Growth (\%)\\   
+   Model:                         & (1)                             & (2)                          & (3)               & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj                &                                 & 0.0888$^{*}$                 &                   &   \\   
+                                  &                                 & (0.0471)                     &                   &   \\   
+   Post x High CECL               & 0.5209$^{*}$                    &                              & -0.6492$^{**}$    & -0.9022$^{***}$\\   
+                                  & (0.2664)                        &                              & (0.2506)          & (0.2417)\\   
+   Post                           & -0.1645$^{*}$                   & 0.0773                       & 0.3046            & 0.2638\\   
+                                  & (0.0852)                        & (0.0741)                     & (0.1843)          & (0.3432)\\   
+   log(Assets), $t{-}1$           & 1.943$^{***}$                   & 2.589$^{***}$                & -4.691$^{***}$    & -3.777$^{***}$\\   
+                                  & (0.3492)                        & (0.3266)                     & (1.570)           & (0.8215)\\   
+   Equity/Assets (\%), $t{-}1$    & 0.0307$^{*}$                    & 0.0645$^{***}$               & 0.0257            & -0.0050\\   
+                                  & (0.0176)                        & (0.0115)                     & (0.0354)          & (0.0410)\\   
+   Int. Exp/Assets (\%), $t{-}1$  & 7.284$^{***}$                   & 3.786$^{***}$                &                   &   \\   
+                                  & (0.5993)                        & (0.4062)                     &                   &   \\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                           & Yes                             & Yes                          & Yes               & Yes\\  
+   Quarter                        & Yes                             & Yes                          & Yes               & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                   & 97,064                          & 97,056                       & 96,008            & 94,760\\  
+   Adjusted R$^2$                 & 0.75725                         & 0.80570                      & 0.22472           & 0.05842\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Clustered (Bank \& Quarter) standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

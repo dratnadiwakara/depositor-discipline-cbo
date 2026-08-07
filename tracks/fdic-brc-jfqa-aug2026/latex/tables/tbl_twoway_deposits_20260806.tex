@@ -1,0 +1,42 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variables: & \multicolumn{2}{c}{Unins. Time Dep./Assets (\%)} & \multicolumn{2}{c}{Ins. Time Dep./Assets (\%)} & \multicolumn{2}{c}{dep\_gap}\\
+   Model:                         & (1)             & (2)             & (3)             & (4)             & (5)             & (6)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x CECL Adj                & -0.0724$^{*}$   &                 & 0.0699          &                 & -0.1765$^{***}$ &   \\   
+                                  & (0.0353)        &                 & (0.0537)        &                 & (0.0523)        &   \\   
+   Post x High CECL               &                 & -0.3935$^{**}$  &                 & 0.7117$^{**}$   &                 & -1.249$^{***}$\\   
+                                  &                 & (0.1822)        &                 & (0.3085)        &                 & (0.3085)\\   
+   Post                           & 0.0576          & 0.0552          & -0.1525         & -0.1659         & 0.8823$^{***}$  & 0.8949$^{***}$\\   
+                                  & (0.0705)        & (0.0699)        & (0.1025)        & (0.1027)        & (0.1641)        & (0.1639)\\   
+   log(Assets), $t{-}1$           & -0.3484         & -0.3559         & 0.1700          & 0.1664          &                 &   \\   
+                                  & (0.2426)        & (0.2420)        & (0.3175)        & (0.3161)        &                 &   \\   
+   Equity/Assets (\%), $t{-}1$    & -0.0555$^{***}$ & -0.0558$^{***}$ & -0.0873$^{***}$ & -0.0870$^{***}$ &                 &   \\   
+                                  & (0.0143)        & (0.0143)        & (0.0250)        & (0.0250)        &                 &   \\   
+   Int. Exp/Assets (\%), $t{-}1$  & 5.042$^{***}$   & 5.043$^{***}$   & 6.334$^{***}$   & 6.315$^{***}$   &                 &   \\   
+                                  & (0.4013)        & (0.4019)        & (0.6330)        & (0.6321)        &                 &   \\   
+   Constant                       &                 &                 &                 &                 & -2.822$^{***}$  & -2.832$^{***}$\\   
+                                  &                 &                 &                 &                 & (0.1731)        & (0.1730)\\   
+   CECL Adj                       &                 &                 &                 &                 & -0.2119$^{***}$ &   \\   
+                                  &                 &                 &                 &                 & (0.0701)        &   \\   
+   High CECL                      &                 &                 &                 &                 &                 & -0.9801$^{**}$\\   
+                                  &                 &                 &                 &                 &                 & (0.3632)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                           & Yes             & Yes             & Yes             & Yes             &                 & \\  
+   Quarter                        & Yes             & Yes             & Yes             & Yes             &                 & \\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                   & 97,064          & 97,064          & 97,064          & 97,064          & 97,111          & 97,111\\  
+   Adjusted R$^2$                 & 0.82123         & 0.82123         & 0.86398         & 0.86410         & 0.00840         & 0.00857\\  
+   \midrule \midrule
+   \multicolumn{7}{l}{\emph{Clustered (Bank \& Quarter) standard-errors in parentheses}}\\
+   \multicolumn{7}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+
