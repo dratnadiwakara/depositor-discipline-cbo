@@ -1,0 +1,74 @@
+---
+title: "Maturity-split corroboration of the rollover margin"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision v4: Option A maturity corroboration (prose-only,
+no table export). Split banks at the median of the PREDETERMINED 2022Q4
+share of uninsured time deposits maturing within 12 months
+((HK12+HK13)/uninsured TDs) and re-estimate the baseline uninsured-TD DiD
+in each half. Numbers quoted in sections/results/empirical_results_current.tex.
+Inputs: panel_smallbank (fallback vintage),
+        td_maturity_2022q4_20260807.csv (01d_pull_td_maturity_20260807.py).
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+mat <- fread(file.path(TRACK_DATA, "td_maturity_2022q4_20260807.csv"))
+setnames(mat, "IDRSSD", "ID_RSSD")
+
+q4 <- panel[as.Date(D_DT) == as.Date("2022-12-31"),
+            .(ID_RSSD, unins_td_22q4 = unins_time_deps)]
+mat <- mat[q4, on = "ID_RSSD", nomatch = NULL]
+mat[, short_share := fifelse(unins_td_22q4 > 0,
+                             pmin((mat_lt3m + mat_3to12m) / unins_td_22q4, 1),
+                             NA_real_)]
+mat[, high_short := as.integer(short_share >= median(short_share, na.rm = TRUE))]
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+dt_w[, D_DT := as.factor(as.Date(D_DT))]
+dt_w[mat, on = "ID_RSSD",
+     `:=`(short_share = i.short_share, high_short = i.high_short)]
+
+setFixest_fml(
+  ..ctrl = ~ log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+
+r <- list(
+  full    = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                  dt_w, vcov = ~ID_RSSD),
+  high_mat = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                   dt_w[high_short == 1], vcov = ~ID_RSSD),
+  low_mat  = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                   dt_w[high_short == 0], vcov = ~ID_RSSD),
+  triple   = feols(unins_time_deps_assets ~ post * high_cecl_equity * high_short +
+                     ..ctrl | ..fe, dt_w, vcov = ~ID_RSSD)
+)
+cat("\n================ MATURITY SPLIT (prose numbers) ================\n")
+etable(r, keep = "post")
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("Banks with maturity data:", uniqueN(dt_w[!is.na(short_share), ID_RSSD]),
+    "| high-CECL among them:",
+    uniqueN(dt_w[!is.na(short_share) & high_cecl_equity == 1, ID_RSSD]), "\n")
+cat("short_share (2022Q4, <=12m) pctiles:\n")
+print(round(quantile(mat$short_share, c(.01, .25, .5, .75, .99), na.rm = TRUE), 3))
+cat("median split value:", round(median(mat$short_share, na.rm = TRUE), 3), "\n")
+```

@@ -30,7 +30,11 @@ including the tightening cycle and any nationwide reaction to the 2023
 banking stress.  I also estimate an event-study specification that
 replaces $\mathrm{Post}_{it}$ with event-time dummies
 $k\in[-10,10]$, $k=-1$ omitted, and an extended version beginning in
-2018Q1 with binned endpoints.
+2018Q1.  In the extended version the two outermost dummies pool all
+event times at or beyond the window edges: because 92 percent of
+banks adopt in the same quarter, the most distant event times are
+reached only by a handful of off-cycle adopters, and pooling them
+prevents the edge coefficients from being estimated off a few banks.
 
 The composition test stacks the insured and uninsured time-deposit
 series in a single panel and estimates a triple difference:
@@ -48,13 +52,11 @@ series in a single panel and estimates a triple difference:
 \end{equation}
 where $d \in \{\text{uninsured}, \text{insured}\}$ and $\alpha_{it}$
 are bank $\times$ quarter fixed effects.  These absorb the full vector
-of bank-specific time-varying shocks in each period---any level shift
-in total time-deposit demand, any bank-specific effect of the 2023
-stress, any change in liability strategy---so the triple-interaction
-coefficient $\beta_4$ is identified strictly from the differential
-movement of uninsured relative to insured deposits within the same
-bank-quarter cell.  This within-bank composition contrast is the
-paper's anchor because it is invariant to every bank-level determinant
-of total funding.
+of bank-specific time-varying shocks in each period, including any
+level shift in total time-deposit demand, any bank-specific effect of
+the 2023 stress, and any change in liability strategy, so the
+triple-interaction coefficient $\beta_4$ is identified strictly from
+the differential movement of uninsured relative to insured deposits
+within the same bank-quarter cell.
 
 Standard errors are clustered at the bank level throughout.

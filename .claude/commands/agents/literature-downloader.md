@@ -23,11 +23,11 @@ If `<phase>` is `seed` and `<topic>` is empty, stop and tell the user:
 ## Constants (all phases)
 
 ```
-REPO_DIR  = C:/OneDrive/github/paper-repo
-REPO_PDF  = C:/OneDrive/github/paper-repo/pdfs
-REPO_MD   = C:/OneDrive/github/paper-repo/mds
-REPO_CSV  = C:/OneDrive/github/paper-repo/paper_index.csv
-REPO_PY   = C:/OneDrive/github/paper-repo/convert_batch_min.py
+REPO_DIR  = C:/Users/dimut/OneDrive/github/paper-repo
+REPO_PDF  = C:/Users/dimut/OneDrive/github/paper-repo/pdfs
+REPO_MD   = C:/Users/dimut/OneDrive/github/paper-repo/mds
+REPO_CSV  = C:/Users/dimut/OneDrive/github/paper-repo/paper_index.csv
+REPO_PY   = C:/Users/dimut/OneDrive/github/paper-repo/convert_batch_min.py
 VENV_PY   = C:/envs/.docling_venv/Scripts/python.exe
 TOPIC_LIST = related-papers/topic-papers.md
 REPORT    = related-papers/download-report.md
@@ -41,7 +41,7 @@ BIB_PATH  = related-papers/references.bib
 Whenever you need to convert PDFs to markdown, run **exactly** this command (from `REPO_DIR`):
 
 ```bash
-cd C:/OneDrive/github/paper-repo && \
+cd C:/Users/dimut/OneDrive/github/paper-repo && \
   "C:/envs/.docling_venv/Scripts/python.exe" convert_batch_min.py
 ```
 
@@ -147,7 +147,7 @@ When appending in expand/finalize phases, add new rows to the table; do not recr
 
 9. **Download new PDFs** into `REPO_PDF`:
    ```bash
-   curl -L "<PDF_URL>" -o "C:/OneDrive/github/paper-repo/pdfs/<slug>.pdf"
+   curl -L "<PDF_URL>" -o "C:/Users/dimut/OneDrive/github/paper-repo/pdfs/<slug>.pdf"
    ```
    Only download into `REPO_PDF`. Do not write files elsewhere.
 
@@ -190,7 +190,7 @@ When appending in expand/finalize phases, add new rows to the table; do not recr
     ## Failed to Download
 
     The following papers could not be downloaded automatically.
-    Please add their PDFs manually to `C:/OneDrive/github/paper-repo/pdfs/`
+    Please add their PDFs manually to `C:/Users/dimut/OneDrive/github/paper-repo/pdfs/`
     and then re-run with the `expand` phase:
     `/agents/literature-downloader "<topic>" expand`
 
@@ -247,7 +247,7 @@ When appending in expand/finalize phases, add new rows to the table; do not recr
     ## Snowballed: Failed to Download
 
     The following cited papers could not be downloaded automatically.
-    Please add their PDFs manually to `C:/OneDrive/github/paper-repo/pdfs/`
+    Please add their PDFs manually to `C:/Users/dimut/OneDrive/github/paper-repo/pdfs/`
     and then re-run with the `finalize` phase:
     `/agents/literature-downloader finalize`
 

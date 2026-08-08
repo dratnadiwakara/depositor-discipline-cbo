@@ -1,0 +1,92 @@
+---
+title: "Capital-buffer heterogeneity of the disclosure response"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision v4: capital-distance heterogeneity table.
+Does the same disclosed charge move uninsured funding more where the
+2022Q4 capital buffer absorbing it is thinner?  Moderator: equity/assets
+frozen at 2022Q4, winsorized at bank-level 1st/99th percentiles.
+Outcomes: uninsured time deposits/assets (level DiD) and the within-bank
+uninsured-minus-insured gap (equivalent to the bank x quarter FE triple
+difference).  Expected: negative treatment effect at low capital,
+positive interaction with capital.
+Input: panel_smallbank (fallback vintage).
+Output: tbl_capital_het_20260807.tex.
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_tables <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt <- panel[abs(qtrs_since) < 12]
+dt[, post := ifelse(qtrs_since > 0, 1, 0)]
+dt[, D_DT := as.factor(as.Date(D_DT))]
+
+eqv <- dt[!is.na(equity_assets_22q4), unique(.SD),
+          .SDcols = c("ID_RSSD", "equity_assets_22q4")]
+p <- quantile(eqv$equity_assets_22q4, c(.01, .99))
+dt[, eq22_w := pmin(pmax(equity_assets_22q4, p[1]), p[2])]
+dt[, gap := unins_time_deps_assets - ins_time_deps_assets]
+
+setFixest_fml(
+  ..c_full = ~ log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1,
+  ..c_noeq = ~ log_total_assets_l1 + int_expense_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+
+dict_ch <- c(covariate_labels_dict, "(Intercept)" = "Constant",
+             "gap" = "Unins. $-$ Ins. Time Deps/Assets (\\%)",
+             "eq22_w" = "Equity/Assets 2022Q4",
+             "post:eq22_w" = "Post x Equity 2022Q4",
+             "eq22_w:post" = "Post x Equity 2022Q4",
+             "post:cecl_equity:eq22_w" = "Post x CECL Adj x Equity 2022Q4",
+             "post:high_cecl_equity:eq22_w" = "Post x High CECL x Equity 2022Q4",
+             "cecl_equity:eq22_w" = "CECL Adj x Equity 2022Q4",
+             "high_cecl_equity:eq22_w" = "High CECL x Equity 2022Q4")
+```
+
+## Capital-buffer interaction battery
+
+```{r}
+r <- list(
+  feols(unins_time_deps_assets ~ post*cecl_equity*eq22_w + ..c_full | ..fe, dt, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ post*cecl_equity*eq22_w + ..c_noeq | ..fe, dt, vcov = ~ID_RSSD),
+  feols(unins_time_deps_assets ~ post*high_cecl_equity*eq22_w + ..c_full | ..fe, dt, vcov = ~ID_RSSD),
+  feols(gap ~ post*cecl_equity*eq22_w + ..c_full | ..fe, dt, vcov = ~ID_RSSD),
+  feols(gap ~ post*cecl_equity*eq22_w + ..c_noeq | ..fe, dt, vcov = ~ID_RSSD),
+  feols(gap ~ post*high_cecl_equity*eq22_w + ..c_full | ..fe, dt, vcov = ~ID_RSSD)
+)
+cat("\n================ CAPITAL HETEROGENEITY ================\n")
+etable(r, dict = dict_ch,
+       order = c("Post x CECL Adj x Equity 2022Q4", "Post x High CECL x Equity 2022Q4",
+                 "Post x CECL Adj", "Post x High CECL"))
+export_track_tbl(r, "tbl_capital_het", dict_ch,
+                 order = c("Post x CECL Adj x Equity 2022Q4", "Post x High CECL x Equity 2022Q4",
+                           "Post x CECL Adj", "Post x High CECL"))
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("Rows:", nrow(dt), "| banks:", uniqueN(dt$ID_RSSD), "\n")
+cat("eq22 pctiles (raw):\n")
+print(round(quantile(eqv$equity_assets_22q4, c(.01,.25,.5,.75,.99)), 2))
+cat("winsor bounds:", round(p, 2), "\n")
+cat("implied zero-effect capital: level", round(0.3476/0.0275, 1),
+    "| gap cont", round(0.8009/0.0665, 1),
+    "| gap binary", round(4.117/0.3074, 1), "\n")
+```

@@ -1,0 +1,99 @@
+---
+title: "Insured-wholesale combined DiD and SVB-exposure cross-section"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision v4 (PDF-comment round, 2026-08-07).
+§1 "Other measures" for the repurchasing-insurance point: combined insured
+   brokered + reciprocal outcome; extensive margin (any reciprocal).
+§2 SVB-vulnerability cross-section: CECL Adj on 2022Q4 exposure measures,
+   univariate + joint. Expectation: near-zero, tiny R2.
+Inputs: panel_smallbank (post-jmcb vintage via fallback).
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_tables <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
+dt_w[, D_DT := as.factor(as.Date(D_DT))]
+
+setFixest_fml(
+  ..reg_dummy = ~ post * high_cecl_equity,
+  ..reg_cont  = ~ post * cecl_equity,
+  ..controls  = ~ log_total_assets_l1 + equity_assets_l1 + int_expense_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+
+dict_r <- c(covariate_labels_dict, "(Intercept)" = "Constant",
+            "ins_wholesale_assets" = "Ins. Brokered + Reciprocal/Assets (\\%)",
+            "has_reciprocal" = "Any Reciprocal (0/1)",
+            "unreal_loss_assets_22q4" = "Unrealized Sec. Loss/Assets (\\%)",
+            "unins_dep_share_22q4" = "Unins. Dep./Deposits (\\%)",
+            "brokered_share_22q4" = "Brokered Dep./Deposits (\\%)",
+            "log_ta_22q4" = "log(Assets)",
+            "equity_assets_22q4" = "Equity/Assets (\\%)",
+            "cre_loans_share_22q4" = "CRE/Loans (\\%)")
+order_did_tbl <- c("Post x CECL Adj", "Post x High CECL")
+```
+
+## §1 Combined insured-wholesale funding DiD
+
+```{r}
+dt_w[, ins_wholesale_assets := brokered_ins_assets + reciprocal_assets]
+dt_w[, has_reciprocal := as.integer(reciprocal_assets > 0)]
+
+r1 <- list(
+  feols(ins_wholesale_assets ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ins_wholesale_assets ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(has_reciprocal ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(has_reciprocal ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+cat("\n================ §1 INSURED WHOLESALE (combined) ================\n")
+etable(r1, dict = dict_r, order = order_did_tbl)
+export_track_tbl(r1, "tbl_ins_wholesale", dict_r, order_did_tbl)
+```
+
+## §2 SVB-exposure cross-section
+
+```{r}
+cs <- unique(dt_w[!is.na(cecl_equity),
+                  .(ID_RSSD, cecl_equity, unreal_loss_assets_22q4,
+                    unins_dep_share_22q4, brokered_share_22q4, log_ta_22q4,
+                    equity_assets_22q4, cre_loans_share_22q4)])
+
+# All specifications include log assets and equity/assets as controls.
+r2 <- list(
+  feols(cecl_equity ~ unreal_loss_assets_22q4 + log_ta_22q4 + equity_assets_22q4, data = cs, vcov = "hetero"),
+  feols(cecl_equity ~ unins_dep_share_22q4    + log_ta_22q4 + equity_assets_22q4, data = cs, vcov = "hetero"),
+  feols(cecl_equity ~ unreal_loss_assets_22q4 + unins_dep_share_22q4 +
+          brokered_share_22q4 + cre_loans_share_22q4 +
+          log_ta_22q4 + equity_assets_22q4, data = cs, vcov = "hetero")
+)
+cat("\n================ §2 SVB EXPOSURE CROSS-SECTION ================\n")
+etable(r2, dict = dict_r)
+export_track_tbl(r2, "tbl_svb_exposure", dict_r)
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("DiD window rows:", nrow(dt_w), "| banks:", uniqueN(dt_w$ID_RSSD), "\n")
+cat("ins_wholesale non-NA:", dt_w[, sum(!is.na(ins_wholesale_assets))], "\n")
+cat("Cross-section N:", nrow(cs), "\n")
+print(round(cs[, sapply(.SD, function(x) mean(!is.na(x))), .SDcols = -1], 3))
+```

@@ -18,13 +18,18 @@ belongs to the depositor \citep{calomiris1991role, iyer2016tale,
 maechler2006dynamic, egan2017deposit}.  The disclosure arrives while
 that decision is on the table.
 
-The aggregate magnitude is modest by design: 217 high-CECL banks with
-mean assets of \$746~million and a 0.394 percentage-point outflow imply
-roughly \$0.64~billion in reallocated funding, orders of magnitude
-smaller than the withdrawals from the failed institutions in March
-2023.  The claim is not that CECL disclosure rivals the 2023 panic in
-economic magnitude; it is that a mandatory informational disclosure
-moves uninsured funding measurably and durably at community banks.
+The rollover mechanism implies the outflow should be concentrated
+where certificates were actually coming due.  To check this, I split
+the sample at the median of a predetermined measure of maturity
+exposure: the share of each bank's uninsured time deposits with
+remaining maturity under one year as of 2022Q4.  The estimate in the
+high-maturity half is $-0.544$ (SE $0.280$), 2.4 times the $-0.229$
+(SE $0.236$) in the low-maturity half: the outflow concentrates where
+rollover was feasible.  Two caveats keep this corroboration rather
+than an independent test.  With only 213 high-CECL banks split across
+the two halves, the formal difference is imprecise (interaction
+$-0.21$, SE $0.36$), and the 2022Q4 maturity structure is itself
+partly bank-chosen.
 
 \subsection{Insured Time Deposits}
 \label{sec:results:insured}
@@ -45,48 +50,51 @@ threshold rather than a general funding outflow.
 Figure~\ref{fig:overlay_composition} overlays the event-study paths of
 the two series for a ten-quarter window on either side of adoption
 ($k=-1$ omitted).  Pre-adoption coefficients for uninsured time
-deposits are clustered near zero across all ten lead quarters; the
+deposits are clustered near zero across all ten lead quarters, and the
 uninsured series breaks downward within the first post-adoption quarter
-and stays down through the end of the sample, and the insured series
-moves symmetrically upward with the same timing.
+and stays down through the end of the sample.  The insured series rises
+after adoption as well, but its movement starts slightly earlier, in
+the final pre-adoption quarters; that early start is the first trace of
+the bank-side anticipation documented at the end of this section.
 
-Figure~\ref{fig:es_long_balanced} extends the window back to 2018Q1,
-with endpoint bins at $k=-20$ and $k=+11$ so that edge quarters
-contributed only by small off-cycle cohorts are pooled rather than
-estimated from a handful of banks.  Over the five-year pre-period,
-point estimates for uninsured time deposits sit near zero with no slope
-toward the adoption-date divergence; joint tests of the pre-adoption
-coefficients do not reject parallel trends (uninsured $p=0.18$, insured
-$p=0.37$).  The COVID quarters contribute noise but no differential
-trend.  The one visible pre-adoption movement is a mild late upward
-drift in the \emph{insured} series (Panel~B).  That drift is the
-balance-sheet footprint of the banks' own anticipatory pre-funding:
-brokered certificates are booked as time deposits, and banks that knew
-large charges were coming began raising insured brokered money before
-adoption---bank-side behavior I document directly below.  Because the reference
-period is $k=-1$, this pre-positioning is absorbed into the baseline
-rather than attributed to the post-adoption response.
+Figure~\ref{fig:es_long_balanced} extends the window back to 2018Q1.
+Because 92 percent of banks adopt in the same quarter, the most distant
+event times are reached only by a handful of off-cycle adopters, so the
+two outermost coefficients ($k=-20$ and $k=+11$) pool all event times
+at or beyond those points rather than estimating each edge quarter from
+a few banks.  Over the five-year pre-period, point estimates for
+uninsured time deposits sit near zero with no slope toward the
+adoption-date divergence; joint tests of the pre-adoption coefficients
+do not reject parallel trends (uninsured $p=0.18$, insured $p=0.37$).
+The COVID quarters contribute noise but no differential trend.  The one
+visible pre-adoption movement is a mild late upward drift in the
+\emph{insured} series (Panel~B).  That drift is the balance-sheet
+footprint of the banks' own anticipatory pre-funding: brokered
+certificates are booked as time deposits, and banks that knew large
+charges were coming began raising insured brokered money before
+adoption, bank-side behavior I document directly below.  Because the
+reference period is $k=-1$, this pre-positioning is absorbed into the
+baseline rather than attributed to the post-adoption response.
 
 \subsection{The Composition Shift: Triple Difference}
 \label{sec:results:composition}
 
-The most tightly controlled specification is the triple difference of
-equation~\eqref{eq:triple}, which compares uninsured to insured time
-deposits within the same bank and quarter under bank $\times$ quarter
-fixed effects.  Table~\ref{tab:small_bank_triple_diff_time_deposits}
-reports the estimates.  The binary triple interaction is $-1.252$ (SE
-$0.340$, $p<0.01$): relative to their own pre-adoption composition and
-relative to low-CECL banks, high-CECL banks experienced a
-125-basis-point widening of the insured-to-uninsured gap as a share of
-assets after adoption.  The continuous analog ($-0.177$, $p<0.01$)
-confirms a smooth dose-response.  Because the fixed effects absorb any
-level shift in total time-deposit demand at each bank in each
-quarter---including any bank-specific effect of the 2023 stress---this
-estimate functions as a stringent robustness check on the level
-results: whatever differential stress exposure high-CECL banks carried,
-it cannot explain why uninsured deposits fell \emph{relative to insured
-deposits within the same bank} in proportion to the disclosed
-adjustment.
+As a deliberately conservative check on the level results, the triple
+difference of equation~\eqref{eq:triple} compares uninsured to insured
+time deposits within the same bank and quarter under bank $\times$
+quarter fixed effects.
+Table~\ref{tab:small_bank_triple_diff_time_deposits} reports the
+estimates.  The binary triple interaction is $-1.252$ (SE $0.340$,
+$p<0.01$): relative to their own pre-adoption composition and relative
+to low-CECL banks, high-CECL banks experienced a 125-basis-point
+widening of the insured-to-uninsured gap as a share of assets after
+adoption.  The continuous analog ($-0.177$, $p<0.01$) confirms a
+smooth dose-response.  Because the fixed effects absorb any level
+shift in total time-deposit demand at each bank in each quarter,
+including any bank-specific effect of the 2023 stress, whatever
+differential stress exposure high-CECL banks carried cannot explain
+why uninsured deposits fell \emph{relative to insured deposits within
+the same bank} in proportion to the disclosed adjustment.
 
 One caution on interpretation.  Both arms of the differential are
 deposit categories, so the comparison is between two potentially
@@ -96,6 +104,36 @@ increase in part reflects active bank substitution into insured
 brokered and reciprocal deposits, so the triple difference measures the
 joint depositor-plus-bank response at the insurance margin, not a
 depositor-only quantity.
+
+\subsection{Discipline and the Capital Buffer}
+\label{sec:results:capital}
+
+The disclosed charge should matter most where the buffer absorbing it
+is thinnest: a given Day-One adjustment moves a thin-capital bank
+closer to distress than a well-capitalized one, so a monitoring
+depositor should respond more strongly.  Table~\ref{tab:capital_het}
+tests this by interacting the DiD terms with each bank's predetermined
+2022Q4 equity-to-assets ratio.  Columns (1)--(3) use the level of
+uninsured time deposits; columns (4)--(6) use the within-bank gap
+between uninsured and insured time deposits, the outcome equivalent to
+the bank-by-quarter triple difference.
+
+The treatment effect is largest at low capital and attenuates as the
+buffer grows, in every specification.  In the gap design, each
+percentage point of CECL exposure moves the composition by $-0.80$
+percentage points of assets at a hypothetical zero-equity bank
+($p<0.01$), attenuating by $0.067$ per point of capital ($p<0.01$);
+the binary analog is $-4.12$ and $+0.31$.  The implied effect reaches
+zero at an equity ratio of roughly 12 to 13 percent, just above the
+75th percentile of the sample distribution: at the best-capitalized
+quartile of banks, the same disclosed charge draws essentially no
+response.  The estimates are unchanged when the time-varying equity
+control is dropped (columns 2 and 5), so the interaction is not an
+artifact of controlling for contemporaneous capital; the one imprecise
+cell is the binary treatment in levels (column 3), which the
+composition design sharpens.  This gradient is what monitoring theory
+predicts: the disclosure is news about distance to default, and
+distance to default depends on the buffer the charge consumes.
 
 \subsection{No Repricing: Two Rate Tests}
 \label{sec:results:rates}
@@ -118,7 +156,7 @@ sample banks, with the post period split at the date the disclosures
 became public.  Posted 12-month CD rates at the \$10{,}000 and
 \$100{,}000 tiers and posted savings rates at high-CECL banks show no
 differential movement after publication (e.g.\ $-0.058$, SE $0.074$,
-for the retail CD)---and none during the March 10--April 30, 2023
+for the retail CD), and none during the March 10--April 30, 2023
 stress window either ($-0.026$, SE $0.048$).  High-CECL banks never
 competed on retail price, before or after the news.
 
@@ -129,27 +167,35 @@ If banks did not defend uninsured balances on price, how did they
 replace them?  Table~\ref{tab:brokered} examines the wholesale-funding
 margin.  After adoption, high-CECL banks increase insured brokered
 deposits by 0.52 percentage points of assets ($p<0.05$) and reciprocal
-deposits---the network arrangement that purchases full insurance
-coverage for large accounts---by 0.089 percentage points per unit of
+deposits, the network arrangement that purchases full insurance
+coverage for large accounts, by 0.089 percentage points per unit of
 continuous CECL exposure ($p<0.10$), while \emph{uninsured} brokered
-funding does not move.  High-CECL banks did not lose funding so much as
-repurchase it in insured form---the market-based insurance margin of
-\citet{kim2024insurance}.  Excluding the quartile of banks with the
-largest post-adoption growth in insured brokered deposits shrinks the
-triple interaction toward zero (unreported), indicating that the
-composition shift is concentrated precisely among the banks that
-actively replaced uninsured funding with insured wholesale money.
+funding does not move.  Because insured brokered and reciprocal
+deposits are two routes to the same destination, insured wholesale
+funding, Table~\ref{tab:ins_wholesale} combines them into a single
+outcome: high-CECL banks increase the combined position by 0.81
+percentage points of assets after adoption ($p<0.05$; continuous
+$0.175$, $p<0.05$), a sharper estimate than either component alone.
+The margin is intensive rather than extensive: the probability of
+holding any reciprocal balance does not move.  High-CECL banks did not
+lose funding so much as repurchase it in insured form, the
+market-based insurance margin of \citet{kim2024insurance}.  Excluding
+the quartile of banks with the largest post-adoption growth in insured
+brokered deposits shrinks the triple interaction toward zero
+(unreported), indicating that the composition shift is concentrated
+precisely among the banks that actively replaced uninsured funding
+with insured wholesale money.
 
 The event-time paths make the margin visible.  Insured brokered
 deposits (Figure~\ref{fig:es_brokered_ins}) are flat through event
 quarter $-4$, begin accumulating around three quarters \emph{before}
 adoption, and continue rising through the end of the sample; the
 pre-adoption phase is the bank-side anticipation I analyze below.
-Reciprocal deposits
-(Figure~\ref{fig:es_reciprocal}) trend upward across the whole window
-as reciprocal networks expanded secularly, then step up further in the
-later post-adoption quarters; the confidence bands are wide, and I
-treat the DiD coefficient in Table~\ref{tab:brokered} as the estimate
+Reciprocal deposits (Figure~\ref{fig:es_reciprocal}) trend upward
+across the whole window as reciprocal networks expanded secularly,
+then step up further in the later post-adoption quarters; the
+confidence bands are wide, and I treat the DiD coefficients in
+Tables~\ref{tab:brokered} and~\ref{tab:ins_wholesale} as the estimates
 and the figure as context.
 
 \subsection{Profitability}
@@ -159,7 +205,7 @@ The substitution is costly.
 Table~\ref{tab:small_bank_did_financial_outcomes} reports DiD estimates
 for interest expense, ROA, and NIM.  High-CECL banks paid $0.021$
 percentage points more per quarter in interest expense per dollar of
-assets ($p<0.01$)---approximately 8--9 basis points annualized, or 9
+assets ($p<0.01$), approximately 8--9 basis points annualized, or 9
 percent of the sample quarterly mean.  ROA fell by $0.038$ percentage
 points per quarter ($p<0.01$), an annualized 15-basis-point drag, and
 NIM contracted by $0.024$ percentage points per quarter ($p<0.05$).
@@ -175,31 +221,36 @@ in place.
 \subsection{Bank Anticipation and the Timing of the Response}
 \label{sec:results:anticipation}
 
-Banks knew their Day-One numbers before depositors could.  Regulators
-and auditors required community banks to run CECL in parallel with the
+Banks knew their Day-One numbers before depositors could.  Supervisors
+and auditors expected community banks to run CECL in parallel with the
 incurred-loss model through 2022, so management had a quantified
-estimate of the coming capital charge by mid-2022; the public learned
-it only when 2023Q1 Call Reports were posted in late April and May
-2023.  If the funding reallocation documented above reflects responses
-to CECL information rather than to a common stress shock,
-bank-controlled margins should move on the private
-information---before adoption---and depositor-facing margins only on
-the public release.  Both predictions hold.
+estimate of the coming capital charge before adoption; the public
+learned it only when 2023Q1 Call Reports were posted in late April and
+May 2023.  If the funding reallocation documented above reflects
+responses to CECL information rather than to a common stress shock,
+bank-controlled margins should move on the private information, before
+adoption, and depositor-facing margins only on the public release.
+Both predictions hold.
 
 Table~\ref{tab:anticipation} tests the bank side.  Columns (1)--(2)
 regress each bank's change in insured brokered deposits over event
-quarters $-4$ to $-1$---before any public disclosure---on the size of
+quarters $-4$ to $-1$, before any public disclosure, on the size of
 its still-undisclosed future adjustment.  The pre-adoption ramp scales
 with the future charge: 0.12 percentage points of assets per percentage
 point of CECL exposure ($p<0.01$), 0.53 percentage points at high-CECL
 banks.  Column (3) shows the same private knowledge in a regulatory
-choice: the probability of electing the CECL capital transition
-phase-in rises steeply with the charge---34 percent of high-CECL banks
-elected relief against 6 percent of the rest---an election that is
-economically sensible only for a bank expecting a material hit.
-Column (4) closes the loop: the banks that elected relief are the banks
-that pre-funded, with a pre-adoption brokered ramp 0.41 percentage
-points larger ($p<0.05$).
+choice: the CECL capital transition election, made on the first Call
+Report a bank files under CECL and irrevocable thereafter, allows the
+bank to phase the Day-One hit into regulatory capital over three
+years, adding back 75 percent of the impact in the first year, 50
+percent in the second, and 25 percent in the third, with the full
+impact reflected from the fourth year on.  The election is
+economically sensible only for a bank expecting a material hit, and
+the probability of electing rises steeply with the charge: 34 percent
+of high-CECL banks elected relief against 6 percent of the rest.
+Column (4) closes the loop: the banks that elected relief are the
+banks that pre-funded, with a pre-adoption brokered ramp 0.41
+percentage points larger ($p<0.05$).
 
 The depositor side shows the opposite timing.  Uninsured time deposits
 are flat through every pre-adoption quarter
@@ -210,7 +261,7 @@ banks' posted CD and savings rates show no differential movement in the
 weeks after the March 2023 failures (Table~\ref{tab:rw_did}), which is
 difficult to square with the view that these banks were differentially
 caught in the 2023 panic, and no movement after publication either,
-consistent with the wholesale---not retail---replacement channel.  A
+consistent with the wholesale, not retail, replacement channel.  A
 common stress shock would move bank and depositor margins together in
 March 2023.  Instead, each margin moves exactly when its
 decision-maker's information arrives: banks in 2022 on private
