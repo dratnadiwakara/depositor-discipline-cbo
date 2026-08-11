@@ -78,9 +78,6 @@ expressed in percentage points.  For binary specifications I construct
   \label{eq:binary}
 \end{equation}
 with $\tau = 2.5$ percentage points (approximately the 95th percentile).
-Equity scaling is the baseline because it measures the fraction of the
-loss-absorbing buffer that the new standard revealed to be already
-committed against expected credit losses.
 
 \subsection{Is the Adjustment Predetermined?}
 \label{sec:background:predetermination}
@@ -91,11 +88,10 @@ Day-One adjustment reflects the cumulative composition of the loan
 portfolio, fixed by prior underwriting: long maturities, weak borrower
 credit, thin collateral.  The standard was public from June 2016, but
 the \emph{magnitude} of any given bank's Day-One charge was not
-knowable to outsiders in advance; anticipation of the event date
-without knowledge of intensity does not bias a
-difference-in-differences design, and outside anticipation of intensity
-would appear as pre-adoption divergence in depositor-facing outcomes,
-which I test for directly.
+knowable to outsiders in advance.  Everyone knew the date; nobody
+outside the bank knew the number.  If outsiders had known the number
+early, depositor-facing outcomes would have started to diverge before
+adoption, which I test for directly.
 
 Two components of the Day-One magnitude deserve separate treatment.
 The first is legacy loan composition, which was fixed by prior
@@ -105,11 +101,7 @@ component required by ASC~326: banks combine historical loss experience
 with reasonable-and-supportable forward-looking forecasts of
 macroeconomic conditions and choose a lifetime-loss estimation
 approach.  This component is a contemporaneous choice at adoption and
-is in principle correlated with 2022--2023 macro conditions.  This
-choice does not threaten the design.  Uninsured and insured time
-deposits at the same bank face the same modeling choice, so it biases
-the composition comparison only if it moves the two deposit types
-apart through some channel other than the disclosure itself.
+is in principle correlated with 2022--2023 macro conditions.
 
 \subsection{What the Disclosure Does, and Does Not, Change}
 \label{sec:background:mechanism}
@@ -157,8 +149,8 @@ adjustment scaled by equity.  Equity markets respond immediately:
 relative to the month before adoption, the coefficient on normalized
 market capitalization drops to $-0.947$ per unit of CECL-to-equity at
 the adoption month ($p = 0.006$) and reaches a trough of $-2.771$
-($p < 0.001$) two months later; a ten-percentage-point higher
-adjustment is associated with roughly 28~percent lower market
+($p < 0.001$) two months later; a one-percentage-point higher
+adjustment is associated with roughly 2.8~percent lower market
 capitalization.  Credit markets price the same information with a lag:
 five-year CDS spreads for the 103 banks with active contracts widen by
 $190.8$~basis points per unit of CECL-to-equity four months after
@@ -167,8 +159,8 @@ points of adjustment.  Pre-adoption coefficients in both markets are
 flat.
 
 I use the 2020 cohort only for this signal-validation exercise, not
-for the deposit tests, for two reasons.  The cohort is small: roughly
-one hundred publicly traded holding companies, against more than 4,000
+for the deposit tests, for two reasons.  The cohort is small: 192
+publicly traded holding companies, against more than 4,000
 community banks.  And its adoption quarter coincides with the COVID-19
 onset, when emergency liquidity programs and precautionary corporate
 drawdowns flooded banks with deposits; any disciplinary outflow would

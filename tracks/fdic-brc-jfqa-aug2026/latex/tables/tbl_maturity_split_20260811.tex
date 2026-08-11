@@ -1,0 +1,39 @@
+
+\begingroup
+\centering
+\begin{tabular}{lcccc}
+   \tabularnewline \midrule \midrule
+   Dependent Variable: & \multicolumn{4}{c}{Unins. Time Dep./Assets (\%)}\\
+   Unins. TDs maturing $\leq$1yr          & Full            & Above median   & Below median    & Full \\   
+   Model:                                 & (1)             & (2)            & (3)             & (4)\\  
+   \midrule
+   \emph{Variables}\\
+   Post x High CECL x High Short-Maturity &                 &                &                 & -0.2100\\   
+                                          &                 &                &                 & (0.3627)\\   
+   Post x High CECL                       & -0.3935$^{**}$  & -0.5438$^{*}$  & -0.2291         & -0.2910\\   
+                                          & (0.1815)        & (0.2799)       & (0.2362)        & (0.2380)\\   
+   Post x High Short-Maturity             &                 &                &                 & 0.0749\\   
+                                          &                 &                &                 & (0.0898)\\   
+   Post                                   & 0.0552          & 0.0904         & 0.0196          & 0.0220\\   
+                                          & (0.0915)        & (0.1409)       & (0.1240)        & (0.1022)\\   
+   log(Assets), $t{-}1$                   & -0.3559         & -0.1879        & -0.9605$^{***}$ & -0.4901$^{*}$\\   
+                                          & (0.2358)        & (0.4322)       & (0.2985)        & (0.2732)\\   
+   Equity/Assets (\%), $t{-}1$            & -0.0558$^{***}$ & -0.0418$^{**}$ & -0.1286$^{***}$ & -0.0729$^{***}$\\   
+                                          & (0.0114)        & (0.0179)       & (0.0201)        & (0.0139)\\   
+   Int. Exp/Assets (\%), $t{-}1$          & 5.043$^{***}$   & 5.948$^{***}$  & 3.798$^{***}$   & 4.968$^{***}$\\   
+                                          & (0.3100)        & (0.4877)       & (0.4476)        & (0.3392)\\   
+   \midrule
+   \emph{Fixed-effects}\\
+   Bank                                   & Yes             & Yes            & Yes             & Yes\\  
+   Quarter                                & Yes             & Yes            & Yes             & Yes\\  
+   \midrule
+   \emph{Fit statistics}\\
+   Observations                           & 97,064          & 46,541         & 46,725          & 93,266\\  
+   Adjusted R$^2$                         & 0.82123         & 0.81815        & 0.81668         & 0.81702\\  
+   \midrule \midrule
+   \multicolumn{5}{l}{\emph{Clustered (Bank) standard-errors in parentheses}}\\
+   \multicolumn{5}{l}{\emph{Signif. Codes: ***: 0.01, **: 0.05, *: 0.1}}\\
+\end{tabular}
+\par\endgroup
+
+

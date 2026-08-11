@@ -5,7 +5,8 @@
 \label{sec:results:uninsured}
 
 Uninsured time deposits fall after the disclosure, in proportion to the
-disclosed charge.  Table~\ref{tab:small_bank_did_time_deposits},
+disclosed charge.  Panel~A of
+Table~\ref{tab:small_bank_did_time_deposits},
 columns (1)--(2), reports the baseline difference-in-differences
 estimates.  High-CECL banks lost 0.394 percentage points of assets in
 uninsured time deposits after adoption ($p<0.05$), roughly 7 percent of
@@ -23,10 +24,12 @@ where certificates were actually coming due.  Panel~B of
 Table~\ref{tab:small_bank_did_time_deposits} checks this by splitting
 the sample at the median of a predetermined measure of maturity
 exposure: the share of each bank's uninsured time deposits with
-remaining maturity under one year as of 2022Q4.  The estimate in the
-high-maturity half is $-0.544$ (SE $0.280$), 2.4 times the $-0.229$
-(SE $0.236$) in the low-maturity half: the outflow concentrates where
-rollover was feasible.  Two caveats keep this corroboration rather
+remaining maturity under one year as of 2022Q4.  Banks above that
+median hold the shorter book, so more of their certificates reach a
+rollover decision during the sample.  The estimate for those banks is
+$-0.544$ (SE $0.280$), 2.4 times the $-0.229$
+(SE $0.236$) for banks with the longer book: the outflow concentrates
+where rollover was feasible.  Two caveats keep this corroboration rather
 than an independent test.  With only 213 high-CECL banks split across
 the two halves, the formal difference is imprecise (interaction
 $-0.21$, SE $0.36$), and the 2022Q4 maturity structure is itself
@@ -36,7 +39,7 @@ partly bank-chosen.
 \label{sec:results:insured}
 
 The mirror image appears on the insured side.  Columns (3)--(4) of
-Table~\ref{tab:small_bank_did_time_deposits} estimate the same
+Panel~A of Table~\ref{tab:small_bank_did_time_deposits} estimate the same
 specification for insured time deposits: high-CECL banks \emph{gained}
 0.712 percentage points of assets ($p<0.05$), with a matching
 continuous estimate of $+0.070$.  The account-size categories cannot
@@ -113,19 +116,13 @@ widening of the insured-to-uninsured gap as a share of assets after
 adoption.  The continuous analog ($-0.177$, $p<0.01$) confirms a
 smooth dose-response.  Because the fixed effects absorb any level
 shift in total time-deposit demand at each bank in each quarter,
-including any bank-specific effect of the 2023 stress, whatever
-differential stress exposure high-CECL banks carried cannot explain
-why uninsured deposits fell \emph{relative to insured deposits within
-the same bank} in proportion to the disclosed adjustment.
-
-One caution on interpretation.  Both arms of the differential are
-deposit categories, so the comparison is between two potentially
-endogenous outcomes rather than between the treated outcome and an
-unaffected control liability \citep{covitz2004market}.  The insured
-increase in part reflects active bank substitution into insured
-brokered deposits, so the triple difference measures the
-joint depositor-plus-bank response at the insurance margin, not a
-depositor-only quantity.
+including any bank-specific effect of the 2023 stress, the estimate
+cannot be produced by high-CECL banks simply losing more funding in
+2023.  The test is silent on the level and decisive on the mix: it
+does not rule out that stress drove uninsured balances down, but for
+the stress to generate this coefficient it would have to have pushed
+uninsured and insured time deposits in opposite directions inside the
+same bank and quarter, in proportion to the disclosed adjustment.
 
 \subsection{Discipline and the Capital Buffer}
 \label{sec:results:capital}
@@ -152,11 +149,11 @@ $+0.31$.  The implied effect reaches
 zero at an equity ratio of roughly 12 to 13 percent, just above the
 75th percentile of the sample distribution: at the best-capitalized
 quartile of banks, the same disclosed charge draws essentially no
-response.  The estimates are unchanged when the time-varying equity
-control is dropped (columns 2 and 5), so the interaction is not an
-artifact of controlling for contemporaneous capital; the one imprecise
-cell is the binary treatment in levels (column 3), which the
-composition design sharpens.  This gradient is what monitoring theory
+response.  Dropping the time-varying equity control leaves the
+estimates unchanged (columns 2 and 5): the gradient is not an artifact
+of also controlling for a bank's current capital.  One cell is
+imprecise, the binary treatment in levels (column 3); the composition
+design in columns (4)--(6) recovers it.  This gradient is what monitoring theory
 predicts: the disclosure is news about distance to default, and
 distance to default depends on the buffer the charge consumes.
 
@@ -215,8 +212,8 @@ continuous $0.086$, $p<0.10$).  This is the same instrument banks
 were already ramping before adoption, on private knowledge of their
 charges, and it continues to grow once the number is public.
 Uninsured brokered funding, by contrast, shows no response (available
-on request): what the banks bought was the insurance, not the
-wholesale funding as such.
+on request).  Banks were buying insurance, not wholesale money: the
+same broker, the same market, but only the insured product moved.
 
 Columns (3)--(4) report the second insured margin, reciprocal
 deposits.  These are balances placed through a network that
@@ -230,9 +227,7 @@ though the binary estimate is imprecise ($0.290$, SE $0.253$), and the
 response is intensive rather than extensive: the probability of
 holding any reciprocal balance does not move (available on request).
 Estimating the two insured margins jointly gives $0.81$ percentage
-points ($p<0.05$; continuous $0.175$, $p<0.05$), but I report them
-separately here because they are distinct contractual arrangements and
-the aggregation is not required for the result.
+points ($p<0.05$; continuous $0.175$, $p<0.05$).
 
 Banks did not lever up instead.  Columns (5)--(6) report the borrowing
 margin, term FHLB advances, and find nothing: $0.034$ (SE $0.182$)

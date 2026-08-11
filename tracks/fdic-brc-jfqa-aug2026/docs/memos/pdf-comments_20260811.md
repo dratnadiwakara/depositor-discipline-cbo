@@ -1,0 +1,37 @@
+# PDF Comments — fdic-brc-jfqa-aug2026 — 2026-08-11
+
+Source: `latex/build/main.pdf` (harvested before recompile; 23 sticky notes, 0 empty markup annotations).
+
+| # | Page | Comment (verbatim) | Anchor (pdf text) | Source file:line | Status |
+|---|------|--------------------|-------------------|------------------|--------|
+| 1 | 2 | "need to breakdown the first para of intro into two. also we need to cite the pennachi paper that argues things like reciprocal deposits may lead to moral hazard etc. (huberdeau-reid-2024-adverse-selection-insurance.md)" | intro para 1, "Community banks are the right laboratory..." | sections/intro/intro_current.tex:4–30 | done |
+| 2 | 3 | "don't include Chen et al (2022) here. only tangentally relevant" | "Chen, Goldstein, Huang, and Vashishtha (2022) show that uninsured deposit flows respond more sharply to performance at more transparent banks." | sections/intro/intro_current.tex:56–58 | done |
+| 3 | 5 | "remove 'Third, high-CECL banks' posted deposit rates show no differential movement during the stress weeks themselves'. This is not strong evidence supporting the story, possibly undermines it" | six-pieces-of-evidence paragraph | sections/intro/intro_current.tex:121–123 | done |
+| 4 | 5 | "I am not sure the part starting with 'Separately, the large SEC-filing banks that adopted CECL in 2020 validate the signal content' belongs in this paragraph. Maybe a separate paragraph making the point that CECL shock is taken seriously by the market" | same paragraph, tail | sections/intro/intro_current.tex:132–139 | done |
+| 5 | 6 | "correct citation is @article{jordan2000market, ... Journal of Financial Intermediation 9(3), 298–319, 2000}" | "(Jordan, Peek, and Rosengren, 1999)" | sections/intro/intro_current.tex:155; main.bib:553 | done |
+| 6 | 6 | "Took a little whiel to understand the following. simplify. 'Two further results sharpen what is at stake. Retail depositors in a fully uninsured historical banking system ... the answer here is that they can.'" | end of discipline-literature paragraph | sections/intro/intro_current.tex:168–176 | done |
+| 7 | 6 | "had to read the paragraph starting with 'Second,' multiple times. content is fine, but simplify" | "Second, on CECL and mandatory credit-risk disclosure..." | sections/intro/intro_current.tex:178–198 | done |
+| 8 | 10 | "don't need the sentence 'Equity scaling is the baseline ...'" | end of §2.2 | sections/institutional-background/inst_bg_current.tex:81–83 | done |
+| 9 | 10 | "do not say 'does not bias a difference-in-differences design', I am not sure about that. keep it simpler" | §2.3 para 1 | sections/institutional-background/inst_bg_current.tex:94–98 | done |
+| 10 | 10 | "remove 'This choice does not threaten the design. Uninsured and insured time deposits at the same bank face the same modeling choice, so it biases the composition comparison only if it moves the two deposit types apart through some channel other than the disclosure itself.'" | §2.3 para 2 | sections/institutional-background/inst_bg_current.tex:108–112 | done |
+| 11 | 12 | "instead of 'ten-percentage point', use one percentage point -> 2.8%." | "a ten-percentage-point higher adjustment is associated with roughly 28 percent lower market capitalization" | sections/institutional-background/inst_bg_current.tex:160–162 | done |
+| 12 | 12 | "this has to be more than 100. close to 200. verify." | "The cohort is small: roughly one hundred publicly traded holding companies" | inst_bg_current.tex:170–171; intro_current.tex:137 | done |
+| 13 | 15 | "this seems repetitive. we have hammered this point before. Keep it minmal. ['This choice does not threaten the design ...']" | duplicate of #10 (quoted text renders on p.10) | inst_bg_current.tex:108–112 | done |
+| 14 | 17 | "Should be Table 2 Panel A" | "Table 2, columns (1)–(2), reports the baseline difference-in-differences estimates" | sections/results/empirical_results_current.tex:8–9 | done |
+| 15 | 17 | "Panel B of Table 2 should be moved to a new page. doesn't fit" | Table 2 float | tables_figures.tex:57–71 | done |
+| 16 | 17 | "need column labels on high maturity vs low maturity etc" | Panel B header row shows only (1)–(4) | code/result-generation/maturity_split_20260807.qmd:76; tables/tbl_maturity_split_*.tex | done |
+| 17 | 18 | "Table 2 Panel A" | "Columns (3)–(4) of Table 2" | sections/results/empirical_results_current.tex:38–39 | done |
+| 18 | 20 | "not sure if this is correct. 'including any bank-specific effect of the 2023 stress, whatever differential stress exposure high-CECL banks carried cannot explain why uninsured deposits fell relative to insured deposits within the same bank in proportion to the disclosed adjustment'. it doesn't rule out uninsured deposits leaving, correct?" | §6.4 | sections/results/empirical_results_current.tex:114–119 | done |
+| 19 | 20 | "remove paragraph: 'One caution on interpretation. Both arms of the differential are deposit categories ... not a depositor-only quantity.'" | §6.4 | sections/results/empirical_results_current.tex:121–128 | done |
+| 20 | 21 | "didn't fully understand the following. I think its a good point, but needs to simplify. 'The estimates are unchanged when the time-varying equity control is dropped (columns 2 and 5) ... which the composition design sharpens.'" | §6.5 | sections/results/empirical_results_current.tex:155–159 | done |
+| 21 | 22 | "Simplify 'what the banks bought was the insurance, not the wholesale funding as such'" | §6.7 | sections/results/empirical_results_current.tex:217–219 | done |
+| 22 | 23 | "remove ' but I report them separately here because they are distinct contractual arrangements and the aggregation is not required for the result.' part" | §6.7 reciprocal paragraph | sections/results/empirical_results_current.tex:232–235 | done |
+| 23 | 27 | "Replace Table 11 with a figure. Three panels, two on the top row and one below: (a) unrealized securities losses / assets, (b) weighted average maturity of loans and debt securities, (c) HRP Balance Sheet Risk. ... restricted to banks with a strictly positive adjustment (N=1,383) ... joint test p = 0.77 / 0.27 / 0.42, no measure has an R2 above 0.8%. ... Verify the A568 vs A569 labeling against the FFIEC instructions before using." | §7.2 | sections/robustness/robustness_current.tex:39–71; tables_figures.tex:250–262 | done |
+
+No inline `@@@ ... @@@` markers found in the section `.tex` files.
+
+## Verification notes
+
+- **#12** — verified against `data/raw/y9c.rds` + `crsp_20220930v2.csv`: 217 holding companies report a first Day-One adjustment in 2019–2021 (176 in 2020); 192 of them are CRSP-linked and enter the market-cap event study (162 adopting in 2020). "Roughly one hundred" is wrong; "roughly two hundred" is right.
+- **#11** — `cecl_equity = CECL / total_equity_capital` is a *fraction* in `market_and_cds_large_banks_20260401.qmd:129`, so the −2.771 coefficient is per 100 percentage points. One percentage point → ≈2.8 percent lower market cap. The CDS conversion ("19 basis points per ten percentage points") is arithmetically consistent with 190.8 per unit and stays as is.
+- **#23, maturity buckets** — verified against the 2022Q4 bulk file's own item descriptions: A553/A554 and A574/A575 read "OV 5-15 YRS" / "OVER 15 YR", confirming the standard RC-B/RC-C Memo 2 ladder. `RCONA568`'s description string ("CLSD-END LNS SECD 1ST LIENS OVR 15 Y") is a truncation artifact; the item is over 5 through 15 years and A569 is over 15 years. Midpoints 10 and 20 years are correct.

@@ -40,35 +40,42 @@ everything a depositor could have observed before the disclosure.
 \label{sec:robustness:svb}
 
 The remaining concern specific to 2023 is that the adjustment might
-proxy for vulnerability to the March 2023 stress.
-Table~\ref{tab:svb_exposure} regresses the adjustment on the 2022Q4
-measures of that vulnerability, the characteristics that identified
-run-prone banks in 2023 \citep{jiang2024monetary}, with log assets and
-equity-to-assets included in every specification: unrealized
-securities losses and the uninsured share of deposits one at a time,
-then jointly with the brokered share and CRE concentration.
-No specification explains even 1 percent of the cross-sectional
-variation.  Unrealized securities losses, the signature exposure of
-the failed banks, carry a coefficient of 0.016 (marginally significant
-alone, insignificant jointly), and the uninsured deposit share enters
-\emph{negatively} ($-0.003$, $p<0.05$): if anything, high-CECL banks
-funded themselves with slightly fewer of the deposits that ran in
-March 2023.  A stress-exposure story for the results requires the
-treatment to be correlated with stress exposure; it is not.
+proxy for vulnerability to the March 2023 stress.  If it did, banks
+disclosing larger charges would also be the banks carrying the
+balance-sheet exposures that identified run-prone institutions in 2023
+\citep{jiang2024monetary}.  Figure~\ref{fig:svb_exposure} plots three
+such exposures, measured at 2022Q4, across deciles of the disclosed
+adjustment: unrealized securities losses (Panel~A), the weighted
+average maturity of loans and debt securities (Panel~B), and the
+composite run-risk measure discussed below (Panel~C).  All three
+profiles are flat.  A joint test that the decile means are equal is
+not rejected for any of them ($p=0.77$, $0.27$, and $0.42$
+respectively), and the decile index explains under one percent of the
+cross-sectional variation in each case.  The deciles are formed among
+the 1,383 banks with a strictly positive adjustment, the variation the
+continuous treatment uses; 53~percent of the full sample discloses an
+adjustment of exactly zero, which would otherwise make the lower
+deciles arbitrary.
 
-Column (4) repeats the exercise with the composite run-risk measure
-of \citet{huberdeau2025adverse}, who summarize a bank's vulnerability
-as the expected loss of its uninsured depositors: promised debt over
+Panel~C uses the composite run-risk measure of
+\citet{huberdeau2025adverse}, who summarize a bank's vulnerability as
+the expected loss of its uninsured depositors: promised debt over
 marked-to-market assets, multiplied by the runnable share of that
 debt.  I approximate their Balance Sheet Risk at 2022Q4 as uninsured
 deposits plus short-term borrowings over total assets net of
-unrealized securities losses.  The composite fares no better than its
-components: the specification still explains well under one percent
-of the variation, and the coefficient is \emph{negative} ($-0.406$,
-$p<0.01$): among observably similar banks, those more exposed to runs
-disclosed, if anything, slightly smaller charges.  The treatment is
-orthogonal to the measure that identifies which banks expanded
-insured funding on contemporaneous risk during 2023.
+unrealized securities losses.  Conditioning does not help the stress
+story either.  In cross-sectional regressions of the adjustment on
+these characteristics with log assets and equity-to-assets included,
+no specification explains even 1~percent of the variation; unrealized
+securities losses carry a coefficient of 0.016, marginally significant
+alone and insignificant once entered jointly with the brokered share
+and CRE concentration; the uninsured deposit share enters
+\emph{negatively} ($-0.003$, $p<0.05$), so if anything high-CECL banks
+funded themselves with slightly fewer of the deposits that ran in
+March 2023; and the composite itself enters negatively as well
+($-0.406$, $p<0.01$).  A stress-exposure story for the results
+requires the treatment to be correlated with stress exposure.  It is
+not, and where a relation is detectable at all it runs the wrong way.
 
 A placebo test turns the question around.  If depositors were reacting
 to stress exposure rather than to the disclosure, uninsured time

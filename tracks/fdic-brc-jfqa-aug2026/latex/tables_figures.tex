@@ -58,16 +58,28 @@ Summary statistics at each bank's CECL adoption quarter. Columns present the ful
     \centering
     \adddescription{
 \small
-Panel A: difference-in-differences estimates. Dependent variables: uninsured time deposits/assets (cols 1--2), insured time deposits/assets (cols 3--4), and total uninsured deposits/assets, all uninsured balances regardless of product category (cols 5--6), in percentage points. Odd columns interact Post with continuous CECL Day-One adjustment relative to equity; even columns use the High-CECL indicator. Panel B: maturity split of the uninsured time-deposit specification under the High-CECL indicator. Banks are split at the median of the 2022Q4 share of uninsured time deposits with remaining maturity under one year (Schedule RC-E Memorandum item 4). Column (1) full sample, column (2) above-median maturity share, column (3) below-median, column (4) full sample with the split indicator fully interacted. Both panels: bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets; bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+Panel A: difference-in-differences estimates. Dependent variables: uninsured time deposits/assets (cols 1--2), insured time deposits/assets (cols 3--4), and total uninsured deposits/assets, all uninsured balances regardless of product category (cols 5--6), in percentage points. Odd columns interact Post with continuous CECL Day-One adjustment relative to equity; even columns use the High-CECL indicator. Panel B, reported on the following page, splits the uninsured time-deposit specification by predetermined maturity exposure. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets; bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
     }
     \vspace{0.25cm}
     Panel A: Time-deposit difference-in-differences\\[0.15cm]
     \resizebox{\textwidth}{!}{\input{tables/tbl_did_time_deposits_20260808}}
-    \vspace{0.4cm}\\
-    Panel B: Split by predetermined maturity exposure\\[0.15cm]
-    \resizebox{0.85\textwidth}{!}{\input{tables/tbl_maturity_split_20260808}}
     \caption{Difference-in-differences: time deposits and CECL exposure}
     \label{tab:small_bank_did_time_deposits}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \ContinuedFloat
+    \centering
+    \adddescription{
+\small
+Panel B: maturity split of the uninsured time-deposit specification under the High-CECL indicator. Banks are split at the median of the 2022Q4 share of uninsured time deposits with remaining maturity under one year (Schedule RC-E Memorandum item 4), so an above-median bank is one whose uninsured certificates come due sooner and whose depositors therefore face more rollover decisions during the sample. Column (1) full sample, column (2) above-median short-maturity share, column (3) below-median, column (4) full sample with the split indicator fully interacted. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets; bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    Panel B: Split by predetermined maturity exposure\\[0.15cm]
+    \resizebox{0.85\textwidth}{!}{\input{tables/tbl_maturity_split_20260811}}
+    \caption{Difference-in-differences: time deposits and CECL exposure (continued)}
+    \label{tab:maturity_split_panelb}
 \end{table}
 
 \clearpage
@@ -249,17 +261,17 @@ OLS regressions of the CECL Day-One adjustment (percent of pre-adoption equity) 
 \end{table}
 
 \clearpage
-\begin{table}[]
+\begin{figure}
     \centering
     \adddescription{
-\small
-Cross-sectional regressions of the CECL Day-One adjustment (percent of pre-adoption equity) on 2022Q4 measures of vulnerability to the March 2023 stress. Columns (1) and (2) enter unrealized securities losses/assets and the uninsured share of deposits one at a time; column (3) enters them jointly with the brokered share of deposits and CRE/loans. Column (4) uses an approximation of the Balance Sheet Risk measure of Huberdeau, Reid, and Pennacchi (2025), computed as uninsured deposits plus short-term borrowings divided by total assets net of unrealized securities losses; the approximation differs from theirs by excluding estimated unrealized loan losses and the seniority adjustment for FHLB advances. All specifications include log assets and equity/assets. One observation per sample bank. Heteroskedasticity-robust standard errors in parentheses. *, **, *** denote significance at 10\%, 5\%, 1\%.
+    \small
+Mean 2022Q4 stress-vulnerability characteristics by decile of the CECL Day-One adjustment, with 95\% confidence intervals; the dashed line is the sample mean. Panel A: unrealized securities losses as a percent of assets, signed so that larger values indicate larger losses. Panel B: weighted average remaining maturity or next repricing date of debt securities and loans, in years, computed from the Schedule RC-B and RC-C Part I Memorandum 2 maturity ladders using bucket midpoints of 0.125, 0.625, 2, 4, 10, and 20 years (other mortgage-backed securities report only two buckets, assigned 1.5 and 10 years). Panel C: an approximation of the Balance Sheet Risk measure of Huberdeau-Reid and Pennacchi (2025), uninsured deposits plus short-term borrowings divided by total assets net of unrealized securities losses; the approximation differs from theirs by excluding estimated unrealized loan losses and the seniority adjustment for FHLB advances. The sample is the 1,383 banks reporting a strictly positive Day-One adjustment, the variation the continuous treatment uses: 53 percent of the full sample reports an adjustment of exactly zero and a further 15 percent reports a reserve release, so full-sample deciles are degenerate. One observation per bank.
     }
     \vspace{0.25cm}
-    \resizebox{0.95\textwidth}{!}{\input{tables/tbl_svb_exposure_bsr_20260808}}
+    \includegraphics[width=\textwidth]{figures/fig_svb_exposure_20260811}
     \caption{CECL adjustment and 2022Q4 stress-vulnerability characteristics}
-    \label{tab:svb_exposure}
-\end{table}
+    \label{fig:svb_exposure}
+\end{figure}
 
 \clearpage
 \begin{table}[]

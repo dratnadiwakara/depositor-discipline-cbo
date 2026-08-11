@@ -1,0 +1,191 @@
+---
+title: "Stress-exposure profiles across CECL Day-One deciles (Sec. 7.2 figure)"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+2026-08-11 (PDF comment round, comment #23): replaces Table 11
+(tbl_svb_exposure_bsr) with a three-panel binned-means figure. Three panels,
+two on the top row and one below:
+  (a) unrealized securities losses / assets   (2022Q4, loss-signed)
+  (b) weighted average maturity of loans and debt securities (years, 2022Q4)
+  (c) Balance Sheet Risk, the Huberdeau-Reid and Pennacchi (2025) composite
+Each is the bin mean with a 95% CI across deciles of the Day-One adjustment.
+
+SAMPLE: banks with a STRICTLY POSITIVE adjustment only. 52.7% of the full
+sample has an adjustment of exactly zero and a further 15% is negative, so
+full-sample rank deciles are degenerate (deciles 3-6 are identical zeros
+separated only by an arbitrary tie-break, and deciles 1-2 are reserve
+releases, not low exposure). Positives are the variation the continuous
+treatment actually uses.
+
+Inputs: panel_smallbank (fallback vintage);
+        data/raw/call_report_data_20260401_{1,2}.rds;
+        data/maturity_2022q4_20260811.csv (01g_pull_maturity_20260811.py).
+Output: latex/figures/fig_svb_exposure_<stamp>.png
+        Prose numbers in sections/robustness/robustness_current.tex must match
+        the joint tests printed by the diagnostic block below.
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(ggplot2)
+library(here)
+library(patchwork)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+NBIN <- 10L
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+treat <- unique(panel[qtrs_since == 0 & !is.na(cecl_equity),
+                      .(ID_RSSD, cecl_equity, high_cecl_equity,
+                        unreal_loss_assets_22q4)])
+```
+
+## Balance Sheet Risk at 2022Q4
+
+Same construction as `svb_placebo_20260808.qmd`: promised runnable debt over
+marked-to-market assets.
+
+```{r}
+raw <- readRDS(here::here("data", "raw", "call_report_data_20260401_1.rds"))
+setDT(raw)
+raw2 <- readRDS(here::here("data", "raw", "call_report_data_20260401_2.rds"))
+setDT(raw2)
+raw <- unique(rbind(raw, raw2, fill = TRUE), by = c("ID_RSSD", "D_DT"))
+rm(raw2); gc()
+raw[, D_DT := as.Date(D_DT)]
+
+q4 <- raw[D_DT == as.Date("2022-12-31")]
+q4[, ul_sec := pmax(0, -((afs_fair_value - afs_amortized_cost) +
+                         (htm_fair_value - htm_amortized_cost)))]
+q4[, ud := fifelse(is.na(unins_deps_excl_ret), 0, unins_deps_excl_ret) +
+           fifelse(is.na(unins_ret_deps), 0, unins_ret_deps)]
+q4[, stb := fifelse(is.na(fed_funds_purchased), 0, fed_funds_purchased)]
+q4[, bsr := fifelse(total_assets - ul_sec > 0,
+                    (ud + stb) / (total_assets - ul_sec), NA_real_)]
+```
+
+## Weighted average maturity at 2022Q4
+
+Bucket midpoints in years. Other MBS (A561/A562) has only two buckets, so its
+midpoints are 1.5 and 10. See `01g_pull_maturity_20260811.py` for the A568
+description caveat.
+
+```{r}
+mat <- fread(file.path(TRACK_DATA, "maturity_2022q4_20260811.csv"))
+buckets <- c(
+  A549 = 0.125, A550 = 0.625, A551 = 2, A552 = 4, A553 = 10, A554 = 20,
+  A555 = 0.125, A556 = 0.625, A557 = 2, A558 = 4, A559 = 10, A560 = 20,
+  A561 = 1.5,   A562 = 10,
+  A564 = 0.125, A565 = 0.625, A566 = 2, A567 = 4, A568 = 10, A569 = 20,
+  A570 = 0.125, A571 = 0.625, A572 = 2, A573 = 4, A574 = 10, A575 = 20
+)
+bk <- names(buckets)
+mat[, (bk) := lapply(.SD, function(x) {
+  v <- suppressWarnings(as.numeric(as.character(x)))
+  fifelse(is.na(v), 0, v)
+}), .SDcols = bk]
+mat[, denom := rowSums(.SD), .SDcols = bk]
+mat[, numer := as.matrix(.SD) %*% buckets, .SDcols = bk]
+mat[, wam := fifelse(denom > 0, numer / denom, NA_real_)]
+```
+
+## Cross-section and deciles (positive adjustments only)
+
+```{r}
+cs <- merge(treat, q4[, .(ID_RSSD, bsr)], by = "ID_RSSD", all.x = TRUE)
+cs <- merge(cs, mat[, .(ID_RSSD, wam)], by = "ID_RSSD", all.x = TRUE)
+cs[, loss := -unreal_loss_assets_22q4]
+
+cs <- cs[!is.na(cecl_equity) & cecl_equity > 0]
+rk <- frank(cs$cecl_equity, ties.method = "first")
+cs[, dec := as.integer(cut(rk,
+                           breaks = quantile(rk, probs = seq(0, 1, length.out = NBIN + 1)),
+                           include.lowest = TRUE, labels = FALSE))]
+```
+
+## The three panels
+
+```{r}
+binned <- function(v) {
+  d <- cs[!is.na(get(v)), .(m = mean(get(v)), se = sd(get(v)) / sqrt(.N), n = .N),
+          by = dec]
+  d[, `:=`(lo = m - 1.96 * se, hi = m + 1.96 * se)]
+  setorder(d, dec)
+  d[]
+}
+
+mk <- function(d, ylab, tag) {
+  ggplot(d, aes(x = dec, y = m)) +
+    geom_hline(yintercept = weighted.mean(d$m, d$n), colour = accent_gray,
+               linetype = "dashed", linewidth = 0.4) +
+    geom_errorbar(aes(ymin = lo, ymax = hi), width = 0.18,
+                  colour = primary_blue, linewidth = 0.45) +
+    geom_point(colour = primary_blue, size = 1.9) +
+    scale_x_continuous(breaks = 1:NBIN) +
+    theme_custom() +
+    labs(x = "CECL Day-One adjustment decile", y = ylab, tag = tag)
+}
+
+p1 <- mk(binned("loss"), "Unrealized securities loss\n(% of assets)", "A")
+p2 <- mk(binned("wam"),  "Weighted average maturity\n(years)", "B")
+p3 <- mk(binned("bsr"),  "Balance Sheet Risk", "C")
+
+fig <- (p1 | p2) / (p3 | plot_spacer())
+
+if (isTRUE(save_figures)) {
+  ggsave(file.path(TRACK_FIG,
+                   paste0("fig_svb_exposure_", format(Sys.time(), "%Y%m%d"), ".png")),
+         fig, width = 9, height = 5.6, bg = "white")
+}
+print(fig)
+```
+
+## Diagnostics: the flatness numbers quoted in Sec. 7.2
+
+```{r}
+cat("\n================ POSITIVE-ONLY SAMPLE ================\n")
+cat("banks with a strictly positive adjustment:", nrow(cs),
+    "| High-CECL among them:", cs[high_cecl_equity == 1, .N], "\n")
+cat("with BSR:", cs[!is.na(bsr), .N], "| with WAM:", cs[!is.na(wam), .N], "\n\n")
+print(cs[, .(cecl_mean = round(mean(cecl_equity), 3),
+             cecl_min  = round(min(cecl_equity), 3),
+             cecl_max  = round(max(cecl_equity), 3),
+             loss = round(mean(loss, na.rm = TRUE), 3),
+             wam  = round(mean(wam,  na.rm = TRUE), 2),
+             bsr  = round(mean(bsr,  na.rm = TRUE), 4),
+             n = .N), by = dec][order(dec)])
+
+cat("\nJoint test that all decile means are equal:\n")
+for (v in c("loss", "wam", "bsr")) {
+  m <- lm(as.formula(paste(v, "~ factor(dec)")), data = cs)
+  f <- summary(m)$fstatistic
+  cat(sprintf("  %-5s F=%.2f p=%.3f R2=%.4f\n", v, f[1],
+              pf(f[1], f[2], f[3], lower.tail = FALSE), summary(m)$r.squared))
+}
+cat("\nSlope on the decile index:\n")
+for (v in c("loss", "wam", "bsr")) {
+  m <- lm(as.formula(paste(v, "~ dec")), data = cs)
+  s <- summary(m)$coefficients["dec", ]
+  cat(sprintf("  %-5s %8.4f (SE %.4f) p=%.3f R2=%.4f\n",
+              v, s[1], s[2], s[4], summary(m)$r.squared))
+}
+cat("\nSlope on the continuous adjustment:\n")
+for (v in c("loss", "wam", "bsr")) {
+  m <- lm(as.formula(paste(v, "~ cecl_equity")), data = cs)
+  s <- summary(m)$coefficients["cecl_equity", ]
+  cat(sprintf("  %-5s %8.4f (SE %.4f) p=%.3f R2=%.4f\n",
+              v, s[1], s[2], s[4], summary(m)$r.squared))
+}
+```

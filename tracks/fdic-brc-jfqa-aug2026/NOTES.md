@@ -1,5 +1,26 @@
 # Track Notes — fdic-brc-jfqa-aug2026
 
+## 2026-08-11 (PDF comment round)
+
+### Done
+- Harvested 23 sticky notes from build/main.pdf → docs/memos/pdf-comments_20260811.md (numbered checklist, all 23 addressed, all marked done). Harvest BEFORE any compile; build/ is clobbered.
+- Table 11 (tbl_svb_exposure_bsr) DELETED, replaced by Figure 7 fig:svb_exposure: 3 panels (2 top, 1 below) of binned means with 95% CIs vs Day-One decile — unrealized sec. loss, weighted avg maturity, HRP Balance Sheet Risk. New: svb_exposure_figs_20260811.qmd + 01g_pull_maturity_20260811.py → data/maturity_2022q4_20260811.csv.
+- §7.2 rewritten around the figure; the four table coefficients (0.016, −0.003, −0.406, R²<1%) survive as prose only.
+- Table 2 split across two floats via \ContinuedFloat so Panel B gets its own page and still numbers as "Table 2 (continued)"; Panel B gained a Sample header row (Full / High maturity / Low maturity / Full) via etable `headers=` in maturity_split_20260807.qmd → tbl_maturity_split_20260811.tex.
+- 2020 SEC-filer cohort corrected: "roughly one hundred" → 192 holding companies (217 have a 2019–21 Day-One number; 192 CRSP-linked, 162 adopting in 2020). Verified in scratchpad check_cohort_n*.R.
+- Intro para 1 split in two; huberdeau2025adverse now cited there for the reciprocal/sweep/brokered → weaker discipline + moral hazard point. "Six pieces of evidence" → five (posted-rate stress-week null dropped from the list). SEC-filer validation broken into its own paragraph.
+- jordan1999impact (FRB Boston WP) → jordan2000market (JFI 9(3) 298–319), per author's supplied BibTeX. Old entry left in main.bib, now unused.
+
+### Lessons
+- `cecl_equity` in market_and_cds_large_banks_20260401.qmd is CECL/equity as a FRACTION, so the −2.771 mktcap coefficient is per 100pp: one pp → 2.8% lower market cap. Do not read those coefficients as per-percentage-point.
+- The 2022Q4 bulk file mislabels RCONA568 as "OVR 15 Y". It is over 5 through 15 years (A569 is >15y) — confirmed by the parallel A553/A554 and A574/A575 descriptions. Midpoints 10/20 are right.
+- Full-sample deciles of the Day-One adjustment are useless: 53% exactly zero, 15% negative. Any decile plot of this treatment must restrict to strictly positive adjustments (N=1,383).
+- `etable(..., headers = list("Sample" = c(...)))` passes through export_track_tbl's `...` and is the way to label split-sample columns.
+
+### Next
+- Re-harvest on the next annotated PDF (new dated file in docs/memos/).
+- Still unrun: /skills/bib-validator (jordan2000market page range unverified; blickle2024who lacks RFS vol/pages), /skills/latex-preflight-check, figure-table-crosscheck.
+
 ## 2026-08-11
 
 ### Done

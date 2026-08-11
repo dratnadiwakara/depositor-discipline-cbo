@@ -75,7 +75,10 @@ dict_mat <- c(covariate_labels_dict, "(Intercept)" = "Constant",
                 "Post x High CECL x High Short-Maturity")
 export_track_tbl(r, "tbl_maturity_split", dict_mat,
                  order = c("Post x High CECL x High Short-Maturity",
-                           "Post x High CECL", "Post x High Short-Maturity"))
+                           "Post x High CECL", "Post x High Short-Maturity"),
+                 headers = list("Unins. TDs maturing $\\leq$1yr" =
+                                  c("Full", "Above median",
+                                    "Below median", "Full")))
 
 cat("\n================ DIAGNOSTICS ================\n")
 cat("Banks with maturity data:", uniqueN(dt_w[!is.na(short_share), ID_RSSD]),
