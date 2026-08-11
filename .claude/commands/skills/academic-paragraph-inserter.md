@@ -51,6 +51,16 @@ Before inserting any text, internalize these norms:
   directly.
 - Define any new variable or term the first time it appears in the insertion.
 
+**Hard project invariants — apply to every insertion (checked by `/skills/latex-preflight-check`)**
+- **No em dashes.** Never emit `---`; use a comma, colon, semicolon, parentheses, or a new
+  sentence. En-dash ranges (`2016--2025`) are fine.
+- **No forward section references.** An inserted sentence in a body section must not point to
+  a *later* section (`Section~\ref{}` to material not yet presented). Backward references are
+  fine; the introduction is exempt. If the point leans on a later result, state it in place in
+  present tense without the `\ref{}`.
+- **Every number quoted must trace to an exhibit.** Do not insert a coefficient, magnitude,
+  or count that cannot be read off an existing table fragment or figure in the track.
+
 **Cochrane (2005) micro-rules — apply to every insertion**
 - Kill "in other words" — if the prior sentence needed a restate, fix the prior sentence.
 - Kill "it should be noted that", "it is worth noting that", "it is easy to show that". Just
@@ -67,6 +77,13 @@ Before inserting any text, internalize these norms:
   decreases (increases)"; write the up-direction once, add "and vice versa" if needed.
 - No "I leave X for future research" / "this opens avenues for future work."
 - Do not abbreviate author names ("FF" → "Fama and French"; "DKS" → spell it out).
+- Same name for the same thing: reuse the manuscript's exact term for every variable and
+  concept ("uninsured time deposits" stays "uninsured time deposits"); never introduce a
+  synonym for variety.
+- Every comparative names its benchmark ("increases relative to ..."); never leave
+  "higher/lower/increases" hanging.
+- Never write bare "significant": state the statistical level or give the economic
+  magnitude.
 - Do not "assume" a model structure when stating it. Write "consumers have power utility,"
   not "we assume that consumers have power utility." Reserve "assume" for genuine
   identifying assumptions about the world.

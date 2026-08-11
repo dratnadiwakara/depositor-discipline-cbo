@@ -11,9 +11,13 @@ execute:
 FDIC-BRC / JFQA revision v4 (PDF-comment round, 2026-08-07).
 §1 "Other measures" for the repurchasing-insurance point: combined insured
    brokered + reciprocal outcome; extensive margin (any reciprocal).
+   2026-08-09: split into per-instrument columns (insured brokered, reciprocal,
+   term FHLB advances) alongside the combined outcome, so the exported Table 7
+   shows the components and the borrowing-margin null in one place.
 §2 SVB-vulnerability cross-section: CECL Adj on 2022Q4 exposure measures,
    univariate + joint. Expectation: near-zero, tiny R2.
-Inputs: panel_smallbank (post-jmcb vintage via fallback).
+Inputs: panel_smallbank (post-jmcb vintage via fallback),
+        fhlb_advances_20260809.rds (from 01e/01f).
 -->
 
 ```{r}
@@ -31,6 +35,15 @@ save_tables <- TRUE
 panel <- readRDS(latest_track_file("panel_smallbank"))
 setDT(panel)
 
+# FHLB advances (RC-M 5.a) merged on: built by 01e_pull_fhlb / 01f_convert_fhlb
+fhlb <- readRDS(latest_track_file("fhlb_advances"))
+panel[, D_DT := as.Date(D_DT)]
+panel <- merge(panel, fhlb, by = c("ID_RSSD", "D_DT"), all.x = TRUE)
+panel[total_assets > 0, `:=`(
+  fhlb_term_assets  = fhlb_term  / total_assets * 100,
+  fhlb_total_assets = fhlb_total / total_assets * 100
+)]
+
 dt_w <- panel[abs(qtrs_since) < 12]
 dt_w[, post := ifelse(qtrs_since > 0, 1, 0)]
 dt_w[, D_DT := as.factor(as.Date(D_DT))]
@@ -45,6 +58,8 @@ setFixest_fml(
 dict_r <- c(covariate_labels_dict, "(Intercept)" = "Constant",
             "ins_wholesale_assets" = "Ins. Brokered + Reciprocal/Assets (\\%)",
             "has_reciprocal" = "Any Reciprocal (0/1)",
+            "fhlb_term_assets" = "Term FHLB Adv./Assets (\\%)",
+            "fhlb_total_assets" = "Total FHLB Adv./Assets (\\%)",
             "unreal_loss_assets_22q4" = "Unrealized Sec. Loss/Assets (\\%)",
             "unins_dep_share_22q4" = "Unins. Dep./Deposits (\\%)",
             "brokered_share_22q4" = "Brokered Dep./Deposits (\\%)",
@@ -68,7 +83,38 @@ r1 <- list(
 )
 cat("\n================ §1 INSURED WHOLESALE (combined) ================\n")
 etable(r1, dict = dict_r, order = order_did_tbl)
-export_track_tbl(r1, "tbl_ins_wholesale", dict_r, order_did_tbl)
+# 2026-08-08 comment round: exported table kept only the combined-outcome
+# columns; the any-reciprocal extensive-margin models (cols 3-4) stay
+# computed above and are "available on request" in the paper.
+
+# 2026-08-09: exported Table 7. One column pair per instrument, no aggregation:
+# (1)-(2) insured brokered deposits, the headline destination margin and the
+# same instrument as the pre-adoption ramp in tbl_anticipation; (3)-(4)
+# reciprocal deposits, the network-insurance margin; (5)-(6) term FHLB
+# advances, the borrowing rather than deposit margin (expected null). Odd
+# columns continuous treatment, even columns the High-CECL dummy. The combined
+# brokered + reciprocal outcome is estimated in r1c below for the text.
+r1b <- list(
+  feols(brokered_ins_assets ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(brokered_ins_assets ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(reciprocal_assets   ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(reciprocal_assets   ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(fhlb_term_assets    ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(fhlb_term_assets    ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+)
+cat("\n================ §1b TABLE 7: DESTINATION MARGINS ================\n")
+etable(r1b, dict = dict_r, order = order_did_tbl)
+export_track_tbl(r1b, "tbl_ins_wholesale", dict_r, order_did_tbl)
+
+# Combined brokered + reciprocal and total FHLB advances: reported in the text
+# / available on request, not in the exported table.
+cat("\n================ §1c COMBINED, TOTAL FHLB (text only) ================\n")
+etable(list(
+  feols(ins_wholesale_assets ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(ins_wholesale_assets ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(fhlb_total_assets    ~ ..reg_cont  + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD),
+  feols(fhlb_total_assets    ~ ..reg_dummy + ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+), dict = dict_r, order = order_did_tbl)
 ```
 
 ## §2 SVB-exposure cross-section

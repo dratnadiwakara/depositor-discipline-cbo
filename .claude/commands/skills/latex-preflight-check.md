@@ -112,6 +112,9 @@ Add the following lightweight checks when scanning prose:
 - **Italics overuse** — count `\textit{}` and `\emph{}` per page. More than ~5 per page → flag and suggest restructuring sentences so the emphasis is carried by word order.
 - **Naked Greek letters** — flag any Greek symbol (`\alpha`, `\beta`, `\theta`, …) used in prose with no nearby definition (`= …`, `\equiv`, "where …", or a named gloss in the same or prior paragraph).
 - **Abbreviated author names** — patterns like `\bFF\b`, `\bDKS\b`, `\bGW\b` standing for an author pair where the bib entry exists. Spell them out.
+- **Unqualified "significant"** — flag every "significant"/"insignificant" in prose not accompanied by a level (10/5/1 percent) or an economic magnitude in the same sentence; ambiguous between statistical and economic senses.
+- **Empty intensifiers and hedges** — flag "very", "quite", "extremely", "somewhat", "relatively", "rather", "fairly" in prose; each should be deleted or replaced by a number.
+- **Elegant variation** — when scanning result-summary sentences, flag places where the same variable or concept appears under different names across sections (e.g., "uninsured CDs" in one place, "large-denomination funding" in another); the manuscript must use one canonical term per concept.
 
 ### 3.4 Figures and tables: text vs exhibits
 For each identifiable figure/table:
@@ -144,6 +147,18 @@ When discrepancies arise, apply this **source-of-truth heuristic**:
 - If neither is clear, mark **Uncertain** and state what evidence is missing.
 
 Do not critique the underlying design; only whether the **description matches** what is produced.
+
+### 3.6 Style-invariant sweeps (mechanical; run all of them)
+
+These are project-standard invariants. Each is a deterministic grep-style scan over the manuscript's section files (and `tables_figures.tex` where noted); report every hit as an issue with file:line.
+
+1. **No em dashes.** Flag every occurrence of `---` in prose (en-dash ranges `--` are fine, e.g. `2016--2025`).
+2. **Voice matches author count.** Read `\author{}` in the main file. If solo-authored, flag every `\bwe\b`, `\bour\b`, `\bus\b` in prose (case-insensitive; skip quotations and "reader+author we" only if unambiguous). If multi-authored, flag `\bI\b`/`\bmy\b` used for the authors.
+3. **No forward section references.** Build the section order from the `\input{}` sequence in the main file. Flag any `Section~\ref{...}` (or `\autoref`/`\cref` to a `sec:` label) in a body section that points to a *later* section. The introduction is exempt.
+4. **Floats in first-mention order.** Extract the sequence of first mentions of every `\ref{tab:...}` and `\ref{fig:...}` across section files in `\input{}` order. Extract the order of `\label{tab:...}`/`\label{fig:...}` blocks in `tables_figures.tex` (or wherever floats live). Diff the two sequences; flag any float whose block position differs from its first-mention position.
+5. **No results in float captions/notes.** For each caption and note/description block in `tables_figures.tex` and table fragments: flag coefficients, significance stars/p-values quoted as findings, directional findings language ("shows that", "consistent with", "we find", "declines by", "increases by"), or any interpretive claim. Captions/notes describe sample, unit, specification, variable construction, and data sources only.
+6. **Cite keys resolve.** Every `\cite*{}` key exists in the `.bib`; every `.bib` entry compiles without missing required fields for its entry type (title/author/year at minimum; flag `@article` without journal). Cross-check with the latest `build/*.blg` if present (bibtex warnings).
+7. **Numbers trace.** Every coefficient/magnitude quoted in prose appears in a table fragment or figure note (this overlaps §3.4; here it is a completeness sweep — list any quoted number you could not locate in any exhibit).
 
 ## 4. Output: Preflight Report (Required)
 

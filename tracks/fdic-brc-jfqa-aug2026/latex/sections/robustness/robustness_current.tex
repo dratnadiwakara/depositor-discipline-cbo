@@ -42,10 +42,11 @@ everything a depositor could have observed before the disclosure.
 The remaining concern specific to 2023 is that the adjustment might
 proxy for vulnerability to the March 2023 stress.
 Table~\ref{tab:svb_exposure} regresses the adjustment on the 2022Q4
-measures of that vulnerability, with log assets and equity-to-assets
-included in every specification: unrealized securities losses and the
-uninsured share of deposits one at a time, then jointly with the
-brokered share and CRE concentration \citep{caglio2024depositors}.
+measures of that vulnerability, the characteristics that identified
+run-prone banks in 2023 \citep{jiang2024monetary}, with log assets and
+equity-to-assets included in every specification: unrealized
+securities losses and the uninsured share of deposits one at a time,
+then jointly with the brokered share and CRE concentration.
 No specification explains even 1 percent of the cross-sectional
 variation.  Unrealized securities losses, the signature exposure of
 the failed banks, carry a coefficient of 0.016 (marginally significant
@@ -54,3 +55,50 @@ alone, insignificant jointly), and the uninsured deposit share enters
 funded themselves with slightly fewer of the deposits that ran in
 March 2023.  A stress-exposure story for the results requires the
 treatment to be correlated with stress exposure; it is not.
+
+Column (4) repeats the exercise with the composite run-risk measure
+of \citet{huberdeau2025adverse}, who summarize a bank's vulnerability
+as the expected loss of its uninsured depositors: promised debt over
+marked-to-market assets, multiplied by the runnable share of that
+debt.  I approximate their Balance Sheet Risk at 2022Q4 as uninsured
+deposits plus short-term borrowings over total assets net of
+unrealized securities losses.  The composite fares no better than its
+components: the specification still explains well under one percent
+of the variation, and the coefficient is \emph{negative} ($-0.406$,
+$p<0.01$): among observably similar banks, those more exposed to runs
+disclosed, if anything, slightly smaller charges.  The treatment is
+orthogonal to the measure that identifies which banks expanded
+insured funding on contemporaneous risk during 2023.
+
+A placebo test turns the question around.  If depositors were reacting
+to stress exposure rather than to the disclosure, uninsured time
+deposits should have fallen at loss-exposed banks even where no CECL
+news arrived.  Table~\ref{tab:svb_placebo} estimates a
+difference-in-differences around the March 2023 failures in which the
+treatment intensity is the 2022Q4 unrealized securities loss itself.
+Columns (1)--(3) restrict the sample to the banks that reported a
+Day-One adjustment of exactly zero, so the disclosure carried no news
+about them.  Uninsured time deposits at loss-exposed banks did not
+fall after the failures: the interaction is positive (0.073,
+significant at 5~percent), and insured time deposits move the same way
+(0.062), a parallel drift in the funding mix of banks holding
+long-duration securities as rates rose, not a run.  Columns (4) and
+(5) return to the full sample and add the loss interaction to the
+baseline specification: the CECL coefficients ($-0.078$ continuous,
+$-0.406$ High-CECL, both significant at 5~percent) are essentially
+identical to the baseline estimates in
+Table~\ref{tab:small_bank_did_time_deposits}, while the loss
+interaction is small and insignificant.  The depositors who moved on
+the disclosed charge did not move on the balance-sheet exposure that
+defined the SVB episode.
+
+The broader accounts of the episode point the same way.  The runs
+were concentrated in crypto- and venture-focused business models at a
+handful of mostly West Coast banks, and smaller banks faced less
+pressure \citep{kelly2025rushing}; the deposit reallocation of the
+stress weeks ran toward the largest banks on size and perceived
+safety rather than on balance-sheet fundamentals
+\citep{caglio2024depositors}; and the runs themselves were wholesale,
+with no retail run and almost no run risk at private banks
+\citep{cipriani2024tracing}.  None of these mechanisms operates
+through a bank's CECL Day-One adjustment.

@@ -38,10 +38,11 @@ For **figures**:
 6. **Reference to paper section** — point the reader to where the exercise is discussed (e.g., "discussed in Section 4.6").
 
 ### What a note must NOT do
-- **Do not interpret results** — do not say "consistent with", "we find", "the results show", or draw any conclusions.
+- **Do not state or interpret results — hard invariant.** Captions and notes describe *method only*: sample, unit of observation, specification, estimation, variable construction, sources. Never include coefficients, magnitudes, significance statements quoted as findings, directional findings ("declines by", "increases by", "is larger for"), or interpretive language ("consistent with", "we find", "shows that", "indicating that"). Findings live in the body text. When evaluating existing captions/notes, flag any results language as an error to remove, not a style preference. This is checked mechanically by `/skills/latex-preflight-check` §3.6.
 - **Do not be redundant with the title** — the title (e.g., "Table 3: Effect of Agent Experience on Foreclosure") states what the table is; the note provides operational detail.
 - **Do not omit variable definitions** — any transformed variable (logs, indicators, interactions) must be defined.
 - **Do not use vague language** — "appropriate controls" or "standard fixed effects" are not acceptable when the specification itself is the focus; in such cases, clearly describe how the specification differs from the baseline rather than listing every control.
+- **Do not mismatch voice or use em dashes** — read `\author{}` in the track's `main.tex`: solo-authored → "I" (or agentless constructions: "The table reports..."), multi-authored → "we". Never emit `---` in a caption or note; en-dash ranges are fine.
 
 ### Numerical formatting (Cochrane 2005 §2 — Tables)
 - **Significant digits**: 2–3 sig figs, not whatever the program prints. `4.56783 (0.6789)` becomes `4.6 (0.7)`. Flag any cell with > 3 sig figs and propose the rounded value in the suggested note or caption.

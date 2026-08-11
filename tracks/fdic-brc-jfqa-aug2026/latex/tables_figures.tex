@@ -1,8 +1,9 @@
 %% Consolidated float file. Order follows first reference in text:
 %% background (market/CDS validation) -> descriptive stats -> results
-%% (level DiD, overlay ES, extended ES, triple diff, TD rates, posted rates,
-%% brokered, insured wholesale, brokered ES, reciprocal ES, financial,
-%% anticipation) -> robustness (predictors, SVB exposure).
+%% (level DiD w/ maturity Panel B, overlay ES, extended ES, triple diff,
+%% capital het, TD rates, posted rates, insured wholesale, insured-wholesale
+%% ES fig, financial, financial ES fig, anticipation) -> robustness
+%% (predictors, SVB exposure incl. BSR col, SVB placebo).
 %% Notes describe what is done, not what is found.
 
 %% Institutional background
@@ -42,10 +43,10 @@ This figure plots the cross-sectional distribution of the CECL Day-One retained-
     \centering
     \adddescription{
 \small
-Summary statistics at each bank's CECL adoption quarter. Columns present the full sample, banks with a high CECL Day-One adjustment (at or above 2.5 percent of equity), the remaining low-CECL banks, and the high-minus-low mean difference with two-sample $t$-test significance. Ratio variables are in percentage points, winsorized within quarter at the 1st and 99th percentiles. *, **, *** denote significance at 10\%, 5\%, 1\%.
+Summary statistics at each bank's CECL adoption quarter. Columns present the full sample, banks with a high CECL Day-One adjustment (at or above 2.5 percent of equity), the remaining low-CECL banks, and the high-minus-low mean difference with two-sample $t$-test significance. The deposit-structure block includes total brokered, insured brokered, and reciprocal deposits, each scaled by assets. Ratio variables are in percentage points, winsorized within quarter at the 1st and 99th percentiles. *, **, *** denote significance at 10\%, 5\%, 1\%.
     }
     \vspace{0.25cm}
-    \resizebox{0.8\textwidth}{!}{\input{tables/tab01_sumstats_20260612}}
+    \resizebox{0.8\textwidth}{!}{\input{tables/tab01_sumstats_20260808}}
     \caption{Summary statistics at CECL adoption}
     \label{tab:descriptive_sumstats_cecl}
 \end{table}
@@ -57,10 +58,14 @@ Summary statistics at each bank's CECL adoption quarter. Columns present the ful
     \centering
     \adddescription{
 \small
-Difference-in-differences estimates. Dependent variables: uninsured time deposits/assets (cols 1--2) and insured time deposits/assets (cols 3--4), in percentage points. Odd columns interact Post with continuous CECL Day-One adjustment relative to equity; even columns use the High-CECL indicator. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+Panel A: difference-in-differences estimates. Dependent variables: uninsured time deposits/assets (cols 1--2), insured time deposits/assets (cols 3--4), and total uninsured deposits/assets, all uninsured balances regardless of product category (cols 5--6), in percentage points. Odd columns interact Post with continuous CECL Day-One adjustment relative to equity; even columns use the High-CECL indicator. Panel B: maturity split of the uninsured time-deposit specification under the High-CECL indicator. Banks are split at the median of the 2022Q4 share of uninsured time deposits with remaining maturity under one year (Schedule RC-E Memorandum item 4). Column (1) full sample, column (2) above-median maturity share, column (3) below-median, column (4) full sample with the split indicator fully interacted. Both panels: bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets; bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
     }
     \vspace{0.25cm}
-    \resizebox{0.8\textwidth}{!}{\input{tables/tbl_did_time_deposits_20260612}}
+    Panel A: Time-deposit difference-in-differences\\[0.15cm]
+    \resizebox{\textwidth}{!}{\input{tables/tbl_did_time_deposits_20260808}}
+    \vspace{0.4cm}\\
+    Panel B: Split by predetermined maturity exposure\\[0.15cm]
+    \resizebox{0.85\textwidth}{!}{\input{tables/tbl_maturity_split_20260808}}
     \caption{Difference-in-differences: time deposits and CECL exposure}
     \label{tab:small_bank_did_time_deposits}
 \end{table}
@@ -155,24 +160,11 @@ Posted deposit rates around the 2023 stress and the Day-One disclosures. Bank-we
     \centering
     \adddescription{
 \small
-DiD for wholesale and insurance-structured funding outcomes, each scaled by assets (percentage points): total brokered (cols 1--2), insured brokered (cols 3--4), uninsured brokered maturing within one year (cols 5--6), reciprocal deposits (cols 7--8). Odd columns continuous; even High-CECL. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs. *, **, *** denote 10\%, 5\%, 1\%.
+DiD for the three margins a bank could use to replace withdrawn uninsured deposits, each scaled by contemporaneous total assets (percentage points) and estimated separately. Columns (1)--(2) are insured brokered deposits. Columns (3)--(4) are reciprocal deposits, balances placed through a network arrangement (e.g.\ IntraFi) that distributes a large account across member banks in sub-\$250{,}000 slices, leaving the depositor relationship with the originating bank intact while making the full balance insured. Columns (5)--(6) are term FHLB advances, defined as advances with a remaining maturity or next repricing date beyond one year (Schedule RC-M items 5.a.(1)(b)--(d)); these measure the borrowing rather than the deposit margin. Odd columns interact Post with the continuous CECL adjustment; even columns use the High-CECL indicator. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
     }
     \vspace{0.25cm}
-    \resizebox{\textwidth}{!}{\input{tables/tbl_brokered_20260612}}
-    \caption{Destination of funding: brokered and reciprocal deposits}
-    \label{tab:brokered}
-\end{table}
-
-\clearpage
-\begin{table}[]
-    \centering
-    \adddescription{
-\small
-DiD for combined insured wholesale funding. Dependent variables: the sum of insured brokered and reciprocal deposits scaled by assets (percentage points; cols 1--2) and an indicator for holding any reciprocal balance (cols 3--4). Odd columns interact Post with continuous CECL adjustment; even columns use the High-CECL indicator. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
-    }
-    \vspace{0.25cm}
-    \resizebox{0.85\textwidth}{!}{\input{tables/tbl_ins_wholesale_20260807}}
-    \caption{Combined insured wholesale funding: insured brokered plus reciprocal deposits}
+    \resizebox{0.9\textwidth}{!}{\input{tables/tbl_ins_wholesale_20260809}}
+    \caption{Where the funding went: insured brokered deposits, reciprocal deposits, and FHLB advances}
     \label{tab:ins_wholesale}
 \end{table}
 
@@ -181,23 +173,11 @@ DiD for combined insured wholesale funding. Dependent variables: the sum of insu
     \centering
     \adddescription{
     \small
-Event-study estimates for insured brokered deposits/assets around CECL adoption, under the High-CECL indicator interaction. Horizontal axis: quarters relative to adoption, $k=-1$ omitted. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs; shaded bands are 90\% CIs.
+Event-study estimates for insured brokered deposits scaled by assets around CECL adoption, under the High-CECL indicator interaction. Horizontal axis: quarters relative to adoption, $k=-1$ omitted. The rise over the final pre-adoption quarters is the bank-side pre-funding documented in Table~\ref{tab:anticipation}: management knew the coming charge before depositors did. Bank and calendar-quarter FE; lagged controls including interest expense/assets; bank-clustered SEs; shaded bands are 90\% CIs.
     }
-    \includegraphics[width=0.7\textwidth]{figures/fig_es_brokered_ins_20260612.png}
+    \includegraphics[width=0.8\textwidth]{figures/fig_es_brokered_ins_20260809.png}
     \caption{Event study: insured brokered deposits}
     \label{fig:es_brokered_ins}
-\end{figure}
-
-\clearpage
-\begin{figure}
-    \centering
-    \adddescription{
-    \small
-Event-study estimates for reciprocal deposits/assets around CECL adoption, under the High-CECL indicator interaction. Horizontal axis: quarters relative to adoption, $k=-1$ omitted. Bank and calendar-quarter FE; lagged controls; bank-clustered SEs; shaded bands are 90\% CIs.
-    }
-    \includegraphics[width=0.7\textwidth]{figures/fig_es_reciprocal_20260612.png}
-    \caption{Event study: reciprocal deposits}
-    \label{fig:es_reciprocal}
 \end{figure}
 
 \clearpage
@@ -212,6 +192,33 @@ Difference-in-differences estimates for financial outcomes. Dependent variables:
     \caption{Difference-in-differences: financial outcomes and CECL exposure}
     \label{tab:small_bank_did_financial_outcomes}
 \end{table}
+
+\clearpage
+\begin{figure}
+    \centering
+    \adddescription{
+    \small
+Event-study estimates for the financial outcomes of the profitability analysis, under the High-CECL indicator interaction: interest expense/assets (Panel A), ROA (Panel B), and NIM (Panel C), each in quarterly percentage points. Horizontal axis: quarters relative to CECL adoption, $k=-1$ omitted. Bank and calendar-quarter FE; lagged log assets and equity-to-assets; bank-clustered SEs; shaded bands are 90\% CIs.
+    }
+    \begin{minipage}[t]{0.49\textwidth}
+        \centering
+        {\small Panel A: Interest expense/assets}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/fig_es_intexp_20260808.png}
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.49\textwidth}
+        \centering
+        {\small Panel B: ROA}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/fig_es_roa_20260808.png}
+    \end{minipage}
+    \vspace{0.3cm}\\
+    \begin{minipage}[t]{0.49\textwidth}
+        \centering
+        {\small Panel C: NIM}\\[-0.25em]
+        \includegraphics[width=\linewidth]{figures/fig_es_nim_20260808.png}
+    \end{minipage}
+    \caption{Event studies: financial outcomes}
+    \label{fig:es_financial}
+\end{figure}
 
 \clearpage
 \begin{table}[]
@@ -246,10 +253,23 @@ OLS regressions of the CECL Day-One adjustment (percent of pre-adoption equity) 
     \centering
     \adddescription{
 \small
-Cross-sectional regressions of the CECL Day-One adjustment (percent of pre-adoption equity) on 2022Q4 measures of vulnerability to the March 2023 stress. Columns (1) and (2) enter unrealized securities losses/assets and the uninsured share of deposits one at a time; column (3) enters them jointly with the brokered share of deposits and CRE/loans. All specifications include log assets and equity/assets. One observation per sample bank. Heteroskedasticity-robust standard errors in parentheses. *, **, *** denote significance at 10\%, 5\%, 1\%.
+Cross-sectional regressions of the CECL Day-One adjustment (percent of pre-adoption equity) on 2022Q4 measures of vulnerability to the March 2023 stress. Columns (1) and (2) enter unrealized securities losses/assets and the uninsured share of deposits one at a time; column (3) enters them jointly with the brokered share of deposits and CRE/loans. Column (4) uses an approximation of the Balance Sheet Risk measure of Huberdeau, Reid, and Pennacchi (2025), computed as uninsured deposits plus short-term borrowings divided by total assets net of unrealized securities losses; the approximation differs from theirs by excluding estimated unrealized loan losses and the seniority adjustment for FHLB advances. All specifications include log assets and equity/assets. One observation per sample bank. Heteroskedasticity-robust standard errors in parentheses. *, **, *** denote significance at 10\%, 5\%, 1\%.
     }
     \vspace{0.25cm}
-    \resizebox{0.95\textwidth}{!}{\input{tables/tbl_svb_exposure_20260807}}
+    \resizebox{0.95\textwidth}{!}{\input{tables/tbl_svb_exposure_bsr_20260808}}
     \caption{CECL adjustment and 2022Q4 stress-vulnerability characteristics}
     \label{tab:svb_exposure}
+\end{table}
+
+\clearpage
+\begin{table}[]
+    \centering
+    \adddescription{
+\small
+Placebo difference-in-differences around the March 2023 failures. Treatment intensity is the 2022Q4 unrealized securities loss scaled by assets, in percentage points with the sign flipped so that larger values indicate larger losses; the High Unrealized Loss indicator marks banks above the sample median. Post-SVB equals one from 2023Q1 onward. Dependent variables: uninsured time deposits/assets (cols 1--2 and 4--5) and insured time deposits/assets (col 3), in percentage points. Columns (1)--(3) restrict the sample to banks that reported a CECL Day-One adjustment of exactly zero; columns (4)--(5) use the full sample and add the Post $\times$ CECL interaction from the baseline specification. Bank and calendar-quarter FE; lagged log assets, equity-to-assets, and interest expense/assets. Bank-clustered standard errors. *, **, *** denote 10\%, 5\%, 1\%.
+    }
+    \vspace{0.25cm}
+    \resizebox{\textwidth}{!}{\input{tables/tbl_svb_placebo_20260808}}
+    \caption{Placebo: unrealized-loss exposure and time deposits around the 2023 failures}
+    \label{tab:svb_placebo}
 \end{table}

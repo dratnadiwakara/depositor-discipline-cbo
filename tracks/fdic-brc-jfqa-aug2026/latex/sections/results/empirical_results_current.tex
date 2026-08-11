@@ -19,7 +19,8 @@ maechler2006dynamic, egan2017deposit}.  The disclosure arrives while
 that decision is on the table.
 
 The rollover mechanism implies the outflow should be concentrated
-where certificates were actually coming due.  To check this, I split
+where certificates were actually coming due.  Panel~B of
+Table~\ref{tab:small_bank_did_time_deposits} checks this by splitting
 the sample at the median of a predetermined measure of maturity
 exposure: the share of each bank's uninsured time deposits with
 remaining maturity under one year as of 2022Q4.  The estimate in the
@@ -38,11 +39,32 @@ The mirror image appears on the insured side.  Columns (3)--(4) of
 Table~\ref{tab:small_bank_did_time_deposits} estimate the same
 specification for insured time deposits: high-CECL banks \emph{gained}
 0.712 percentage points of assets ($p<0.05$), with a matching
-continuous estimate of $+0.070$.  Funding did not simply leave
-high-CECL banks; it changed insurance status within the same
-instrument class.  The symmetry of the two estimates is the first
-indication that the response is a reallocation across the insurance
-threshold rather than a general funding outflow.
+continuous estimate of $+0.070$.  The account-size categories cannot
+say who supplied that gain.  A depositor who trims a \$500{,}000
+certificate down to the \$250{,}000 cap registers as an uninsured
+decline and an insured gain, exactly as a newly opened insured
+certificate does, and part of the insured inflow is bank-initiated
+insured brokered money, documented below.  What the paired
+estimates do establish is that the response operates at the insurance
+threshold rather than as a general funding outflow: balances crossed
+the \$250{,}000 line, whether because depositors trimmed their
+uninsured exposure or because the bank replaced what left.
+
+Columns (5)--(6) widen the lens to total uninsured deposits, the
+quantity object in \citet{huberdeau2025adverse} and most of the
+2023-crisis literature, and find nothing: the estimates are small,
+mixed in sign, and imprecise (0.073, SE 0.085, continuous; $-0.177$,
+SE 0.458, High-CECL).  The null marks the scope of the response
+rather than contradicting the time-deposit result.  Most uninsured
+balances at community banks sit in transaction and operating
+accounts: payroll, business checking, municipal operating funds.
+Those balances are held for liquidity services rather than yield
+\citep{davernas2023deposit}, they face no scheduled decision point,
+and moving them means severing an operating relationship rather than
+declining to roll over a maturing certificate.  Discipline appears
+where the depositor faces a scheduled, low-cost exit decision, the
+rollover margin, and nowhere else; the remainder of the paper
+therefore works with the time-deposit categories.
 
 \subsection{Event-Study Evidence}
 \label{sec:results:eventstudy}
@@ -101,29 +123,32 @@ deposit categories, so the comparison is between two potentially
 endogenous outcomes rather than between the treated outcome and an
 unaffected control liability \citep{covitz2004market}.  The insured
 increase in part reflects active bank substitution into insured
-brokered and reciprocal deposits, so the triple difference measures the
+brokered deposits, so the triple difference measures the
 joint depositor-plus-bank response at the insurance margin, not a
 depositor-only quantity.
 
 \subsection{Discipline and the Capital Buffer}
 \label{sec:results:capital}
 
-The disclosed charge should matter most where the buffer absorbing it
-is thinnest: a given Day-One adjustment moves a thin-capital bank
-closer to distress than a well-capitalized one, so a monitoring
-depositor should respond more strongly.  Table~\ref{tab:capital_het}
-tests this by interacting the DiD terms with each bank's predetermined
-2022Q4 equity-to-assets ratio.  Columns (1)--(3) use the level of
-uninsured time deposits; columns (4)--(6) use the within-bank gap
+The same disclosed charge is worse news at some banks than at others.
+A Day-One adjustment consumes equity, so a bank with a thin capital
+buffer ends up closer to insolvency than a well-capitalized bank
+reporting the identical charge, and its uninsured depositors have more
+at stake in reacting.  If depositors monitor, the response should
+therefore be strongest at thinly capitalized banks and fade as the
+buffer grows.  Table~\ref{tab:capital_het} tests for this gradient by
+interacting the DiD terms with each bank's equity-to-assets ratio
+measured at 2022Q4, before adoption.  Columns (1)--(3) use the level
+of uninsured time deposits; columns (4)--(6) use the within-bank gap
 between uninsured and insured time deposits, the outcome equivalent to
 the bank-by-quarter triple difference.
 
-The treatment effect is largest at low capital and attenuates as the
-buffer grows, in every specification.  In the gap design, each
+The prediction holds in every specification.  In the gap design, each
 percentage point of CECL exposure moves the composition by $-0.80$
-percentage points of assets at a hypothetical zero-equity bank
-($p<0.01$), attenuating by $0.067$ per point of capital ($p<0.01$);
-the binary analog is $-4.12$ and $+0.31$.  The implied effect reaches
+percentage points of assets for a hypothetical bank with zero equity
+($p<0.01$), and the response shrinks by $0.067$ for every percentage
+point of capital ($p<0.01$); the binary analog is $-4.12$ and
+$+0.31$.  The implied effect reaches
 zero at an equity ratio of roughly 12 to 13 percent, just above the
 75th percentile of the sample distribution: at the best-capitalized
 quartile of banks, the same disclosed charge draws essentially no
@@ -160,43 +185,97 @@ for the retail CD), and none during the March 10--April 30, 2023
 stress window either ($-0.026$, SE $0.048$).  High-CECL banks never
 competed on retail price, before or after the news.
 
+These nulls are what the rate-setting literature predicts, not an
+absence of discipline.  Posted deposit rates are set centrally: more
+than 90~percent of branches follow a rate set elsewhere in the bank
+\citep{begenau2023uniform}, and after mergers, target-branch rates
+converge to the acquirer's rate with little regard for local market
+concentration \citep{granja2024market}.  In the same RateWatch data,
+posted CD rates show no negative relation to bank risk and instead
+track the bank's own loan growth \citep{bendavid2017banks}.  The
+depositor side is largely inert: roughly 94~percent of depositors are
+inactive in a given year, and only about 15~percent of account
+closures involve switching for better terms \citep{egan2025sleepy}.
+When a posted-rate risk premium is detectable at all, it appears as a
+within-branch spread between partially insured and fully insured
+products, and mainly in acute crisis quarters \citep{jacewitz2018deposit}.
+Price defense may not even be available to the banks that need it:
+healthy banks can attract uninsured deposits by paying more, but weak
+banks cannot \citep{maechler2006dynamic}.  The margin depositors
+control is the rollover quantity, and that is the margin that moved.
+
 \subsection{Repurchasing Insurance: Where the Funding Goes}
 \label{sec:results:destination}
 
 If banks did not defend uninsured balances on price, how did they
-replace them?  Table~\ref{tab:brokered} examines the wholesale-funding
-margin.  After adoption, high-CECL banks increase insured brokered
-deposits by 0.52 percentage points of assets ($p<0.05$) and reciprocal
-deposits, the network arrangement that purchases full insurance
-coverage for large accounts, by 0.089 percentage points per unit of
-continuous CECL exposure ($p<0.10$), while \emph{uninsured} brokered
-funding does not move.  Because insured brokered and reciprocal
-deposits are two routes to the same destination, insured wholesale
-funding, Table~\ref{tab:ins_wholesale} combines them into a single
-outcome: high-CECL banks increase the combined position by 0.81
-percentage points of assets after adoption ($p<0.05$; continuous
-$0.175$, $p<0.05$), a sharper estimate than either component alone.
-The margin is intensive rather than extensive: the probability of
-holding any reciprocal balance does not move.  High-CECL banks did not
+replace them?  Table~\ref{tab:ins_wholesale} takes each candidate
+margin in turn.  Insured brokered deposits rise by 0.52 percentage
+points of assets at high-CECL banks after adoption ($p<0.05$;
+continuous $0.086$, $p<0.10$).  This is the same instrument banks
+were already ramping before adoption, on private knowledge of their
+charges, and it continues to grow once the number is public.
+Uninsured brokered funding, by contrast, shows no response (available
+on request): what the banks bought was the insurance, not the
+wholesale funding as such.
+
+Columns (3)--(4) report the second insured margin, reciprocal
+deposits.  These are balances placed through a network that
+distributes a large account across member banks in sub-\$250{,}000
+slices: the depositor keeps a single relationship with the originating
+bank, and the bank receives an offsetting balance from other members,
+so the size of its balance sheet is unchanged and only the insurance
+status of the money moves.  Reciprocal balances rise with the
+disclosed charge in the continuous specification ($0.089$, $p<0.10$),
+though the binary estimate is imprecise ($0.290$, SE $0.253$), and the
+response is intensive rather than extensive: the probability of
+holding any reciprocal balance does not move (available on request).
+Estimating the two insured margins jointly gives $0.81$ percentage
+points ($p<0.05$; continuous $0.175$, $p<0.05$), but I report them
+separately here because they are distinct contractual arrangements and
+the aggregation is not required for the result.
+
+Banks did not lever up instead.  Columns (5)--(6) report the borrowing
+margin, term FHLB advances, and find nothing: $0.034$ (SE $0.182$)
+under the binary treatment and $0.017$ (SE $0.036$) continuous, with
+total advances and other borrowed money equally flat (unreported).
+The 2022--2023 rate cycle drove a large common increase in FHLB
+borrowing across community banks, but none of it scales with the
+disclosed charge.  The contrast with \citet{huberdeau2025adverse} is
+informative: riskier banks there drew FHLB advances in 2023Q1, in the
+immediate aftermath of the failures, whereas the response to a
+predetermined disclosure runs entirely through the deposit market.
+High-CECL banks did not
 lose funding so much as repurchase it in insured form, the
-market-based insurance margin of \citet{kim2024insurance}.  Excluding
+network-based insurance margin of \citet{kim2024insurance}.  The
+substitution itself has precedent, but at banks in trouble: failing
+banks replace withdrawn uninsured money with insured term deposits
+structured just under the limit \citep{martin2026deposit}, distressed
+thrifts attracted insured and brokered deposits as uninsured money
+left \citep{goldberg2002depositor}, the 2023 run banks eventually
+replaced lost uninsured deposits with higher-cost insured deposits
+\citep{cipriani2024tracing}, and in the 2023 cross-section riskier
+small and midsize banks expanded reciprocal and sweep deposits while
+paying higher rates \citep{huberdeau2025adverse}.  Here the trigger is
+a predetermined disclosure at solvent banks rather than realized
+distress or contemporaneous balance-sheet risk.  Excluding
 the quartile of banks with the largest post-adoption growth in insured
 brokered deposits shrinks the triple interaction toward zero
 (unreported), indicating that the composition shift is concentrated
 precisely among the banks that actively replaced uninsured funding
 with insured wholesale money.
 
-The event-time paths make the margin visible.  Insured brokered
-deposits (Figure~\ref{fig:es_brokered_ins}) are flat through event
-quarter $-4$, begin accumulating around three quarters \emph{before}
-adoption, and continue rising through the end of the sample; the
-pre-adoption phase is the bank-side anticipation I analyze below.
-Reciprocal deposits (Figure~\ref{fig:es_reciprocal}) trend upward
-across the whole window as reciprocal networks expanded secularly,
-then step up further in the later post-adoption quarters; the
-confidence bands are wide, and I treat the DiD coefficients in
-Tables~\ref{tab:brokered} and~\ref{tab:ins_wholesale} as the estimates
-and the figure as context.
+The event-time path makes the margin visible.  Insured brokered
+deposits (Figure~\ref{fig:es_brokered_ins}) sit flat and below the
+reference level through the distant pre-period, turn upward over the
+final three pre-adoption quarters, and keep climbing through the end
+of the sample.  The pre-adoption rise is not a violated pre-trend but
+the anticipation itself: management knew the size of the coming charge
+in 2022 and began buying insured funding then, which is precisely what
+Table~\ref{tab:anticipation} estimates directly.  Because $k=-1$ is
+the reference quarter, this pre-positioning is absorbed into the
+baseline, so the post-adoption coefficients understate the total
+movement; I treat the DiD estimates in Table~\ref{tab:ins_wholesale}
+as the magnitudes and the figure as timing evidence.
 
 \subsection{Profitability}
 \label{sec:results:financial}
@@ -210,12 +289,20 @@ percent of the sample quarterly mean.  ROA fell by $0.038$ percentage
 points per quarter ($p<0.01$), an annualized 15-basis-point drag, and
 NIM contracted by $0.024$ percentage points per quarter ($p<0.05$).
 The joint decline in ROA and NIM is consistent with higher liability
-costs not being passed through to borrowers, in line with community
-banks facing competitive local loan markets \citep{hannan1988bank}.
-Continuous estimates scale proportionally.  Combined with the rate
+costs not being passed through to borrowers in competitive local loan
+markets.
+Continuous estimates scale proportionally.
+Figure~\ref{fig:es_financial} traces the three outcomes in event time:
+interest expense steps up within two quarters of adoption and stays
+higher through the end of the sample, while ROA and NIM step down at
+adoption and remain lower.  The pre-adoption paths are not perfectly
+flat, and the final pre-adoption convergence in interest expense is
+the cost footprint of the insured-brokered pre-funding documented
+below, but the shift at adoption is visible in all three panels.
+Combined with the rate
 tests above, the source of the higher funding cost is the substitution
 itself: maturing uninsured certificates were replaced with insured
-brokered and reciprocal money raised at wholesale rates, not repriced
+brokered money raised at wholesale rates, not repriced
 in place.
 
 \subsection{Bank Anticipation and the Timing of the Response}

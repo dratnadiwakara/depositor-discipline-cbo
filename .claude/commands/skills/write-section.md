@@ -74,8 +74,19 @@ Before writing any section, Claude Code should collect or confirm:
 
 ## Writing Style Guide
 
+### Hard style invariants (non-negotiable; checked by `/skills/latex-preflight-check`)
+
+These apply to every section this skill writes, regardless of free-text instructions:
+
+1. **Voice matches the author count.** Read `\author{}` in `tracks/<track>/latex/main.tex` before drafting. Solo-authored paper → "I"/"my" throughout, never "we"/"our". Multi-authored → "we"/"our". Do not mix.
+2. **No em dashes.** Never emit `---` in prose. Use a comma, colon, semicolon, or a separate sentence. En-dash ranges (`2016--2025`, `pp.~1--18`) are fine.
+3. **No forward section references.** A body section never points the reader to a *later* section (`Section~\ref{...}` to material not yet presented). Backward references are fine. The introduction is the only exception (its roadmap and previews may reference anything). If prose wants to lean on a later result, state the fact in place in present tense ("a specification developed below confirms...") without a `\ref{}` — or restructure so the dependency runs backward.
+4. **Floats appear in first-mention order.** Float blocks in `tables_figures.tex` must be ordered by the first `\ref{}` mention across section files in `\input{}` order. When a new section changes mention order, flag it so the float block can be reordered (or reorder it via the inserter skills).
+5. **No results in float captions or notes.** Captions and `\adddescription{}` notes describe sample, unit of observation, specification, variable construction, and sources — never coefficients, significance, directions, or interpretive language ("shows that", "consistent with"). Findings live in body prose only.
+6. **Every number in prose traces to an exhibit.** Any coefficient, magnitude, or count quoted in the text must be readable off a table fragment or figure in the track. If it cannot be traced, do not write it.
+
 ### Voice and Register
-- **Third-person, present-tense exposition** for describing methods and results ("We estimate...", "Column 3 shows..."). First-person plural ("we") is standard.
+- **Present-tense exposition** for describing methods and results ("I estimate...", "Column 3 shows..."). Pronoun per invariant 1 above: match the author count in `main.tex`.
 - **Assertive but not overconfident**. State findings directly without excessive hedging ("seems to suggest", "appears to possibly indicate"), but do not overclaim. No empirical paper is airtight—there are always alternative explanations. Acknowledge the most plausible ones honestly rather than burying them. Do not write as though the identification is perfect or the evidence is definitive when it is not. Sophisticated readers will notice overselling; it undermines credibility.
 - **No filler or throat-clearing**. Every sentence should either (a) convey information, (b) build the argument, or (c) connect the reader to the next idea. Delete sentences that merely announce what will come next without adding content.
 - **Cochrane's "no warmup" rule**. Nothing before the main result of a section that the reader does not need to read in order to understand the main result. No replication of well-known datasets, no preliminary estimates, no descriptive-statistics travelogue placed in front of the main result.
@@ -86,6 +97,22 @@ Before writing any section, Claude Code should collect or confirm:
 - **Reader-objective-first, not code-cataloguing.** Empirical-substrate sections (Data, Sample, Measurement, Identification) must open with the empirical objective the section is serving and what the data needs to deliver to answer it; subsequent paragraphs walk the reader through construction in the order that builds toward that objective, not the order the code runs. Each construction step's purpose is justified by what it contributes to the empirical question. Do not structure prose as a list of variables, sources, or pipeline outputs. Open paragraphs with the measurement target ("To measure a bank's local cost-side advantage, we need..."), then describe the construction that hits the target --- never with "Variable X is defined as the ratio of A to B from source C."
 - **Skip trivial mechanics knowledgeable readers know.** Omit standard data-construction machinery that finance journal audiences already know: HUD ZIP--county / tract--ZIP allocation crosswalks; HMDA respondent-ID-to-RSSDID linkage via the Avery crosswalk (and LEI--RSSDID post-2018); efficiency-ratio definitions; CRA small-business loan size cutoffs; ACS / IRS forward-fill or back-fill mechanics outside the analysis window; specific Call Report RIAD line numbers unless the line choice is itself the methodological point. Mechanics that are non-obvious or non-standard --- self-exclusion of the focal bank from an incumbent benchmark, sample-period restrictions driven by identifier resets, cycle-period assignment for an imputed panel --- DO need explanation because the reader cannot guess them. If a mechanism is needed for replicability but is too long for the body, banish it to an appendix or a footnote.
 
+### Sentence-Level Style (Cochrane 2005 — apply to every sentence drafted)
+
+- **Simple short words.** "Use" not "utilize"; "get" not "obtain"; "several" not "diverse"; "about" not "approximately" where precision is not needed. If a shorter common word carries the meaning, the longer one is wrong.
+- **Same name for the same thing, every time.** No elegant variation: if the variable is "uninsured time deposits" in Section 2, it is never "uninsured CDs," "large-denomination funding," or "the treated deposit category" later. Synonyms for variety force the reader to check whether a new object was introduced.
+- **One direction per comparative, and name the benchmark.** "X increases" begs "relative to what" — supply it. For a causal sign, state the up-direction once; never "X increases (decreases) when Y decreases (increases)."
+- **"Significant" is banned unqualified.** Write "statistically significant at the five percent level" or give the economic magnitude; a bare "significant" is ambiguous between the two meanings and reads as both.
+- **Kill empty intensifiers and hedges.** "Very," "quite," "extremely," "somewhat," "relatively," "rather," "fairly" — delete on sight; if the sentence needs strength, use a number.
+- **Kill throat-clearing frames.** "It should be noted that," "Note that," "It is worth mentioning," "It is clear that," "Interestingly," — start with the content. "In other words" means the first wording failed; fix the first wording and delete the restatement.
+- **Clothe naked "this."** Never open a sentence with "This shows/implies/suggests" — "This estimate shows," "This pattern implies."
+- **"Where" refers to places; "in which" to models and specifications.** "Specifications in which," not "specifications where."
+- **Write about the economics, not about yourself or the paper.** No process narration ("we first tried," "we then turned to"), no travelogue ("having established X, we now examine Y"), and at most one perfunctory roadmap sentence in the introduction. The subject of a sentence should be a bank, a depositor, a coefficient, or a disclosure — not "this section."
+- **Footnotes carry only skippable material** (side derivations, documentation, long citation strings). A one-line editorial aside is not a footnote; it is either promoted into the text or deleted.
+- **Italics for emphasis: at most a few per page.** If emphasis is needed, restructure the sentence so word order carries it.
+- **Spell out author names** ("Fama and French," never "FF") and define any Greek symbol at first use in prose.
+- **2–3 significant digits in prose,** with sensible units (percent, basis points, percentage points of assets) — never the raw printout precision.
+
 ### Paragraph and Sentence Construction
 - **Lead with the claim, then supply the evidence**. Topic sentences state the finding or argument; supporting sentences provide the mechanism, coefficient, or citation.
 - **Vary sentence length** but favor crisp, declarative sentences for key results. Reserve longer sentences for nuanced qualifications or mechanism discussions.
@@ -93,7 +120,7 @@ Before writing any section, Claude Code should collect or confirm:
 - **Transitions between paragraphs should be logical, not mechanical**. Mechanical connectors ("Next, we...", "Additionally,...", "Moreover,...") are acceptable sparingly but should not become a crutch—vary them with transitions that emerge naturally from the argument: "The cross-sectional variation in deposit responses suggests a role for information acquisition costs. To test this channel, we exploit..."
 - **Do not use paragraph titles or `\paragraph{}` headings.** No bold lead-in labels (`**Main results.**`), no LaTeX `\paragraph{Foo.}` macro, no `\textbf{Foo.}` lead-ins, no `\noindent\textbf{...}` fake headings. Paragraphs must flow from their topic sentences. The topic sentence itself carries the work that a paragraph label would have done.
 - **Prefer continuous prose over subsection proliferation.** A section is paragraphs flowing into paragraphs, not a stack of headings. Default to **zero or one** `\subsection{}` per section. Add a `\subsection{}` only when the section spans a genuinely separate content block that a reader will navigate to independently (e.g., a long results section that cleanly splits into "Main Results" and "Heterogeneity"). Do not subsection a topic just because it is a distinct variable, source, or step --- those belong inside the prose, with the topic sentence doing the framing. If you find yourself writing three or more `\subsection{}` calls in the same section, collapse them.
-- **Use em dashes sparingly**. Reserve them for a genuine aside or strong parenthetical break. Do not use them as a default connector or substitute for a comma, colon, or semicolon.
+- **No em dashes** (hard invariant 2 above). Where an aside is genuinely needed, use parentheses or a separate sentence.
 
 ### Discussing Results
 - **Cite coefficients with economic magnitudes, not just statistical significance**. Bad: "The coefficient is significant at the 1% level." Good: "A one-standard-deviation increase in X is associated with a Y-basis-point decline in uninsured deposit growth (column 3, p < 0.01), roughly 40% of the sample mean."
@@ -334,3 +361,9 @@ When the headline result is an interaction $A \times B$ (the paper tests a condi
 - Begenau et al. (uniform rate, 2025) --- narrative-led table refs; quoted vendor note in footnote for non-obvious mechanics.
 **Open items for next session**:
 - After the next data-section draft, verify the four-beat variable-paragraph template is actually applied and surface any drift back to wall-of-text paragraphs.
+
+### Session: 2026-08-08
+**Files edited**: `.claude/commands/skills/write-section.md` (Hard style invariants block added)
+**Key decisions** (from the depositor-discipline-cbo fdic-brc-jfqa-aug2026 revision rounds):
+- Added six non-negotiable invariants at the top of the style guide: author-count-dependent voice (I vs we), no em dashes, no forward section references outside the intro, floats in first-mention order, method-only float captions/notes, every prose number traces to an exhibit.
+- Rationale: these were repeatedly reintroduced by hand edits between skill runs during the JMCB→FDIC-BRC revisions and had to be swept out each round; enforcing at generation time plus a preflight backstop (see latex-preflight-check §3.6) closes the loop.

@@ -8,11 +8,13 @@ execute:
 ---
 
 <!--
-FDIC-BRC / JFQA revision v4: Option A maturity corroboration (prose-only,
-no table export). Split banks at the median of the PREDETERMINED 2022Q4
-share of uninsured time deposits maturing within 12 months
-((HK12+HK13)/uninsured TDs) and re-estimate the baseline uninsured-TD DiD
-in each half. Numbers quoted in sections/results/empirical_results_current.tex.
+FDIC-BRC / JFQA revision v4: maturity corroboration. Split banks at the
+median of the PREDETERMINED 2022Q4 share of uninsured time deposits maturing
+within 12 months ((HK12+HK13)/uninsured TDs) and re-estimate the baseline
+uninsured-TD DiD in each half.
+2026-08-08 (PDF comment round): now exported as Panel B of the main
+time-deposit DiD table (tbl_maturity_split); prose numbers in
+sections/results/empirical_results_current.tex must match.
 Inputs: panel_smallbank (fallback vintage),
         td_maturity_2022q4_20260807.csv (01d_pull_td_maturity_20260807.py).
 -->
@@ -26,6 +28,8 @@ library(here)
 
 source(here::here("code", "_common.R"))
 source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_tables <- TRUE
 
 panel <- readRDS(latest_track_file("panel_smallbank"))
 setDT(panel)
@@ -52,17 +56,26 @@ setFixest_fml(
 )
 
 r <- list(
-  full    = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
-                  dt_w, vcov = ~ID_RSSD),
-  high_mat = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
-                   dt_w[high_short == 1], vcov = ~ID_RSSD),
-  low_mat  = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
-                   dt_w[high_short == 0], vcov = ~ID_RSSD),
-  triple   = feols(unins_time_deps_assets ~ post * high_cecl_equity * high_short +
-                     ..ctrl | ..fe, dt_w, vcov = ~ID_RSSD)
+  "Full"          = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                          dt_w, vcov = ~ID_RSSD),
+  "High Maturity" = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                          dt_w[high_short == 1], vcov = ~ID_RSSD),
+  "Low Maturity"  = feols(unins_time_deps_assets ~ post * high_cecl_equity + ..ctrl | ..fe,
+                          dt_w[high_short == 0], vcov = ~ID_RSSD),
+  "Interaction"   = feols(unins_time_deps_assets ~ post * high_cecl_equity * high_short +
+                            ..ctrl | ..fe, dt_w, vcov = ~ID_RSSD)
 )
-cat("\n================ MATURITY SPLIT (prose numbers) ================\n")
+cat("\n================ MATURITY SPLIT (Panel B of Table 2) ================\n")
 etable(r, keep = "post")
+
+dict_mat <- c(covariate_labels_dict, "(Intercept)" = "Constant",
+              "high_short" = "High Short-Maturity",
+              "post:high_short" = "Post x High Short-Maturity",
+              "post:high_cecl_equity:high_short" =
+                "Post x High CECL x High Short-Maturity")
+export_track_tbl(r, "tbl_maturity_split", dict_mat,
+                 order = c("Post x High CECL x High Short-Maturity",
+                           "Post x High CECL", "Post x High Short-Maturity"))
 
 cat("\n================ DIAGNOSTICS ================\n")
 cat("Banks with maturity data:", uniqueN(dt_w[!is.na(short_share), ID_RSSD]),

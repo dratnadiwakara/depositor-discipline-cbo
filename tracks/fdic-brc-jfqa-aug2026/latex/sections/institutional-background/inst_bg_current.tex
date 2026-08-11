@@ -5,21 +5,29 @@
 \label{sec:background:transition}
 
 Under the historical incurred loss model (ILM), U.S.\ banks recognized
-credit losses only when a loss became "probable and estimable,"
-producing loan-loss provisions that lagged realized defaults
+credit losses only when a loss was probable and could be reasonably
+estimated, producing loan-loss provisions that lagged realized defaults
 \citep{beatty2011delays} and reduced the informativeness of bank
-disclosures \citep{bushman2012accounting, bushman2015delayed}.  Following
+disclosures \citep{bushman2012accounting, bushman2015delayed,
+bischof2021accounting}.  Following
 the 2007--2009 crisis, FASB issued ASU 2016-13, introducing the Current
 Expected Credit Loss (CECL) model, codified in ASC~326
 \citep{FASB2016}: banks estimate and reserve for \emph{lifetime}
 expected credit losses at origination and at each reporting date.  The
 required allowance is a direct function of loan-portfolio credit-risk
 composition: longer maturities, weaker borrowers, and thinner collateral
-require larger allowances than the ILM reserve.  Recent evidence finds
-CECL adoption increased provision sensitivity to forward-looking credit
-signals \citep{granja2025current, kim2026current}, reduced procyclicality
-of bank lending \citep{chen2022does}, and improved decision-usefulness of
-reserve disclosures \citep{gee2022decision}.
+require larger allowances than the ILM reserve.  Forcing credit risk
+into a reported number in this way is what makes the standard
+informative to outsiders; the same logic underlies the finding that
+fair-value reporting of financial instruments strengthens the observed
+association between bank leverage and credit risk
+\citep{blankespoor2013fair}.  Recent evidence finds
+CECL adoption made provisions timelier and more reflective of future
+local economic conditions \citep{kim2026current}, raised rates on
+longer-maturity consumer credit \citep{granja2025current}, tightened
+lending in the COVID-19 recession \citep{chen2022does}, and produced
+Day-One adjustments that predict future net charge-offs and are
+reflected in equity prices \citep{gee2022decision}.
 
 \subsection{The Day-One Adjustment and Treatment Variable}
 \label{sec:background:dayone}
@@ -97,19 +105,29 @@ component required by ASC~326: banks combine historical loss experience
 with reasonable-and-supportable forward-looking forecasts of
 macroeconomic conditions and choose a lifetime-loss estimation
 approach.  This component is a contemporaneous choice at adoption and
-is in principle correlated with 2022--2023 macro conditions.  The
-within-bank composition design does not require the modeling component
-to be pure noise, only that it not differentially move uninsured
-relative to insured deposits within the same bank and quarter through
-any channel other than the disclosure.
+is in principle correlated with 2022--2023 macro conditions.  This
+choice does not threaten the design.  Uninsured and insured time
+deposits at the same bank face the same modeling choice, so it biases
+the composition comparison only if it moves the two deposit types
+apart through some channel other than the disclosure itself.
 
 \subsection{What the Disclosure Does, and Does Not, Change}
 \label{sec:background:mechanism}
 
+The premise of an information shock is that bank credit risk is hard
+to observe from outside.  Banks are the canonical opaque industry:
+rating agencies split over bank bonds far more often than over other
+issuers, and the disagreement traces precisely to loans
+\citep{morgan2002rating}.  Mandated supervisory disclosure
+demonstrably closes part of that gap, but the demonstrations are for
+capital-market audiences: stress-test results move stock prices and
+trading volume, most strongly at levered and risky banks
+\citep{flannery2017stress}.  Whether a mandated credit-risk disclosure
+reaches depositors is the question this paper takes up.
+
 Prior depositor-discipline tests typically exploit realized distress in
 which new information arrives simultaneously with deterioration in cash
-flows or liquidity \citep{flannery1996evidence, martinez2001depositors,
-iyer2016tale}.  The CECL Day-One adjustment separates the two: it
+flows or liquidity \citep{martinez2001depositors, iyer2016tale}.  The CECL Day-One adjustment separates the two: it
 records a pure accounting charge that does not trigger a cash transfer,
 alter borrower repayment terms, reduce bank liquidity, or change the
 risk of the underlying loans.  A depositor who withdraws or demands a

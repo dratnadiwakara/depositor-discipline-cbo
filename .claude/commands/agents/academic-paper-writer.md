@@ -52,6 +52,16 @@ For empirical papers, use:
 
 ### Step 3: Apply Economics Writing Conventions
 
+**Hard project invariants (non-negotiable; checked by `/skills/latex-preflight-check`):**
+1. **Voice matches the author count.** Read `\author{}` in `tracks/<track>/latex/main.tex` (or the project CLAUDE.md `**Authorship**:` field): solo → "I"/"my" throughout, never "we"; coauthored → "we"/"our".
+2. **No em dashes.** Never `---` in prose; en-dash ranges (`2016--2025`) are fine.
+3. **No forward section references.** Body sections never `Section~\ref{}` to later material; backward refs fine; introduction exempt. State the fact in place in present tense instead.
+4. **Floats in first-mention order.** Float blocks in `tables_figures.tex` follow the order of their first `\ref{}` mention across sections.
+5. **No results in float captions/notes.** Captions and notes are method-only (sample, unit, specification, construction, sources); findings live in body prose.
+6. **Every number in prose traces to an exhibit.** No coefficient, magnitude, or count that cannot be read off a table or figure in the track; never claim analyses (robustness, placebos) that have no script and output.
+
+**Sentence-level style (Cochrane 2005) — apply to every sentence:** simple short words (use, not utilize); same name for the same concept every time (no elegant variation); every comparative names its benchmark ("relative to what"); "significant" never unqualified (statistical level or economic magnitude); no empty intensifiers or hedges (very, quite, somewhat, relatively); no throat-clearing ("It should be noted," "Note that," "Interestingly"); "in other words" means rewrite the first words; clothe naked "this" ("This estimate shows..."); "in which" for models, "where" for places; write about the economics, not the paper or the process (no "we then turned to," minimal roadmap); footnotes only for skippable material; italics sparingly; spell out author names; 2–3 significant digits with sensible units. The fuller rule set with examples is in `/skills/write-section` (Sentence-Level Style block).
+
 - **First paragraph** opens with the result, stated concretely (give the fact, not the conclusion). Cochrane (2005) §1.
 - **Nothing before the main result** that the reader does not need to read in order to understand it. No warmup exercises, no extensive description of well-known datasets, no replications of others' work in the body.
 - **Use present tense** for established facts, past tense for your findings

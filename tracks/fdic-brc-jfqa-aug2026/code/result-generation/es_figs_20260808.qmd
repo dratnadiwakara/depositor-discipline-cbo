@@ -1,0 +1,89 @@
+---
+title: "Event-study figures: combined insured wholesale and financial outcomes"
+format: html
+type: source
+execute:
+  warning: false
+  message: false
+---
+
+<!--
+FDIC-BRC / JFQA revision (2026-08-08, PDF comment round).
+§1 Single-panel ES for the destination margin. 2026-08-09: switched from the
+   combined insured brokered + reciprocal series to INSURED BROKERED alone,
+   matching the headline column of tbl_ins_wholesale and the same instrument
+   as the pre-adoption ramp in tbl_anticipation. The combined series is still
+   estimated below for the text. Spec matches tbl_ins_wholesale (controls
+   incl. lagged interest expense).
+§2 ES panels for the financial outcomes of the profitability table:
+   interest expense/assets, ROA, NIM. Spec matches
+   tbl_did_financial_outcomes (controls EXCLUDE lagged interest expense).
+Inputs: panel_smallbank (post-jmcb 20260612 vintage via fallback).
+Outputs: fig_es_brokered_ins, fig_es_intexp, fig_es_roa, fig_es_nim.
+-->
+
+```{r}
+rm(list = ls())
+
+library(data.table)
+library(fixest)
+library(ggplot2)
+library(here)
+
+source(here::here("code", "_common.R"))
+source(here::here("tracks", "fdic-brc-jfqa-aug2026", "code", "_track_common.R"))
+
+save_figures <- TRUE
+
+panel <- readRDS(latest_track_file("panel_smallbank"))
+setDT(panel)
+
+dt_w <- panel[abs(qtrs_since) < 12]
+dt_w[, D_DT := as.factor(D_DT)]
+dt_w[, ins_wholesale_assets := brokered_ins_assets + reciprocal_assets]
+
+setFixest_fml(
+  ..controls = ~ log_total_assets_l1 + equity_assets_l1,
+  ..fe = ~ ID_RSSD + D_DT
+)
+```
+
+## §1 Insured brokered ES (single panel; combined series kept for the text)
+
+```{r}
+m_b <- feols(brokered_ins_assets ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+cat("\n--- insured brokered (figure) ---\n")
+print(coeftable(m_b)[grepl("qtrs_since", rownames(coeftable(m_b))), ])
+p <- make_es_plot(m_b, ylab_str = "Coefficient (pp of assets)", title_str = "")
+print(p)
+save_track_fig(p, "fig_es_brokered_ins", width = 6, height = 3)
+
+# Combined brokered + reciprocal: not plotted, retained for the text.
+m_w <- feols(ins_wholesale_assets ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls + int_expense_assets_l1 | ..fe, data = dt_w, vcov = ~ID_RSSD)
+cat("\n--- combined insured brokered + reciprocal (not plotted) ---\n")
+print(coeftable(m_w)[grepl("qtrs_since", rownames(coeftable(m_w))), ])
+```
+
+## §2 Financial-outcome ES panels
+
+```{r}
+for (s in list(
+  list(dv = "int_expense_assets", stub = "fig_es_intexp"),
+  list(dv = "roa",                stub = "fig_es_roa"),
+  list(dv = "nim",                stub = "fig_es_nim")
+)) {
+  m <- feols(.[s$dv] ~ i(qtrs_since, high_cecl_equity, ref = -1) +
+               ..controls | ..fe, data = dt_w, vcov = ~ID_RSSD)
+  cat("\n---", s$dv, "---\n")
+  print(coeftable(m)[grepl("qtrs_since", rownames(coeftable(m))), ][1:5, ])
+  p <- make_es_plot(m, ylab_str = "Coefficient (pp)", title_str = "")
+  print(p)
+  save_track_fig(p, s$stub, width = 6, height = 3)
+}
+
+cat("\n================ DIAGNOSTICS ================\n")
+cat("Rows:", nrow(dt_w), "| banks:", uniqueN(dt_w$ID_RSSD), "\n")
+cat("ins_wholesale_assets non-NA:", dt_w[, sum(!is.na(ins_wholesale_assets))], "\n")
+```

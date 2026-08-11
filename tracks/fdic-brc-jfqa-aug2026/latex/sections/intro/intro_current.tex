@@ -6,14 +6,15 @@ discipline community banks.  When mandatory adoption of the Current
 Expected Credit Loss (CECL) standard forced more than 4,000
 U.S.\ community banks to disclose lifetime expected credit losses on
 their existing loan portfolios in 2023, banks with large disclosed
-charges lost 0.39 percentage points of assets in uninsured time
-deposits, about 7 percent of the sample mean, and gained a similar
-amount of insured time deposits.  Whether such discipline exists is
+charges lost uninsured time deposits and gained insured time
+deposits.  Whether such discipline exists is
 a central question in banking.  Theory predicts it should
 \citep{calomiris1991role, diamond2001liquidity}, and riskier banks pay
 higher deposit rates and experience larger uninsured outflows
-\citep{park1995market, martinez2001depositors, maechler2006dynamic,
-iyer2016tale, egan2017deposit, chen2024liquidity}, but whether these
+\citep{hannan1988bank, park1995market, park1998market,
+martinez2001depositors,
+maechler2006dynamic, iyer2016tale, egan2017deposit, chen2024liquidity},
+but whether these
 patterns reflect a causal disciplinary response or equilibrium
 correlation remains unsettled.  The question is pressing: the Main
 Street Depositor Protection Act (S.~2999, reintroduced March 2026)
@@ -22,7 +23,11 @@ deposit insurance programs that eliminated market discipline enabled
 excessive risk-taking \citep{calomiris2019stealing}.  Community banks
 are the right laboratory: institutions below \$10~billion in assets
 carry no credible government backstop, so the monitoring incentive is
-intact \citep{o1990deposit, flannery1996evidence}.
+intact \citep{o1990deposit, flannery1996evidence}.  Consistent with
+that incentive surviving, small U.S.\ banks are the one group where
+depositor discipline held or strengthened through the 2008--2009
+crisis rather than eroding under the expanded guarantees
+\citep{berger2015depositors}.
 
 Clean identification requires resolving three problems.  Simultaneity:
 a bank's risk profile, deposit composition, and depositor behavior
@@ -30,10 +35,10 @@ co-evolve, so regressions of flows on risk measures capture equilibrium
 sorting rather than isolated disciplinary responses.  Accounting
 opacity: under the incurred-loss model, banks could delay recognition
 and systematically understate risk in disclosures
-\citep{bushman2012accounting, bushman2015delayed}.  Aggregate stress:
-periods with the greatest variation in bank distress are precisely those
-in which government interventions and depositors' own liquidity needs
-contaminate the response \citep{bennett2015market}.  I address all
+\citep{beatty2011delays, bushman2015delayed}.  Aggregate stress: the
+episodes with the greatest variation in bank distress are precisely
+those in which expanded government guarantees weaken or obscure the
+depositor response \citep{berger2015depositors, bennett2015market}.  I address all
 three by exploiting mandatory CECL adoption for community banks in 2023
 as an information shock whose cross-sectional intensity was fixed
 before the event.  CECL requires banks to recognize lifetime expected
@@ -43,13 +48,17 @@ vintages assembled years earlier.  Banks knew the standard was coming,
 but the size of the Day-One charge, the treatment variation I use, was
 pinned down by the composition and seasoning of the existing loan book
 rather than by contemporaneous deposit-market conditions.
-\citet{kim2026current} and \citet{gee2022decision} confirm the Day-One
-adjustment is informative; \citet{nier2006market} and
-\citet{chen2022bank} establish that disclosure improvements enable
-depositors to act on credit-risk signals.
+\citet{gee2022decision} validate the treatment variable directly:
+Day-One adjustments predict future net charge-offs and are reflected
+in equity prices, and the adjustment is \emph{new} information
+for smaller banks, whose information environments are
+thinnest.  \citet{nier2006market} show that disclosure and uninsured
+funding together strengthen the incentive force of market discipline,
+and \citet{chen2022bank} show that uninsured deposit flows respond
+more sharply to performance at more transparent banks.
 
 The central result, estimated on quarterly data from 2016 to 2025, is
-the level difference-in-differences estimate above: after the
+a level difference-in-differences estimate: after the
 disclosure, high-CECL banks lost 0.394 percentage points of assets in
 uninsured time deposits and gained 0.712 percentage points of insured
 time deposits, with continuous-treatment estimates scaling in
@@ -90,15 +99,17 @@ expense show high-CECL banks did not pay more on the uninsured
 certificates they retained, and weekly posted deposit rates from
 RateWatch show they never raised retail CD or savings rates.  The
 funding-cost increase reflects the substitution itself: maturing
-uninsured certificates replaced with insured brokered and reciprocal
-money raised at wholesale rates.  Discipline takes the form of a
+uninsured certificates replaced with insured brokered
+money raised at wholesale rates, the insured-wholesale channel that
+\citet{huberdeau2025adverse} show riskier banks expanded, at higher
+rates, through 2023.  Discipline takes the form of a
 quantity response: depositors leave rather than negotiate, and the
 bank pays for their departure through the higher cost of the insured
 wholesale funding that replaces them.
 
 Community banks adopted CECL in the same quarter that the failures of
 Silicon Valley Bank and Signature Bank put bank risk on every
-depositor's mind, so I confront the stress confound directly.  Four
+depositor's mind, so I confront the stress confound directly.  Six
 pieces of evidence separate the disclosure response from the 2023
 stress.  First, the disclosed adjustment is essentially uncorrelated
 with the balance-sheet characteristics that governed run exposure in
@@ -109,7 +120,16 @@ wrong sign for a stress story.  Second, the triple-difference
 comparison nets out any bank-level exposure to the stress by
 construction.  Third, high-CECL banks' posted deposit rates show no
 differential movement during the stress weeks themselves.  Fourth, the
-bank-side response began in 2022, before the failures.  Separately,
+bank-side response began in 2022, before the failures.  Fifth, the
+March runs themselves were a wholesale phenomenon concentrated at
+publicly traded banks, with no retail run and almost no run risk at
+private ones \citep{cipriani2024tracing}; the community banks I study
+are overwhelmingly private and retail funded.  Sixth, banks that
+disclosed a zero Day-One adjustment provide a placebo: among them,
+uninsured time deposits did not fall at banks with large unrealized
+securities losses after the failures, and adding that loss exposure to
+the baseline specification leaves the CECL estimates unchanged.
+Separately,
 the large SEC-filing banks that adopted CECL in 2020 validate the
 signal content of the disclosure: their market capitalization and CDS
 spreads moved sharply at adoption in proportion to the charge.  I
@@ -120,31 +140,85 @@ the COVID-19 liquidity programs flooded banks with deposits in
 
 This paper contributes to three literatures.  First, on depositor and
 market discipline, prior evidence documents higher rates and larger
-outflows at riskier banks \citep{park1995market, egan2017deposit,
-flannery1996evidence, nier2006market}, but causal interpretation has
+outflows at riskier banks \citep{park1995market, park1998market,
+egan2017deposit},
+but causal interpretation has
 been elusive: government guarantees attenuate estimates in the crisis
-episodes that generate the most variation \citep{bennett2015market,
-berger2015depositors, jacewitz2018deposit}, and cross-sectional
+episodes that generate the most variation \citep{berger2015depositors,
+jacewitz2018deposit}, and cross-sectional
 comparisons cannot separate information responses from equilibrium
-sorting.  Recent work on the 2023 episode shows depositors ran on banks
-with high uninsured shares and unrealized losses
-\citep{caglio2024depositors}; I exploit orthogonal variation
-\emph{within} that high-attention period, uncorrelated with the
-balance-sheet characteristics that governed run exposure.  Second, on
-CECL and mandatory credit-risk disclosure, \citet{bushman2012accounting}
-and \citet{bushman2015delayed} document that delayed loss recognition
-under the incurred-loss model attenuated the informativeness of bank
-statements and, by extension, the market's ability to price bank risk.
-Prior CECL work focuses on the supply side, lending
-\citep{granja2025current} and provisioning \citep{kim2026current}, and
-on information users other than depositors, particularly analysts
-\citep{gee2022decision} and equity investors.  I complement this
+sorting.  Two antecedents come closest, and they define what remains
+to be shown.  When regulators were forced to disclose formal
+enforcement actions in 1989--1990, thirty-five large publicly traded
+holding companies lost roughly 10~percent of large time deposits while
+small time deposits rose and total deposits fell less than 2~percent
+\citep{jordan1999impact}: the same composition signature, at large
+public banks in a crisis.  \citet{chen2022bank} show on Call Report
+data that uninsured deposit flows respond more strongly to performance
+at more transparent banks, that insured inflows offset the uninsured
+outflows, and that the offset is costly.  What neither setting
+delivers, and what mandatory CECL adoption does, is predetermined
+treatment intensity: a disclosure whose size was fixed by loan
+portfolios assembled years earlier, observed at thousands of solvent,
+mostly private community banks, at the time-deposit margin where the
+rollover decision belongs unambiguously to the depositor.  Work on
+the 2023 episode identifies run exposure with the interaction of
+mark-to-market losses and uninsured funding \citep{jiang2024monetary};
+I exploit variation \emph{within} that high-attention period that is
+uncorrelated with those characteristics.  Two further results sharpen
+what is at stake.  Retail depositors in a fully uninsured historical
+banking system could not tell failing banks from survivors; only
+interbank depositors could \citep{blickle2024who}.  And simple
+reported profitability predicts crisis tail risk better than
+model-based risk measures \citep{meiselman2023judging}.  Whether
+ordinary depositors can read and act on a new standardized credit-risk
+disclosure is therefore a genuinely open question, and the answer here
+is that they can.
+
+Second, on
+CECL and mandatory credit-risk disclosure, loan portfolios are the
+opaque core of an opaque industry: rating agencies disagree over bank
+bonds more than over almost any other sector, and the disagreement
+traces to loans and trading assets \citep{morgan2002rating}.
+\citet{bushman2012accounting} show that provisioning discretion used
+to smooth earnings dampens discipline over bank risk-taking, and
+\citet{bushman2015delayed} show that delayed loss recognition degrades
+bank transparency and raises downside risk.  The reverse also holds:
+measurement rules that force credit risk into reported numbers improve
+what outsiders can infer, in the association between bank leverage and
+credit risk under fair-value reporting
+\citep{blankespoor2013fair} and in the disclosure and
+loss-recognition regimes that shaped stakeholder responses during the
+2007--2009 crisis \citep{bischof2021accounting}.  Prior CECL work studies the supply side,
+lending \citep{granja2025current, chen2022does} and provisioning
+\citep{kim2026current}, and the information users it studies are
+equity investors \citep{gee2022decision}.  I complement this
 literature by tracing the disclosure to depositor behavior and
-downstream to funding costs and profitability, closing a channel that
-the analyst-and-equity strand does not observe.  Third, on deposit
-insurance design, broader coverage reduces the incentive to monitor
-\citep{demirgucc2004market, flannery2019market}; the substitution I
-document toward insured brokered and reciprocal deposits
-\citep{kim2024insurance} shows that much of the response takes the form
-of repurchasing insurance through market arrangements rather than
-exiting the banking system.
+downstream to funding costs and profitability, a channel the
+equity-market strand does not observe.
+
+Third, on deposit
+insurance design, explicit insurance weakens the deposit market's
+sensitivity to bank risk \citep{demirgucc2004market} and loosens the
+constraint it places on bank risk-taking, both in internal loan ratings
+\citep{ioannidou2010deposit} and around the 2008 increase in the
+coverage limit \citep{lambert2017insured}.  The optimal
+coverage limit trades run prevention against the costs of broader
+coverage and the mispricing of the guarantee itself
+\citep{davila2023optimal, pennacchi2006deposit}.  The uninsured-to-insured
+substitution I document has until now been observed at banks in
+trouble: failing banks replace fleeing uninsured money with insured
+term deposits structured just under the limit \citep{martin2026deposit},
+distressed thrifts offset uninsured outflows by attracting insured and
+brokered deposits \citep{goldberg2002depositor}, and the 2023 run
+banks eventually replaced lost uninsured deposits with higher-cost
+insured deposits \citep{cipriani2024tracing}.  In the 2023
+cross-section, riskier small and midsize banks expanded reciprocal and
+sweep deposits while paying higher rates \citep{huberdeau2025adverse},
+and reciprocal-network banks raised insured deposits sharply
+\citep{kim2024insurance}.  All of this evidence identifies off
+realized distress or contemporaneous balance-sheet risk.  I show the
+same repurchasing of insurance as a response to a predetermined
+disclosure at solvent banks: much of the bite of depositor discipline
+is not lost funding but the price of replacing monitored money with
+insured money.
