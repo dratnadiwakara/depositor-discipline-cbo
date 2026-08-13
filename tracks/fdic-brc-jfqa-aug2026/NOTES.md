@@ -1,5 +1,34 @@
 # Track Notes — fdic-brc-jfqa-aug2026
 
+## 2026-08-13 (motivating figure + placebo/attention slides + restricted-sample checks)
+
+### Done
+- Slide 11 REPLACED with 3-panel raw-means figure fig_s_motiv_panels.png (slide_figs_motiv3_20260813.R, patchwork): uninsured TDs top, centered at half width (base 2023Q1, adoption quarter); insured TDs + insured brokered side by side below (base 2022Q1 = k−4). All pp of assets, blue/gold (grey too close to blue when projected), 22pt top margin separates rows. Old single-panel script/fig (slide_figs_motiv_20260812.R, fig_s_motiv_index) kept as backup.
+- Restricted-figure sample = High CECL (cecl_equity ≥ 2.5) vs near-zero (|adj| ≤ 0.05), balanced 206 vs 2,265 banks. Gaps at 2024Q4: unins −0.40pp, ins +1.24pp, brokered +1.64pp.
+- NEW placebo slide (page 22, before fsvb): fig_s_placebo_svb.png (slide_figs_placebo_20260813.R) — zero-charge banks split at median 2022Q4 unrealized loss, raw means; lines flat post-SVB (−0.04pp at 2024Q4 vs −0.40 for the charge).
+- NEW attention-limitation slide (page 24, before Takeaways): cannot rule out 2023 = high-attention period; estimates = response conditional on attention; framed as external validity, not identification.
+- Takeaways bullet 4 added: reciprocal/sweeps/insured brokered = private de facto coverage may already dampen discipline. NB institutional claim, not an estimate — sweep cross-section was scratchpad-only and loads on BSR not CECL.
+- Deck now 31 pp (25 talk + 6 backup), compiles clean.
+- Scratchpad regressions on restricted sample, binary only (restricted_sample_did_20260813.R, restricted_het_20260813.R): unins −0.590*** (vs −0.394 full), ins +0.450 ns (vs +0.712***), triple −1.236***, intexp/ROA/NIM all ***; capital gap-triple +0.322*** (≈ full +0.307), zero-effect equity 13.1; maturity high −0.772*** / low −0.394 ns, interaction ns.
+- Recommendation given and accepted: restricted sample = robustness only, NOT main spec (donut on treatment; insured leg dies; whole downstream chain built on full sample).
+- Scratchpad artifact page (claude.ai/code/artifact/4edc990c...) with all raw-means variants incl. short-maturity uninsured TDs (HK12+HK13): gap −0.37pp at 2024Q4 ≈ whole effect in the maturing tranche; base levels 4.14 vs 4.10.
+
+### Dead ends
+- Stacked triple with bare `:` interactions (post:treat:du without full `*` expansion): feols drops wrong collinear pieces after bank×quarter FE → +1.75 WRONG SIGN. Always use full `post * treat * du`; verified against gap regression (−1.183***).
+- Indexing (base=100) for insured series: bases differ ~2x across groups (ins TD 8.40 vs 6.83; brokered 2.74 vs 1.16) → index reports insured TD divergence with the WRONG sign. pp units only for insured outcomes.
+
+### Lessons
+- Base quarter does real work on the uninsured raw-means gap: 2024Q4 diff = −0.17pp (base 2022Q1), −0.34 (2022Q4), −0.40 (2023Q1). On 2022Q1 base High-CECL run ABOVE control through 2022 (pre-positioning visible). Deck top panel uses 2023Q1 = strongest, but then can't show pre-trends — lean on ES figure if pushed.
+- RCONK222 ≠ RCONHK12+HK13 (max gap ~$439m) — different deposit population despite 01d puller naming it mat_lt1yr. Never treat as interchangeable.
+- Insured TD raw series has real pre-trend: High-CECL +0.74pp by 2022Q4 from 2022Q1 base while control flat — anticipation story on the slide, pre-trend to a hostile reader.
+- SVB placebo raw-means pre-period NOT flat (low-loss banks +0.5pp above 2019–21, converged by 2022); post-SVB flatness is the claim, pre-wobble = rate cycle.
+- beamer \pill{appplacebo} reused on two slides — fine, both jump to same backup.
+
+### Next
+- presentation_script has NO beats for new slides 11 (rewritten), 22, 24 — every timing after p.11 shifted; rewrite before video rebuild.
+- build_video_20260812.py N_PAGES=22 hardcoded; talk now 25 pages — bump or last 3 talk slides drop from video.
+- Restricted-sample robustness numbers not yet in paper or backup slide (offered, not requested).
+
 ## 2026-08-11 (PDF comment round)
 
 ### Done

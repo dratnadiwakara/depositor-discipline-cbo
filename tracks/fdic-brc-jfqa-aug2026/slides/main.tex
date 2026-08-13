@@ -322,6 +322,13 @@
 \end{frame}
 
 % =============================================================================
+\begin{frame}{Before any regression: uninsured money leaves, insured money arrives}
+  \spec{Group means, pp of assets; bases 2023Q1 (top) and 2022Q1 (bottom); 206 vs 2{,}265 banks; no controls or FE}
+  \centering
+  \includegraphics[width=\linewidth,height=0.84\textheight,keepaspectratio]{fig_s_motiv_panels.png}
+\end{frame}
+
+% =============================================================================
 \begin{frame}{Uninsured time deposits are flat for ten quarters\dots\ then break at disclosure}
   \spec{Event study, High-CECL $\times$ event time; bank + quarter FE; 90\% CI}
   \centering
@@ -475,6 +482,16 @@
 \end{frame}
 
 % =============================================================================
+\begin{frame}{Placebo: the same picture, drawn on stress exposure, is flat}
+  \spec{Zero-charge banks split at the median 2022Q4 unrealized loss; group means, no controls or FE \quad \pill{appplacebo}{placebo detail}}
+  \centering
+  \includegraphics[width=0.86\linewidth,height=0.68\textheight,keepaspectratio]{fig_s_placebo_svb.png}
+  \vspace{-1mm}
+  \takeaway{Banks with no CECL news show no separation on run exposure ---
+    0.04pp at end-2024, against 0.40pp for the disclosed charge}
+\end{frame}
+
+% =============================================================================
 \begin{frame}[label=fsvb]{This is not the SVB stress in disguise}
   \spec{2022Q4 stress-vulnerability characteristics across deciles of the disclosed charge (positive-adjustment banks) \quad \pill{appplacebo}{placebo detail}}
   \begin{columns}[T]
@@ -500,6 +517,29 @@
 \end{frame}
 
 % =============================================================================
+\begin{frame}{What I cannot rule out: attention}
+  \spec{The design identifies the response to the disclosure, not how much attention was already in the room}
+  \begin{itemize}
+    \item The tests above rule out that \emph{treatment} is stress exposure:
+      the charge is orthogonal to run vulnerability, the placebo on unrealized
+      losses is flat, and posted rates show no differential stress response
+    \item They do \emph{not} rule out that 2023 was a period of unusually high
+      attention to bank fragility. Depositors who had just watched two banks
+      fail may read a credit-risk disclosure more carefully than they otherwise
+      would
+    \item If so, the estimates are the response \emph{conditional on}
+      attention, not an unconditional response to disclosure --- an upper bound
+      on what the same number would do in a quiet year
+    \item That is an external-validity limit, not a threat to identification:
+      heightened attention applies to treated and control banks alike, and
+      cannot manufacture a gap that lines up with a predetermined accounting
+      charge
+    \item Testing it needs a disclosure shock in a calm period. I do not have
+      one here
+  \end{itemize}
+\end{frame}
+
+% =============================================================================
 \begin{frame}{Takeaways}
   \spec{A mandatory credit-risk disclosure moved uninsured funding at solvent community banks}
   \begin{enumerate}
@@ -510,8 +550,12 @@
       repricing, no move in operating balances, stronger where more CDs came
       due and where capital buffers were thin
     \item<1-> \textbf{Banks repurchased the insurance} --- insured brokered
-      money replaced monitored money, and interest expense rose while
-      profitability fell: the bite of discipline is a price, paid by the bank
+      money replaced monitored money; interest expense rose and profitability
+      fell: the bite of discipline is a price, paid by the bank
+    \item<1-> \textbf{Private coverage may already be dampening discipline.}
+      Reciprocal networks, sweeps and insured brokered CDs convert uninsured
+      balances into insured ones with no change in the balance sheet --- the
+      monitored share of funding shrinks before any statutory change
     \item<1-> \textbf{Policy:} expanding coverage (e.g.\ \$10M business
       accounts) converts exactly the funding that monitors into funding that
       does not --- weigh the discipline displaced against the stability gained
