@@ -238,13 +238,15 @@ save_slide_fig(
 )
 
 # --- 7. Rate nulls: Table 5 col (2); Table 6 col (1) --------------------------
+# Row 2 (2026-09-15): implied rate on INSURED CDs, Table 5 col (4), replaces
+# the RateWatch stress-window row (-0.0263, SE 0.0484) on the deck slide.
 dd_rates <- data.table(
   label = c("Implied rate paid on uninsured CDs\n(Call Report, quarterly)",
-            "Posted 12-mo CD rate, SVB stress window\n(RateWatch, weekly)",
+            "Implied rate paid on insured CDs\n(Call Report, quarterly)",
             "Posted 12-mo CD rate, after disclosure\n(RateWatch, weekly)"),
-  est = c(-0.0819, -0.0263, -0.0582),
-  se  = c(0.0518, 0.0484, 0.0737),
-  txt = c("−0.08 (ns)", "−0.03 (ns)", "−0.06 (ns)")
+  est = c(-0.0819, 0.0240, -0.0582),
+  se  = c(0.0518, 0.0384, 0.0737),
+  txt = c("−0.08 (ns)", "+0.02 (ns)", "−0.06 (ns)")
 )
 save_slide_fig(
   ci_plot(dd_rates, xlab = "DiD estimate (pp), High-CECL banks",

@@ -4,7 +4,8 @@
 % Information Shock
 %
 % Slide figures: slides/figures/ (built by
-%   code/result-generation/slide_figs_20260811.R)
+%   code/result-generation/slide_figs_20260811.R; v4 histogram insets and
+%   capital-quartile bars by slide_figs_v4_20260915.R)
 % Reused paper figures: ../latex/figures/
 % Compile: pdflatex -output-directory=build main.tex  (run twice, from slides/)
 % =============================================================================
@@ -12,7 +13,7 @@
 
 \usetheme[progressbar=frametitle,block=fill]{metropolis}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.misc}
+\usetikzlibrary{arrows.meta,positioning,shapes.misc,fit,tikzmark}
 \usepackage{booktabs}
 \usepackage{colortbl}
 
@@ -71,44 +72,47 @@
   \begin{itemize}
     \item<1-> Monitoring by uninsured claimants is the core private check on bank
       risk-taking \gcite{Calomiris--Kahn '91; Diamond--Rajan '01}
-    \item<1-> Riskier banks pay higher rates, and their uninsured balances shrink
-      --- depositors withdraw, or decline to roll over maturing
-      claims \dots\\
-      but is that \textbf{discipline} (depositors reacting to news about risk)
-      or \textbf{equilibrium sorting} (risky banks and yield-chasing depositors
-      matching)?
+    \item<1-> In the data, riskier banks pay higher rates and hold fewer
+      uninsured deposits: depositors decline to roll over maturing claims
+      \gcite{Park--Peristiani '98; Martinez Peria--Schmukler '01;
+      Goldberg--Hudgins '02}
     \item<1-> \textbf{Policy stakes are current:} Main Street Depositor Protection
-      Act would insure \$10M per business account; reciprocal networks, sweeps,
-      and brokers already convert uninsured money into insured money
-      \gcite{Huberdeau-Reid--Pennacchi '25}
+      Act would insure \$10M per \emph{business} account; reciprocal networks,
+      sweeps, and brokers already convert uninsured money into insured money
+      \gcite{Kim--Kundu--Purnanandam '24; Huberdeau-Reid--Pennacchi '25}
   \end{itemize}
+  \vspace{1mm}
+  {\centering\colorbox{pgold!18}{\parbox{0.94\textwidth}{\centering
+    But is that correlation \textbf{discipline} (depositors reacting to news
+    about risk) or \textbf{equilibrium sorting} (risky banks and yield-chasing
+    depositors matching)?}}\par}
   \takeaway{Needed: a shock to \emph{information} about bank risk that is
     unrelated to concurrent bank fundamentals}
 \end{frame}
 
 % =============================================================================
 \begin{frame}{Why the causal evidence has been elusive: three problems}
-  \spec{Why prior estimates conflate information responses with equilibrium sorting}
   \begin{itemize}
     \item \textbf{Simultaneity.} A bank's risk profile, deposit mix, and
-      depositor behavior co-evolve --- regressions of flows on risk measures
+      depositor behavior co-evolve. Regressions of flows on risk measures
       capture sorting, not a disciplinary response
     \item \textbf{Accounting opacity.} Under the incurred-loss standard banks
       could delay recognition and understate risk in disclosures, so measured
       risk was partly a reporting choice
       \gcite{Beatty--Liao '11; Bushman--Williams '15}
     \item \textbf{Aggregate stress.} Episodes with the most variation in bank
-      distress are exactly those where expanded guarantees and system-wide
-      shocks mute or contaminate the depositor response
+      distress are also the episodes with expanded guarantees, system-wide
+      shocks, and the highest liquidity needs of depositors themselves. All
+      three mute or contaminate the depositor response
       \gcite{Berger--Turk-Ariss '15; Bennett--Hwa--Kwast '15}
   \end{itemize}
-  \takeaway{I argue that the mandatory CECL adoption of 2023 addresses
-    all three}
+  \takeaway{The mandatory CECL adoption of 2023 helps me address these
+    endogeneity concerns}
 \end{frame}
 
 % =============================================================================
 \begin{frame}{What is CECL? Lifetime expected losses replace incurred losses}
-  \spec{ASU 2016-13 (FASB 2016), codified in ASC 326 --- the largest change to bank loan accounting in decades}
+  \spec{ASU 2016-13 (FASB 2016), codified in ASC 326. The largest change to bank loan accounting in decades}
   \begin{columns}[T]
     \begin{column}{0.48\textwidth}
       {\centering\colorbox{pgray!15}{\parbox{0.95\linewidth}{\centering
@@ -140,7 +144,7 @@
       \times 100
   \]
   \takeaway{$\Delta_i$ reflects the composition and seasoning of loans made
-    years earlier --- not deposit-market conditions in 2023}
+    years earlier, not deposit-market conditions in 2023}
 \end{frame}
 
 % =============================================================================
@@ -172,38 +176,14 @@
   \end{center}
   \vspace{1mm}
   \begin{itemize}
-    \item Pure accounting event: no cash flow, no change in loan risk --- only
+    \item Pure accounting event: no cash flow, no change in loan risk. Only
       \textbf{news} about lifetime expected losses already embedded in the book
-    \item \alert{Everyone knew the date; nobody outside the bank knew the number}
+    \item The adoption date was public years in advance. The size of each
+      bank's charge was not observable outside the bank until the Call Report
+      was posted
+    \item Timing wedge: banks knew their number in 2022, the public only in
+      April--May 2023
   \end{itemize}
-\end{frame}
-
-% =============================================================================
-\begin{frame}{Back to the three problems: what this shock delivers}
-  \spec{Each identification challenge, and the feature of the Day-One adjustment that addresses it}
-  \begin{center}
-  \footnotesize
-  \renewcommand{\arraystretch}{1.45}
-  \begin{tabular}{@{}p{0.26\textwidth} p{0.66\textwidth}@{}}
-    \toprule
-    \textbf{Problem} & \textbf{Feature of the CECL Day-One charge} \\
-    \midrule
-    Simultaneity &
-      Size is \textbf{predetermined}: set by the composition and seasoning of
-      loans underwritten years earlier; 2022Q4 observables explain
-      $\sim$1\% of its variation \\
-    Accounting opacity &
-      \textbf{Mandatory and standardized}: one rule, every bank, one date,
-      disclosed on Schedule RI-A --- no discretion over whether to reveal \\
-    Aggregate stress &
-      \textbf{Cross-sectional} intensity within one quarter --- calendar-quarter
-      FE absorb the tightening cycle and the 2023 stress; bank$\times$quarter
-      FE absorb them bank by bank \\
-    \bottomrule
-  \end{tabular}
-  \end{center}
-  \takeaway{And a timing wedge: banks knew their number in 2022, the public
-    only in April--May 2023}
 \end{frame}
 
 % =============================================================================
@@ -242,11 +222,11 @@
     \end{column}
   \end{columns}
   \takeaway{Equity falls $\sim$2.8\% per pp of charge at adoption; CDS spreads
-    widen with a lag --- sophisticated investors treat the number as material}
+    widen with a lag. Sophisticated investors treat the number as material}
 \end{frame}
 
 % =============================================================================
-\begin{frame}{Data: a decade of quarterly Call Reports for 4{,}320 community banks}
+\begin{frame}{Data: quarterly Call Reports for 4{,}320 community banks, 2016--2025}
   \spec{FFIEC 041/051, 2016Q1--2025Q4 ($\sim$97{,}000 bank-quarters); RateWatch posted rates; CRSP + Bloomberg for the 2020 cohort}
   \begin{columns}[T]
     \begin{column}{0.41\textwidth}
@@ -277,17 +257,24 @@
       \end{tabular}}
       \vspace{1.5mm}
 
-      {\footnotesize High-CECL banks: weaker loan quality, thinner capital ---
-      but \textbf{balanced on the primary outcome} (bank FE absorb the
+      {\footnotesize High-CECL banks: weaker loan quality, thinner capital.
+      But \textbf{balanced on the primary outcome} (bank FE absorb the
       levels)}
     \end{column}
   \end{columns}
 \end{frame}
 
 % =============================================================================
+\begin{frame}{Univariate evidence: uninsured money leaves, insured money arrives}
+  \spec{Group means, pp of assets; bases 2023Q1 (top) and 2022Q1 (bottom); 206 High-CECL vs 2{,}265 near-zero banks; no controls or FE}
+  \centering
+  \includegraphics[width=\linewidth,height=0.84\textheight,keepaspectratio]{fig_s_motiv_panels.png}
+\end{frame}
+
+% =============================================================================
 \begin{frame}[label=fstrategy]{Empirical strategy: two specifications}
   \spec{Bank + calendar-quarter FE; SEs clustered by bank; controls: lagged log assets, equity/assets, int.\ exp./assets}
-  \begin{block}{Specification 1 --- level DiD \emph{across} banks
+  \begin{block}{Specification 1: level DiD \emph{across} banks
     (expected sign $\beta<0$)}
     \vspace{-2mm}
     \[
@@ -302,7 +289,7 @@
     2023-stress response.}
   \end{block}
   \vspace{2mm}
-  \begin{block}{Specification 2 --- triple difference \emph{within}
+  \begin{block}{Specification 2: triple difference \emph{within}
     bank$\times$quarter (series stacked)}
     \vspace{-4mm}
     \begin{align*}
@@ -315,17 +302,9 @@
     \vspace{-6mm}
 
     {\scriptsize $\alpha_{it}$ absorbs \emph{every} bank-level shock in every
-    quarter --- funding demand, stress exposure, liability strategy; $\beta_4$
-    is identified only from the within-bank uninsured-vs-insured differential.
-    Permutation inference (1{,}000 reassignments): triple diff $p=0.001$.}
+    quarter: funding demand, stress exposure, liability strategy. $\beta_4$
+    is identified only from the within-bank uninsured-vs-insured differential.}
   \end{block}
-\end{frame}
-
-% =============================================================================
-\begin{frame}{Before any regression: uninsured money leaves, insured money arrives}
-  \spec{Group means, pp of assets; bases 2023Q1 (top) and 2022Q1 (bottom); 206 vs 2{,}265 banks; no controls or FE}
-  \centering
-  \includegraphics[width=\linewidth,height=0.84\textheight,keepaspectratio]{fig_s_motiv_panels.png}
 \end{frame}
 
 % =============================================================================
@@ -344,17 +323,18 @@
 % =============================================================================
 \begin{frame}[label=fmag]{Magnitudes: a composition shift, not a funding collapse}
   \spec{Coefficients in pp of assets; bank-clustered inference; */**/*** = 10/5/1\% \quad \pill{fstrategy}{specification}}
+  \vspace{-3mm}
   \begin{center}
   {\small
   \setlength{\tabcolsep}{9pt}
-  \renewcommand{\arraystretch}{1.35}
+  \renewcommand{\arraystretch}{1.2}
   \begin{tabular}{lccc}
     \toprule
     & Unins.\ time dep. & Ins.\ time dep. & Unins.\ $-$ ins.\ gap \\
     & / assets & / assets & (composition) \\
     \midrule
     \rowcolor{pblue!8}
-    Post $\times$ High CECL & $-$0.39** & $+$0.71** & $-$1.25*** \\
+    Post $\times$ High CECL & \tikzmarknode{hl}{$-$0.39**} & $+$0.71** & $-$1.25*** \\
     Post $\times$ CECL Adj (continuous) & $-$0.072** & $+$0.070\phantom{**} & $-$0.177*** \\
     \midrule
     Bank $+$ quarter FE & \checkmark & \checkmark & --- \\
@@ -363,31 +343,76 @@
     \bottomrule
   \end{tabular}}
   \end{center}
-  \vspace{-1mm}
-  \takeaway{The gap survives absorbing every bank-level shock in every quarter
-    --- stress cannot flip uninsured and insured CDs in opposite directions
-    inside the same bank}
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[draw=pred, very thick, rounded corners, inner sep=3pt, fit=(hl)] (box) {};
+    \node[draw=pred, fill=pred!6, rounded corners, text width=0.88\textwidth,
+          align=left, font=\footnotesize, inner sep=5pt, anchor=north]
+          (note) at ([yshift=-2.35cm]current page.center) {%
+      \textcolor{pred}{\textbf{The boxed cell is the headline estimate:}} Post
+      $\times$ High CECL on uninsured time deposits/assets, bank + quarter FE.
+      The next slides take this one specification apart: by deposit type, by
+      capital, by maturity, and by where the money went.};
+  \end{tikzpicture}
 \end{frame}
 
 % =============================================================================
 \begin{frame}{Discipline lives exactly where the depositor holds a decision}
-  \spec{Same specification as the table --- interaction coefficients shown graphically with 90\% CIs from here on}
-  \centering
-  \includegraphics[width=0.8\linewidth,height=0.56\textheight,keepaspectratio]{fig_s_coef_margin.png}
-  \vspace{-1mm}
+  \spec{Same specification as the table. Interaction coefficients shown graphically with 90\% CIs from here on}
+  \begin{columns}[T]
+    \begin{column}{0.64\textwidth}
+      \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{fig_s_coef_margin.png}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \vspace{6mm}
+      \colorbox{pgold!18}{\parbox{0.94\linewidth}{\scriptsize\raggedright
+      \textbf{Why no response in total uninsured deposits?}\\[0.8mm]
+      At the median bank, balances over \$250k are 34\% of assets. Of these,
+      23\% are municipal deposits, collateralized by pledged securities, and
+      26\% are noninterest-bearing operating accounts, held for liquidity
+      services rather than yield \gcite{d'Avernas et al.\ '23}.\\[0.8mm]
+      This money has no scheduled decision point and no reason to respond to
+      a credit disclosure.}}
+    \end{column}
+  \end{columns}
   \takeaway{No response in operating balances; twice the response where more
-    CDs came due --- a quantity response at the rollover margin}
+    CDs came due. A quantity response at the rollover margin}
+\end{frame}
+
+% =============================================================================
+\begin{frame}[label=fcapital]{The response is concentrated at thinly capitalized banks}
+  \spec{Post $\times$ High CECL on uninsured time deposits/assets, split at median 2022Q4 equity/assets (9.8\%); bank + quarter FE; 90\% CI \quad \pill{appcapital}{continuous version}}
+  \centering
+  \includegraphics[width=0.76\linewidth,height=0.6\textheight,keepaspectratio]{fig_s_capital_quartiles.png}
+  \vspace{-1mm}
+  \takeaway{Same disclosed charge, no response in the better-capitalized half.
+    A given charge is worse news when the buffer absorbing it is thin}
+\end{frame}
+
+% =============================================================================
+\begin{frame}[label=fcapmat]{Both margins together: thin capital \emph{and} a scheduled exit}
+  \spec{Post $\times$ High CECL on uninsured time deposits/assets, in the 2$\times$2 of 2022Q4 capital (median 9.8\%) and 2022Q4 share of uninsured CDs maturing within one year (median 76\%); bank + quarter FE; 90\% CI}
+  \centering
+  \includegraphics[width=0.76\linewidth,height=0.6\textheight,keepaspectratio]{fig_s_capital_maturity_2x2.png}
+  \vspace{-1mm}
+  \takeaway{The response sits in one cell: banks where the charge was bad news
+    \emph{and} depositors had a near-term decision to make}
+\end{frame}
+
+% =============================================================================
+\begin{frame}[label=fcapmattotal]{The same 2$\times$2 for total uninsured deposits}
+  \spec{Post $\times$ High CECL on total uninsured deposits/assets (mean 35\% of assets); same cells, controls, and fixed effects as the previous slide; 90\% CI}
+  \centering
+  \includegraphics[width=0.76\linewidth,height=0.6\textheight,keepaspectratio]{fig_s_capital_maturity_2x2_total.png}
+  \vspace{-1mm}
+  \takeaway{Same sign in the same cell, but the aggregate is seven times larger
+    and mostly operating money: the CD signal is lost in the noise}
 \end{frame}
 
 % =============================================================================
 \begin{frame}[label=frates]{High-CECL banks never defended their funding on price}
   \spec{Implied rates from Call Report interest expense; posted APYs from RateWatch, bank-week panel \quad \pill{apprates}{detail}}
   \centering
-  \includegraphics[width=0.8\linewidth,height=0.58\textheight,keepaspectratio]{fig_s_coef_rates.png}
-  \vspace{-1mm}
-  \takeaway{Three nulls, two datasets: no repricing in the stress weeks, none
-    after disclosure --- exactly what the rate-setting literature predicts
-    \gcite{Begenau--Stafford '23; Egan et al.\ '25}}
+  \includegraphics[width=0.8\linewidth,height=0.7\textheight,keepaspectratio]{fig_s_coef_rates.png}
 \end{frame}
 
 % =============================================================================
@@ -417,30 +442,38 @@
       \end{tikzpicture}
       \end{center}
       \vspace{1mm}
-      {\footnotesize Balance sheet keeps its size --- only the
-      \emph{insurance status} of the funding moves. No move in uninsured
+      {\footnotesize Total funding is unchanged. What changes is the
+      \emph{insurance status} of the funding. No move in uninsured
       brokered money or FHLB borrowing.}
     \end{column}
   \end{columns}
 \end{frame}
 
 % =============================================================================
-\begin{frame}{Two actors, two clocks: banks moved first, on private information}
+\begin{frame}{Banks moved first, on private information}
   \spec{Insured brokered deposits, event study; High-CECL $\times$ event time; 90\% CI \quad \pill{appphasein}{phase-in mechanics}}
   \centering
   \includegraphics[width=0.9\linewidth,height=0.76\textheight,keepaspectratio]{fig_s_brokered_build1.png}
 \end{frame}
 
-\begin{frame}[label=ftiming]{Two actors, two clocks: banks moved first, on private information}
-  \spec{Banks ran CECL in parallel through 2022 --- management knew the number before the public did}
+\begin{frame}[label=ftiming]{Banks moved first, on private information}
+  \spec{Banks ran CECL in parallel through 2022. Management knew the number before the public did}
   \begin{columns}[T]
     \begin{column}{0.63\textwidth}
-      \includegraphics[width=\linewidth,height=0.62\textheight,keepaspectratio]{fig_s_brokered_build2.png}
+      \includegraphics[width=\linewidth,height=0.6\textheight,keepaspectratio]{fig_s_brokered_build2.png}
     \end{column}
     \begin{column}{0.35\textwidth}
-      \includegraphics[width=0.9\linewidth,height=0.42\textheight,keepaspectratio]{fig_s_election_bar.png}
-      {\scriptsize Pre-adoption ramp scales with the \emph{still-undisclosed}
-      charge (0.53***); banks electing capital relief pre-funded 0.41** more}
+      {\scriptsize
+      \textbf{The ramp scales with the still-undisclosed charge.}\\[0.5mm]
+      $\Delta$ insured brokered/assets, $k=-4$ to $-1$, on the charge
+      disclosed at $k=0$:\\
+      \hspace*{2mm}$+$0.13*** pp per pp of charge\\
+      \hspace*{2mm}$+$0.53*** pp for High-CECL banks\\[0.8mm]
+      \textbf{And does not vary by capital or maturity.} Interactions with
+      2022Q4 capital and CD maturity all insignificant. The depositor response
+      sits in one cell; the bank response does not.\\[0.8mm]
+      Phase-in electors pre-funded 0.41** pp more.
+      \pill{appphasein}{detail} \pill{appretention}{who kept it}}
     \end{column}
   \end{columns}
   \vspace{-1mm}
@@ -466,33 +499,41 @@
     \end{column}
   \end{columns}
   \vspace{-1mm}
-  \takeaway{They paid no premium to stayers and posted no higher rates --- the
-    cost \emph{is} the substitution: maturing uninsured CDs replaced with
-    insured wholesale money raised at wholesale rates}
+  \takeaway{No premium to stayers, no higher posted rates. The cost comes from
+    replacing maturing uninsured CDs with insured wholesale money raised at
+    wholesale rates}
 \end{frame}
 
 % =============================================================================
-\begin{frame}[label=fcapital]{The response scales with distance to default}
-  \spec{DiD interacted with pre-adoption (2022Q4) equity/assets; gap outcome; effect of the continuous charge \quad \pill{appcapital}{full spec}}
-  \centering
-  \includegraphics[width=0.76\linewidth,height=0.6\textheight,keepaspectratio]{fig_s_capital_gradient.png}
-  \vspace{-1mm}
-  \takeaway{A given charge is worse news at a thin buffer --- monitoring
-    intensity tracks what the disclosure implies about distance to default}
+\begin{frame}{Is this the SVB stress in disguise?}
+  \spec{CECL disclosures reached the public in April--May 2023, weeks after the March 2023 failures}
+  \begin{itemize}
+    \item The concern: uninsured depositors were already running from
+      vulnerable banks. The CECL charge may simply proxy for that
+      vulnerability
+    \item Three answers, in turn:
+      \begin{itemize}
+        \item[1.] \textbf{Placebo.} Banks with no CECL news, sorted on run
+          exposure: do their uninsured CDs separate after March 2023?
+        \item[2.] \textbf{Orthogonality.} Is the charge correlated with
+          unrealized losses, asset maturity, or uninsured funding?
+        \item[3.] \textbf{Horse race.} Do the CECL estimates survive
+          controlling for stress exposure directly?
+      \end{itemize}
+  \end{itemize}
 \end{frame}
 
 % =============================================================================
 \begin{frame}{Placebo: the same picture, drawn on stress exposure, is flat}
   \spec{Zero-charge banks split at the median 2022Q4 unrealized loss; group means, no controls or FE \quad \pill{appplacebo}{placebo detail}}
   \centering
-  \includegraphics[width=0.86\linewidth,height=0.68\textheight,keepaspectratio]{fig_s_placebo_svb.png}
+  \includegraphics[width=\linewidth,height=0.7\textheight,keepaspectratio]{fig_s_placebo_svb.png}
   \vspace{-1mm}
-  \takeaway{Banks with no CECL news show no separation on run exposure ---
-    0.04pp at end-2024, against 0.40pp for the disclosed charge}
+  \takeaway{Banks with no CECL news show no separation on run exposure}
 \end{frame}
 
 % =============================================================================
-\begin{frame}[label=fsvb]{This is not the SVB stress in disguise}
+\begin{frame}[label=fsvb]{Treatment is orthogonal to run exposure}
   \spec{2022Q4 stress-vulnerability characteristics across deciles of the disclosed charge (positive-adjustment banks) \quad \pill{appplacebo}{placebo detail}}
   \begin{columns}[T]
     \begin{column}{0.58\textwidth}
@@ -518,24 +559,16 @@
 
 % =============================================================================
 \begin{frame}{What I cannot rule out: attention}
-  \spec{The design identifies the response to the disclosure, not how much attention was already in the room}
+  \spec{The design identifies the response to the disclosure, conditional on the level of depositor attention in 2023}
   \begin{itemize}
-    \item The tests above rule out that \emph{treatment} is stress exposure:
-      the charge is orthogonal to run vulnerability, the placebo on unrealized
-      losses is flat, and posted rates show no differential stress response
-    \item They do \emph{not} rule out that 2023 was a period of unusually high
-      attention to bank fragility. Depositors who had just watched two banks
-      fail may read a credit-risk disclosure more carefully than they otherwise
-      would
-    \item If so, the estimates are the response \emph{conditional on}
-      attention, not an unconditional response to disclosure --- an upper bound
-      on what the same number would do in a quiet year
-    \item That is an external-validity limit, not a threat to identification:
-      heightened attention applies to treated and control banks alike, and
-      cannot manufacture a gap that lines up with a predetermined accounting
-      charge
-    \item Testing it needs a disclosure shock in a calm period. I do not have
-      one here
+    \item Treatment is not stress exposure. But 2023 was a year of unusual
+      attention to bank fragility
+    \item Depositors who had just watched two banks fail may have read the
+      disclosure more carefully
+    \item If so, the estimates are an upper bound on what the same number
+      would do in a quiet year
+    \item Banks pre-funded in 2022, before SVB, in proportion to their charge.
+      They expected depositors to react before there was any run to watch
   \end{itemize}
 \end{frame}
 
@@ -544,21 +577,22 @@
   \spec{A mandatory credit-risk disclosure moved uninsured funding at solvent community banks}
   \begin{enumerate}
     \item<1-> \textbf{Depositors read the number and acted.} Uninsured CDs fell
-      and insured CDs rose in proportion to the disclosed charge --- flat for
+      and insured CDs rose in proportion to the disclosed charge. Flat for
       five years before, breaking only at public disclosure
     \item<1-> \textbf{Discipline = quantity exit at the rollover margin.} No
       repricing, no move in operating balances, stronger where more CDs came
       due and where capital buffers were thin
-    \item<1-> \textbf{Banks repurchased the insurance} --- insured brokered
+    \item<1-> \textbf{Banks repurchased the insurance.} Insured brokered
       money replaced monitored money; interest expense rose and profitability
-      fell: the bite of discipline is a price, paid by the bank
+      fell. The bite of discipline is a price, paid by the bank
     \item<1-> \textbf{Private coverage may already be dampening discipline.}
       Reciprocal networks, sweeps and insured brokered CDs convert uninsured
-      balances into insured ones with no change in the balance sheet --- the
+      balances into insured ones with no change in the balance sheet. The
       monitored share of funding shrinks before any statutory change
-    \item<1-> \textbf{Policy:} expanding coverage (e.g.\ \$10M business
-      accounts) converts exactly the funding that monitors into funding that
-      does not --- weigh the discipline displaced against the stability gained
+    \item<1-> \textbf{Policy:} the discipline documented here lives in
+      time deposits, not in operating accounts. Proposals that insure \$10M
+      business accounts target the balances that do not monitor; the
+      relevant margin is whether coverage reaches the CD book
   \end{enumerate}
   \vfill
   \begin{center}
@@ -573,7 +607,7 @@
   \spec{Cross-section of the Day-One charge on 2022Q4 observables}
   \begin{itemize}
     \item Loads modestly on NPL ratio, size, capital, deteriorating ROA trend
-      --- directions consistent with credit-sensitive books needing larger
+      in directions consistent with credit-sensitive books needing larger
       lifetime reserves
     \item Adjusted $R^2 \approx 1.4\%$ in the most saturated specification
       (fundamentals + deposit mix + performance trends + local market HHI)
@@ -588,8 +622,8 @@
   \spec{Implied rates: Call Report interest expense on time deposits above/below \$250k (2017--)}
   \begin{itemize}
     \item Implied rate on uninsured CDs, Post $\times$ High-CECL: $-0.082$
-      (SE 0.052) --- no premium extracted by depositors who stayed
-    \item Within-bank large--small rate spread: $-0.110^{*}$ --- if anything
+      (SE 0.052). No premium extracted by depositors who stayed
+    \item Within-bank large--small rate spread: $-0.110^{*}$; if anything
       narrows
     \item RateWatch posted APYs (weekly, $\sim$3{,}300 banks): 12-mo CD
       \$10k/\$100k tiers and savings, no differential move in stress window
@@ -607,7 +641,7 @@
     \item Election spreads the Day-One hit to \emph{regulatory} capital over
       three years: 75\% added back in year one, 50\%, 25\%, full impact from
       year four
-    \item Economically sensible only if the bank expects a material hit ---
+    \item Economically sensible only if the bank expects a material hit;
       election probability rises 0.072*** per pp of charge
     \item 34\% of High-CECL banks elect vs.\ 6\% of the rest; electors'
       pre-adoption insured-brokered ramp is 0.41** pp larger
@@ -615,6 +649,34 @@
       brokered ramp is genuinely quarters early
   \end{itemize}
   \hfill \pill{ftiming}{back}
+\end{frame}
+
+\begin{frame}[label=appretention]{Backup: who kept the brokered money?}
+  \spec{High-CECL banks that pre-funded (insured brokered ramp $>0$, $k=-4$ to $-1$), split at the median post-adoption change in uninsured CDs ($k=-1$ to $+8$); pp of assets, winsorized 1/99}
+  \begin{center}
+  \footnotesize
+  \setlength{\tabcolsep}{6pt}
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{lcccc}
+    \toprule
+    & N & Pre-adoption ramp & Post $\Delta$ brokered & $\Delta$ unins.\ CDs \\
+    \midrule
+    Uninsured CDs grew least & 44 & $+$4.16 & $+$2.46 & $+$0.53 \\
+    Uninsured CDs grew normally & 16 & $+$2.95 & $-$1.22 & $+$5.05 \\
+    \midrule
+    Difference in $\Delta$ brokered & & & $+$4.33*** (1.34) & \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \begin{itemize}\footnotesize
+    \item Both groups bought 3--4 pp of insured brokered money before the number was public
+    \item Where uninsured CDs then failed to grow, the brokered money stayed and grew;
+      where they grew normally, it ran off
+    \item Difference controls for ramp size, log assets, equity/assets (robust SE)
+  \end{itemize}
+  {\scriptsize Descriptive: 16 banks in the second row; split is on a
+  post-adoption outcome. Uninsured CDs rose at almost every bank in 2023--25, so
+  ``grew least'' is relative, not a net outflow.} \hfill \pill{ftiming}{back}
 \end{frame}
 
 \begin{frame}[label=appcapital]{Backup: capital-buffer interaction, full specification}
@@ -627,7 +689,7 @@
     \item Level-outcome analog: $+0.0275^{**}$; robust to dropping the
       time-varying equity control
     \item Implied effect crosses zero at equity $\approx$ 12--13\%, just above
-      the 75th percentile --- best-capitalized quartile shows essentially no
+      the 75th percentile; best-capitalized quartile shows essentially no
       response
   \end{itemize}
   \hfill \pill{fcapital}{back}
@@ -637,7 +699,7 @@
   \spec{DiD around March 2023 with 2022Q4 unrealized securities loss as intensity}
   \begin{itemize}
     \item Zero-charge banks ($\sim$2{,}278, no CECL news): Post-SVB $\times$
-      loss $= +0.073^{**}$ for uninsured CDs --- \emph{wrong sign} for a run;
+      loss $= +0.073^{**}$ for uninsured CDs, the \emph{wrong sign} for a run;
       insured CDs move the same way ($+0.062^{*}$) $\Rightarrow$ rate-cycle
       funding mix, not flight
     \item Full-sample horse race: CECL coefficients essentially unchanged
